@@ -124,6 +124,10 @@
     <plugin name="com-darryncampbell-cordova-plugin-intent" spec="~1.0.2" />
     <plugin name="cordova-sqlite-evcore-extbuild-free" spec="~0.9.7" />
     <plugin name="cordova-plugin-badge" spec="0.8.7" />
-    <engine name="android" spec="6.1.2" />
     <engine name="ios" spec="4.3.1" />
+    <engine name="android" spec="6.3.0" />
+    <plugin name="cordova-android-support-gradle-release" spec="^1.4.4">
+        <variable name="ANDROID_SUPPORT_VERSION" value="27.+" />
+    </plugin>
+    <allow-navigation href="http://192.168.1.17:8100" />
 </widget>
