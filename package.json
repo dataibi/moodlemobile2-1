@@ -62,6 +62,7 @@
     "@ionic-native/media-capture": "^4.5.2",
     "@ionic-native/network": "^4.3.2",
     "@ionic-native/push": "^4.5.3",
+    "@ionic-native/qr-scanner": "^4.10.1",
     "@ionic-native/splash-screen": "4.3.0",
     "@ionic-native/sqlite": "^4.3.2",
     "@ionic-native/status-bar": "4.3.0",
@@ -83,7 +84,7 @@
     "cordova-ios": "4.3.1",
     "cordova-plugin-app-event": "^1.2.1",
     "cordova-plugin-badge": "^0.8.7",
-    "cordova-plugin-camera": "^2.4.1",
+    "cordova-plugin-camera": "git+https://github.com/apache/cordova-plugin-camera.git",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-customurlscheme": "^4.3.0",
     "cordova-plugin-device": "^1.1.6",
@@ -95,6 +96,7 @@
     "cordova-plugin-local-notifications-mm": "^1.0.10",
     "cordova-plugin-media-capture": "^1.4.3",
     "cordova-plugin-network-information": "^1.3.3",
+    "cordova-plugin-qrscanner": "^2.6.0",
     "cordova-plugin-splashscreen": "^4.0.3",
     "cordova-plugin-statusbar": "^2.2.3",
     "cordova-plugin-whitelist": "^1.3.2",
@@ -144,7 +146,8 @@
       "cordova-plugin-file-transfer": {},
       "cordova-plugin-camera": {
         "CAMERA_USAGE_DESCRIPTION": "We'd like to access your camera to let you take a photo",
-        "PHOTOLIBRARY_USAGE_DESCRIPTION": "We'd like like to open your photo library to let you pick a photo"
+        "PHOTOLIBRARY_USAGE_DESCRIPTION": "We'd like like to open your photo library to let you pick a photo",
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
       "cordova-plugin-media-capture": {
         "CAMERA_USAGE_DESCRIPTION": "We'd like to access your camera to let you take a photo",
@@ -178,7 +181,9 @@
       "cordova-plugin-badge": {},
       "cordova-android-support-gradle-release": {
         "ANDROID_SUPPORT_VERSION": "27.+"
-      }
+      },
+      "cordova-plugin-qrscanner": {},
+      "cordova-plugin-compat": {}
     }
   },
   "main": "desktop/electron.js",
