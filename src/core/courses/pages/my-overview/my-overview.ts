@@ -26,6 +26,7 @@ import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import * as moment from 'moment';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreSiteHomeIndexComponent } from '@core/sitehome/components/index/index';
+import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
 
 /**
  * Page that displays My Overview.
@@ -485,6 +486,10 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      */
     protected loadSiteName(): void {
         this.siteName = this.sitesProvider.getCurrentSite().getInfo().sitename;
+    }
+
+    navtest() {
+        this.navCtrl.push(QrScannerPage);
     }
 
     /**

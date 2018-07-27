@@ -48,6 +48,7 @@ import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
 import { CoreAttachmentsComponent } from './attachments/attachments';
 import { CoreIonTabsComponent } from './ion-tabs/ion-tabs';
 import { CoreIonTabComponent } from './ion-tabs/ion-tab';
+import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
 
 @NgModule({
     declarations: [
@@ -81,12 +82,14 @@ import { CoreIonTabComponent } from './ion-tabs/ion-tab';
         CoreNavigationBarComponent,
         CoreAttachmentsComponent,
         CoreIonTabsComponent,
-        CoreIonTabComponent
+        CoreIonTabComponent,
+        QrScannerPage
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
         CoreCoursePickerMenuPopoverComponent,
-        CoreRecaptchaModalComponent
+        CoreRecaptchaModalComponent,
+        QrScannerPage
     ],
     imports: [
         IonicModule,
