@@ -7,6 +7,10 @@
 </ion-header>
 
 <ion-content padding>
-  <button ion-button (click)="openQr()">Default</button>
+    <div float-end>
+        <button ion-button icon-only clear color="dark" (click)="closeAndGoBack()">
+            <core-icon name="md-close-circle"></core-icon>
+        </button>
+    </div>
   <p>{{scanned}}</p>
 </ion-content>
