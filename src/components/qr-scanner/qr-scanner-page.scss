@@ -1,5 +1,20 @@
 qr-scanner-page {
-    // ion-content {
-    //     background: transparent !important;
-    //  }
+
+    .content-md, .ion-app.md {
+        color: #3a3a3a;
+        background-color: transparent !important;
+    }
+
+    &.ion-page  {
+        background-color: transparent !important;
+    }
+
+    ion-content {
+        background-color: transparent !important;
+    }
+
+
+
 }
+
+
