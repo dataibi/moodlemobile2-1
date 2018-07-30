@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+        Qr Scanner
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <div float-end>
+        <button ion-button icon-only clear color="dark" (click)="closeAndGoBack()">
+            <core-icon name="md-close-circle"></core-icon>
+        </button>
+    </div>
+  <p>{{scanned}}</p>
+</ion-content>

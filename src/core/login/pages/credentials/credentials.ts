@@ -1,3 +1,4 @@
+import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-page';
 // (C) Copyright 2015 Martin Dougiamas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -274,5 +275,9 @@ export class CoreLoginCredentialsPage {
      */
     signup(): void {
         this.navCtrl.push('CoreLoginEmailSignupPage', { siteUrl: this.siteUrl });
+    }
+
+    navToQrScanner(): void {
+        this.navCtrl.push(QrScannerPage, {isLogin: true});
     }
 }
