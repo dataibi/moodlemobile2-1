@@ -857,3 +857,10 @@ ion-app.cameraView, ion-app.cameraView ion-content, ion-app.cameraView .nav-deco
 .ion-page  {
   background-color: transparent !important;
 }
+
+$primary-color: #f98012;
+
+$button-height: 32px;
+
+$button-height--big: $button-height * 1.5;
+$button-height--huge: $button-height * 2;
