@@ -16,16 +16,20 @@
 <!-- For later   <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description> -->
 
     <div padding>
-        <h2>Contents</h2>
-        <p>{{contents}}</p>
+        <h2>Module</h2>
+        <p>{{module}}</p>
+        <h2>Course</h2>
+        <p>{{courseId}}</p>
+
         <h2>Image</h2>
         <p>{{image}}</p>
-        <h2>childList</h2>
-        <p>{{childrenList}}</p>
         <h2>Description</h2>
         <p>{{description}}</p>
-        <h2>Children</h2>
+        <h2>Pages</h2>
         <p *ngFor="let value of childPages">{{value}}</p>
+
+        <h2>Sections</h2>
+        <p *ngFor="let section of childSections">{{section}}</p>
 
         <core-format-text [component]="component" [componentId]="componentId" [text]="contents"></core-format-text>
     </div>

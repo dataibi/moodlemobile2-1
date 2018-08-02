@@ -31,13 +31,15 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     image: string;
     childPages: string[];
     childrenList: string;
-    childSections: string;
+    childSections: string[];
     description: string;
 
     constructor(injector: Injector, private pageProvider: AddonModPageProvider,
         private courseProvider: CoreCourseProvider, private appProvider: CoreAppProvider,
         private pageHelper: AddonModPageHelperProvider, private pagePrefetch: AddonModPagePrefetchHandler) {
         super(injector);
+        this.childPages = new Array();
+        this.childSections = new Array();
     }
 
     ngOnInit(): void {
@@ -96,28 +98,44 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
 
                 this.contents = content;
 
-                // Retrieve the navigation map data from the HTML content
-                let imageTag = content.substring(content.indexOf('<img'));
-                imageTag = imageTag.substring(0, imageTag.indexOf('>') + 1);
-                this.image = imageTag;
-
-                let childList = content.substring(content.indexOf('<ol>') + 4);
-                childList = childList.substring(0, childList.indexOf('</ol>'));
-                this.childrenList = childList;
-
-                this.childPages = childList.split('</li>');
-
-                let description = content.substring(content.indexOf('</ol>') + 5);
-                this.description = description;
+                this.parseDataFromPageContent(content);
 
                 if (downloadFailed && this.appProvider.isOnline()) {
                     // We could load the main file but the download failed. Show error message.
                     this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
                 }
             }));
-
+            
             return Promise.all(promises);
         });
+    }
+    
+    private parseDataFromPageContent(content: string): void {
+        // Retrieve the navigation map data from the HTML content
+        let imageTag = content.substring(content.indexOf('<img'));
+        imageTag = imageTag.substring(0, imageTag.indexOf('>') + 1);
+        this.image = imageTag;
+    
+        let childList = content.substring(content.indexOf('<ol>') + 4);
+        childList = childList.substring(0, childList.indexOf('</ol>'));
+        this.childrenList = childList;
+    
+        let description = content.substring(content.indexOf('</ol>') + 5);
+        this.description = description;
+    
+        const tokens = childList.split('</li>');
+        for ( let token of tokens) {
+            if (token.includes('/mod/page/')) {
+                token = token.substring(token.indexOf('php?id='));
+                token = token.substring(token.indexOf('=') + 1, token.indexOf('>') - 1);
+                this.childPages.push(token);
+            } else if (token.includes('/course/view.php')) {
+                token = token.substring(token.indexOf('php?id='));
+                token = token.substring(token.indexOf('#') + 1, token.indexOf('>') - 1);
+                this.childSections.push(token);
+            }
+        }
+        
     }
 
 }
