@@ -1,0 +1,33 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="600" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="500" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+    
+<!-- Content. -->
+<h2>From navigation-map</h2>
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+
+<!-- For later   <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description> -->
+
+    <div padding>
+        <h2>Contents</h2>
+        <p>{{contents}}</p>
+        <h2>Image</h2>
+        <p>{{image}}</p>
+        <h2>childList</h2>
+        <p>{{childrenList}}</p>
+        <h2>Description</h2>
+        <p>{{description}}</p>
+        <h2>Children</h2>
+        <p *ngFor="let value of childPages">{{value}}</p>
+
+        <core-format-text [component]="component" [componentId]="componentId" [text]="contents"></core-format-text>
+    </div>
+
+</core-loading>

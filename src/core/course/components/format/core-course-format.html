@@ -33,7 +33,15 @@
         </core-dynamic-component>
 
         <!-- Single section. -->
-        <div *ngIf="selectedSection && selectedSection.id != allSectionsId">
+        <div *ngIf="selectedSection && selectedSection.id != allSectionsId && selectedSection.section == 0">
+            <core-dynamic-component [component]="singleSectionComponent" [data]="data">
+                <ng-container *ngTemplateOutlet="firstSectionTemplate; context: {section: selectedSection}"></ng-container>
+                <core-empty-box *ngIf="!selectedSection.hasContent" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+            </core-dynamic-component>
+        </div>
+        
+        <!-- Single section. -->
+        <div *ngIf="selectedSection && selectedSection.id != allSectionsId && selectedSection.section != 0">
             <core-dynamic-component [component]="singleSectionComponent" [data]="data">
                 <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}"></ng-container>
                 <core-empty-box *ngIf="!selectedSection.hasContent" icon="qr-scanner" [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
@@ -50,6 +58,30 @@
         </div>
     </core-loading>
 </core-dynamic-component>
+
+<!-- Template to render first section. -->
+<ng-template #firstSectionTemplate let-section="section">
+        <section ion-list *ngIf="section.hasContent && section.id != allSectionsId && section.section == 0">
+            <div>
+                <P>{{section.modules[1].name}}</P>
+<!--                <core-navigation-map [module]="section.modules[1]" [courseId]="courseId" (dataRetrieved)="updateData($event)"></core-navigation-map> -->
+            </div>
+            <!-- Title is only displayed when viewing all sections. -->
+            <ion-item-divider text-wrap color="light" *ngIf="selectedSection.id == allSectionsId && section.name">
+                <core-format-text [text]="section.name"></core-format-text>
+                <!-- Section download. -->
+                <ng-container *ngTemplateOutlet="sectionDownloadTemplate; context: {section: section}"></ng-container>
+            </ion-item-divider>
+    
+            <ion-item text-wrap *ngIf="section.summary">
+                <core-format-text [text]="section.summary"></core-format-text>
+            </ion-item>
+    
+            <ng-container *ngFor="let module of section.modules">
+                <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [courseId]="course.id" [downloadEnabled]="downloadEnabled" (completionChanged)="completionChanged.emit()"></core-course-module>
+            </ng-container>
+        </section>
+    </ng-template>
 
 <!-- Template to render a section. -->
 <ng-template #sectionTemplate let-section="section">
