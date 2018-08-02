@@ -1,4 +1,6 @@
-import { NavController, NavParams } from 'ionic-angular';
+import { QrReaderProvider } from './../../providers/qrReader';
+import { CoreLoginCredentialsPage } from './../../core/login/pages/credentials/credentials';
+import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { Component, NgZone } from '@angular/core';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { Platform } from 'ionic-angular';
@@ -12,15 +14,20 @@ export class QrScannerPage {
 	scanned: string = '';
 	scanSubscribe;
 	isLoginScan: boolean = false;
+	callingComponent: any;
+	typeOfQrCode: string;
 
 	constructor(
 		public navCtrl: NavController,
 		private navParams: NavParams,
 		private qrScanner: QRScanner,
 		private zone: NgZone,
-		private platform: Platform
+		private platform: Platform,
+		private alertCtrl: AlertController,
+		private qrReaderProvider: QrReaderProvider
 	) {
 		this.isLoginScan = navParams.get("isLogin");
+		this.callingComponent = navParams.get("callingComponent");
 	}
 
 	ionViewDidEnter() {
@@ -41,10 +48,81 @@ export class QrScannerPage {
 	}
 
 	closeAndGoBack() {
-		this.closeScanner();
-		if(this.navCtrl.canGoBack()){
+		// this.closeScanner();
+		if (this.navCtrl.canGoBack()) {
 			this.navCtrl.pop();
 		}
+	}
+
+	closeAndGoToComponent(component, params_object = {}) {
+		// this.closeScanner();
+		this.navCtrl.push(component, params_object);
+	}
+
+	safelyParseJSON(json) {
+		// This function cannot be optimised, it's best to
+		// keep it small!
+		var parsed;
+
+		try {
+			parsed = JSON.parse(json);
+		} catch (e) {
+			console.log('json error');
+			console.log(e);
+			return false;
+		}
+
+		return parsed; // Could be undefined!
+	}
+
+	whatQrCodeIsIt() { //TODO: json string has to have a type property. so we don`t have to check so complicate
+		let scanned_as_object: string | boolean = this.safelyParseJSON(this.scanned);
+
+		switch (Object.keys(scanned_as_object)[0]) {
+			case 'username':
+				this.typeOfQrCode = 'login';
+				break;
+			case 'exponat_id':
+				this.typeOfQrCode = 'exponate';
+				break;
+			default:
+				this.typeOfQrCode = 'unknown';
+		}
+		console.log('scanned_as_object');
+		console.log(scanned_as_object);
+		console.log('typeOfQrCode');
+		console.log(this.typeOfQrCode);
+		
+		return this.typeOfQrCode;
+	}
+
+	doesQrCodeAndCalledComponentMatch(): boolean {
+		let typeOfQrCode = this.whatQrCodeIsIt();
+		console.log('this.callingComponent instanceof CoreLoginCredentialsPage');
+		console.log(this.callingComponent instanceof CoreLoginCredentialsPage);
+		if (this.callingComponent && this.callingComponent instanceof CoreLoginCredentialsPage && typeOfQrCode === 'login') {
+			return true;
+
+		} else {
+			return false;
+		}
+	}
+
+	presentAlert() {
+		let alert = this.alertCtrl.create({
+			title: 'QR Code not correct',
+			message: 'Please try another code for generated this app',
+			buttons: [
+				{
+					text: 'OK',
+					role: 'cancel',
+					handler: () => {
+						this.closeAndGoBack();
+					}
+				}
+			]
+		});
+		alert.present();
 	}
 
 
@@ -71,14 +149,33 @@ export class QrScannerPage {
 
 					// start scanning
 					this.scanSubscribe = this.qrScanner.scan().subscribe((text: string) => {
-						this.zone.run(
-							() => this.scanned = text
-						);
+						// this.zone.run(
+						// 	() => this.scanned = text
+						// );
 
-						// alert(text);
-						this.qrScanner.hide(); // hide camera preview
-						this.scanSubscribe.unsubscribe(); // stop scanning
-						this.hideCamera();
+						// // alert(text);
+						// this.qrScanner.hide(); // hide camera preview
+						// this.scanSubscribe.unsubscribe(); // stop scanning
+						// this.hideCamera();
+
+						this.scanned = text;
+						if (this.doesQrCodeAndCalledComponentMatch()) {
+							switch (this.typeOfQrCode) {
+								case 'login':
+									this.qrReaderProvider.emitLoginData(this.scanned);
+									// this.closeAndGoToComponent(CoreLoginCredentialsPage, {loginData: this.scanned});
+									break;
+								case 'exponat_id':
+								//this.closeAndGoToComponent(CoreLoginCredentialsPage, {loginData: this.scanned});
+									break;
+								default:
+								console.log('whats wrong here?');
+							}
+							
+						} else {
+							this.presentAlert();
+						}
+
 
 					});
 

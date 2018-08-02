@@ -1,3 +1,4 @@
+import { QrReaderProvider } from './../../../../providers/qrReader';
 import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-page';
 // (C) Copyright 2015 Martin Dougiamas
 //
@@ -13,7 +14,7 @@ import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-pa
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
@@ -34,7 +35,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',
 })
-export class CoreLoginCredentialsPage {
+export class CoreLoginCredentialsPage implements OnInit {
     credForm: FormGroup;
     siteUrl: string;
     siteChecked = false;
@@ -45,6 +46,8 @@ export class CoreLoginCredentialsPage {
     identityProviders: any[];
     pageLoaded = false;
     isBrowserSSO = false;
+    scannedValue: string;
+    isQrLogin: boolean = false;
 
     protected siteConfig;
     protected eventThrown = false;
@@ -52,35 +55,55 @@ export class CoreLoginCredentialsPage {
     protected siteId: string;
     protected urlToOpen: string;
 
-    constructor(private navCtrl: NavController, navParams: NavParams, fb: FormBuilder, private appProvider: CoreAppProvider,
+    constructor(private navCtrl: NavController, navParams: NavParams, private fb: FormBuilder, private appProvider: CoreAppProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
             private eventsProvider: CoreEventsProvider, private contentLinksDelegate: CoreContentLinksDelegate,
-            private contentLinksHelper: CoreContentLinksHelperProvider) {
-
+            private contentLinksHelper: CoreContentLinksHelperProvider, private qrReaderProvider: QrReaderProvider) {
+                
         this.siteUrl = navParams.get('siteUrl');
         this.siteConfig = navParams.get('siteConfig');
         this.urlToOpen = navParams.get('urlToOpen');
+        
 
         this.credForm = fb.group({
             username: [navParams.get('username') || '', Validators.required],
             password: ['', Validators.required]
         });
+
+    }
+
+    ngOnInit() {
+        this.qrReaderProvider.naviLoginDataEvent.subscribe(
+            (loginData) => {
+                let loginDataObject = JSON.parse(loginData);
+                this.isQrLogin = true;
+                console.log('loginData');
+                console.dir(loginData);
+                console.log('username');
+                console.log(loginDataObject.username);
+                console.log('passsword');
+                console.log(loginDataObject.password);
+                console.log('loginDataObject');
+                console.dir(loginDataObject);
+                this.login(loginDataObject.username, loginDataObject.password);
+            }
+        );
     }
 
     /**
      * View loaded.
      */
     ionViewDidLoad(): void {
-        this.treatSiteConfig();
-
-        if (this.loginHelper.isFixedUrlSet()) {
-            // Fixed URL, we need to check if it uses browser SSO login.
-            this.checkSite(this.siteUrl);
-        } else {
-            this.siteChecked = true;
-            this.pageLoaded = true;
-        }
+            this.treatSiteConfig();
+    
+            if (this.loginHelper.isFixedUrlSet()) {
+                // Fixed URL, we need to check if it uses browser SSO login.
+                this.checkSite(this.siteUrl);
+            } else {
+                this.siteChecked = true;
+                this.pageLoaded = true;
+            }
     }
 
     /**
@@ -163,13 +186,13 @@ export class CoreLoginCredentialsPage {
     /**
      * Tries to authenticate the user.
      */
-    login(): void {
+    login(usernameparam = "", passwordparam = ""): void {
         this.appProvider.closeKeyboard();
 
         // Get input data.
         const siteUrl = this.siteUrl,
-            username = this.credForm.value.username,
-            password = this.credForm.value.password;
+            username = this.isQrLogin ? usernameparam : this.credForm.value.username, //TODO: from database of qr code
+            password = this.isQrLogin ? passwordparam : this.credForm.value.password;
 
         if (!this.siteChecked || this.isBrowserSSO) {
             // Site wasn't checked (it failed) or a previous check determined it was SSO. Let's check again.
@@ -178,14 +201,15 @@ export class CoreLoginCredentialsPage {
                     // Site doesn't use browser SSO, throw app's login again.
                     return this.login();
                 }
+                
             });
-
+            this.isQrLogin = false;
             return;
         }
-
+        this.isQrLogin = false;
         if (!username) {
             this.domUtils.showErrorModal('core.login.usernamerequired', true);
-
+            
             return;
         }
         if (!password) {
@@ -199,7 +223,7 @@ export class CoreLoginCredentialsPage {
 
             return;
         }
-
+    
         const modal = this.domUtils.showModalLoading();
 
         // Start the authentication process.
@@ -278,6 +302,12 @@ export class CoreLoginCredentialsPage {
     }
 
     navToQrScanner(): void {
-        this.navCtrl.push(QrScannerPage, {isLogin: true});
+        this.navCtrl.push(
+            QrScannerPage,
+            {
+                isLogin: true,
+                callingComponent: this
+            }
+        );
     }
 }
