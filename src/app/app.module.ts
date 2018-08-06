@@ -22,6 +22,7 @@ import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import { LocationStrategy } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
+import { QRScanner } from '@ionic-native/qr-scanner';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -260,6 +261,7 @@ export const CORE_PROVIDERS: any[] = [
         {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
         {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
         {provide: LocationStrategy, useClass: MockLocationStrategy},
+        QRScanner
     ]
 })
 export class AppModule {

@@ -82,5 +82,6 @@
     "usernamerequired": "Username required",
     "usernotaddederror": "User not added - error",
     "visitchangepassword": "Do you want to visit the site to change the password?",
-    "webservicesnotenabled": "Web Services are not enabled in your site. Please, contact your Moodle site administrator if you think mobile access should be enabled."
+    "scantologin": "Please press the button an scan a QR Code to login"
+
 }
