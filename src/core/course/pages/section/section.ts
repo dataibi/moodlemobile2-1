@@ -27,6 +27,7 @@ import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '..
 import { CoreCourseFormatComponent } from '../../components/format/format';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreTabsComponent } from '@components/tabs/tabs';
+import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
