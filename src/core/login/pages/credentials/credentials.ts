@@ -15,7 +15,7 @@ import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-pa
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreAppProvider } from '@providers/app';
 import { CoreEventsProvider } from '@providers/events';
@@ -47,7 +47,7 @@ export class CoreLoginCredentialsPage implements OnInit {
     pageLoaded = false;
     isBrowserSSO = false;
     scannedValue: string;
-    isQrLogin: boolean = false;
+    loginDataSubscription: any;
 
     protected siteConfig;
     protected eventThrown = false;
@@ -59,7 +59,8 @@ export class CoreLoginCredentialsPage implements OnInit {
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
             private eventsProvider: CoreEventsProvider, private contentLinksDelegate: CoreContentLinksDelegate,
-            private contentLinksHelper: CoreContentLinksHelperProvider, private qrReaderProvider: QrReaderProvider) {
+            private contentLinksHelper: CoreContentLinksHelperProvider, private qrReaderProvider: QrReaderProvider,
+            private appCtrl: App) {
                 
         this.siteUrl = navParams.get('siteUrl');
         this.siteConfig = navParams.get('siteConfig');
@@ -74,22 +75,21 @@ export class CoreLoginCredentialsPage implements OnInit {
     }
 
     ngOnInit() {
-        this.qrReaderProvider.naviLoginDataEvent.subscribe(
+        this.loginDataSubscription = this.qrReaderProvider.naviLoginDataEvent.subscribe(
             (loginData) => {
                 let loginDataObject = JSON.parse(loginData);
-                this.isQrLogin = true;
-                console.log('loginData');
-                console.dir(loginData);
-                console.log('username');
-                console.log(loginDataObject.username);
-                console.log('passsword');
-                console.log(loginDataObject.password);
-                console.log('loginDataObject');
-                console.dir(loginDataObject);
-                this.login(loginDataObject.username, loginDataObject.password);
+                this.credForm = this.fb.group({
+                    username: [loginDataObject.username || '', Validators.required],
+                    password: [loginDataObject.password, Validators.required]
+                });
+                this.login();
             }
         );
     }
+
+    ngOnDestroy(){
+        this.loginDataSubscription.unsubscribe();
+      }
 
     /**
      * View loaded.
@@ -186,15 +186,16 @@ export class CoreLoginCredentialsPage implements OnInit {
     /**
      * Tries to authenticate the user.
      */
-    login(usernameparam = "", passwordparam = ""): void {
+    login(): void {
         this.appProvider.closeKeyboard();
 
         // Get input data.
         const siteUrl = this.siteUrl,
-            username = this.isQrLogin ? usernameparam : this.credForm.value.username, //TODO: from database of qr code
-            password = this.isQrLogin ? passwordparam : this.credForm.value.password;
+            username = this.credForm.value.username, //TODO: from database of qr code
+            password = this.credForm.value.password;
 
         if (!this.siteChecked || this.isBrowserSSO) {
+
             // Site wasn't checked (it failed) or a previous check determined it was SSO. Let's check again.
             this.checkSite(siteUrl).then(() => {
                 if (!this.isBrowserSSO) {
@@ -203,10 +204,8 @@ export class CoreLoginCredentialsPage implements OnInit {
                 }
                 
             });
-            this.isQrLogin = false;
             return;
         }
-        this.isQrLogin = false;
         if (!username) {
             this.domUtils.showErrorModal('core.login.usernamerequired', true);
             
@@ -232,7 +231,6 @@ export class CoreLoginCredentialsPage implements OnInit {
                 // Reset fields so the data is not in the view anymore.
                 this.credForm.controls['username'].reset();
                 this.credForm.controls['password'].reset();
-
                 this.siteId = id;
 
                 if (this.urlToOpen) {
@@ -302,7 +300,7 @@ export class CoreLoginCredentialsPage implements OnInit {
     }
 
     navToQrScanner(): void {
-        this.navCtrl.push(
+        this.appCtrl.getRootNavs()[0].push(
             QrScannerPage,
             {
                 isLogin: true,
@@ -310,4 +308,6 @@ export class CoreLoginCredentialsPage implements OnInit {
             }
         );
     }
+
+    
 }

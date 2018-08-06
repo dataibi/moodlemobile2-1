@@ -1,7 +1,7 @@
 import { QrReaderProvider } from './../../providers/qrReader';
 import { CoreLoginCredentialsPage } from './../../core/login/pages/credentials/credentials';
 import { NavController, NavParams, AlertController } from 'ionic-angular';
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { Platform } from 'ionic-angular';
 
@@ -10,6 +10,8 @@ import { Platform } from 'ionic-angular';
 	templateUrl: 'qr-scanner-page.html'
 })
 export class QrScannerPage {
+
+	@ViewChild('sendbutton', { read: ElementRef }) sendbutton: ElementRef;
 
 	scanned: string = '';
 	scanSubscribe;
@@ -42,64 +44,61 @@ export class QrScannerPage {
 	}
 
 	closeScanner() {
-		this.qrScanner.hide(); // hide camera preview
 		this.scanSubscribe.unsubscribe(); // stop scanning
 		this.hideCamera(); //remove css classes for the transparent background 
+		return this.qrScanner.destroy(); // destroy instance
 	}
 
 	closeAndGoBack() {
-		// this.closeScanner();
 		if (this.navCtrl.canGoBack()) {
 			this.navCtrl.pop();
 		}
 	}
 
 	closeAndGoToComponent(component, params_object = {}) {
-		// this.closeScanner();
 		this.navCtrl.push(component, params_object);
 	}
 
-	safelyParseJSON(json) {
+	/**
+     * parse json safely
+     *
+     * @param {any} json should be a string
+     * @return {any} false, undefined, or an object
+     */
+	safelyParseJSON(json): any {
 		// This function cannot be optimised, it's best to
 		// keep it small!
-		var parsed;
-
+		let parsed;
 		try {
 			parsed = JSON.parse(json);
 		} catch (e) {
-			console.log('json error');
-			console.log(e);
 			return false;
 		}
-
 		return parsed; // Could be undefined!
 	}
 
-	whatQrCodeIsIt() { //TODO: json string has to have a type property. so we don`t have to check so complicate
-		let scanned_as_object: string | boolean = this.safelyParseJSON(this.scanned);
+	whatQrCodeIsIt() {
+		let scanned_as_object: any = this.safelyParseJSON(this.scanned);
 
-		switch (Object.keys(scanned_as_object)[0]) {
-			case 'username':
-				this.typeOfQrCode = 'login';
-				break;
-			case 'exponat_id':
-				this.typeOfQrCode = 'exponate';
-				break;
-			default:
-				this.typeOfQrCode = 'unknown';
+		if (scanned_as_object.qrType && scanned_as_object.qrType !== 'undefined') {
+			switch (scanned_as_object.qrType) {
+				case 'login':
+					this.typeOfQrCode = 'login';
+					break;
+				case 'exponate':
+					this.typeOfQrCode = 'exponate';
+					break;
+				default:
+					this.typeOfQrCode = 'unknown';
+			}
+		} else {
+			this.typeOfQrCode = 'unknown';
 		}
-		console.log('scanned_as_object');
-		console.log(scanned_as_object);
-		console.log('typeOfQrCode');
-		console.log(this.typeOfQrCode);
-		
 		return this.typeOfQrCode;
 	}
 
 	doesQrCodeAndCalledComponentMatch(): boolean {
 		let typeOfQrCode = this.whatQrCodeIsIt();
-		console.log('this.callingComponent instanceof CoreLoginCredentialsPage');
-		console.log(this.callingComponent instanceof CoreLoginCredentialsPage);
 		if (this.callingComponent && this.callingComponent instanceof CoreLoginCredentialsPage && typeOfQrCode === 'login') {
 			return true;
 
@@ -111,7 +110,7 @@ export class QrScannerPage {
 	presentAlert() {
 		let alert = this.alertCtrl.create({
 			title: 'QR Code not correct',
-			message: 'Please try another code for generated this app',
+			message: 'Please try another code generated for this project',
 			buttons: [
 				{
 					text: 'OK',
@@ -125,8 +124,6 @@ export class QrScannerPage {
 		alert.present();
 	}
 
-
-
 	isScanned() {
 		return this.scanned !== '';
 	}
@@ -139,13 +136,15 @@ export class QrScannerPage {
 		(window.document.querySelector('ion-app') as HTMLElement).classList.remove('cameraView');
 	}
 
+	/**
+     * test permission for scanner, open camera for qr reader and create subscription for scanned material
+     */
 	openQr() {
 		// Optionally request the permission early
 		this.qrScanner.prepare()
 			.then((status: QRScannerStatus) => {
 				if (status.authorized) {
 					// camera permission was granted
-					//alert('authorized');
 
 					// start scanning
 					this.scanSubscribe = this.qrScanner.scan().subscribe((text: string) => {
@@ -153,25 +152,9 @@ export class QrScannerPage {
 						// 	() => this.scanned = text
 						// );
 
-						// // alert(text);
-						// this.qrScanner.hide(); // hide camera preview
-						// this.scanSubscribe.unsubscribe(); // stop scanning
-						// this.hideCamera();
-
 						this.scanned = text;
 						if (this.doesQrCodeAndCalledComponentMatch()) {
-							switch (this.typeOfQrCode) {
-								case 'login':
-									this.qrReaderProvider.emitLoginData(this.scanned);
-									// this.closeAndGoToComponent(CoreLoginCredentialsPage, {loginData: this.scanned});
-									break;
-								case 'exponat_id':
-								//this.closeAndGoToComponent(CoreLoginCredentialsPage, {loginData: this.scanned});
-									break;
-								default:
-								console.log('whats wrong here?');
-							}
-							
+							this.sendbutton.nativeElement.click(); //have to go this curious way with Elementref and trigger click, cause fire event here in subscription don`t work well (takes very long)
 						} else {
 							this.presentAlert();
 						}
@@ -179,14 +162,11 @@ export class QrScannerPage {
 
 					});
 
-					this.qrScanner.resumePreview();
 					this.showCamera();
 					// show camera preview
 					this.qrScanner.show()
 						.then((data: QRScannerStatus) => {
 							console.log('datashowing', data);
-							//alert(data.showing);
-							// this.hideCamera();
 						}, err => {
 							//alert(err);
 
@@ -207,5 +187,11 @@ export class QrScannerPage {
 			.catch((e: any) => {
 				alert('Error is' + e);
 			});
+	}
+
+	sendJson() {
+		if (this.typeOfQrCode === 'login') {
+			this.qrReaderProvider.emitLoginData(this.scanned);
+		}
 	}
 }
