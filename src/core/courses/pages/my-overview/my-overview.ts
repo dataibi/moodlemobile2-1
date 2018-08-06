@@ -22,6 +22,7 @@ import { CoreCoursesProvider } from '../../providers/courses';
 import { CoreCoursesMyOverviewProvider } from '../../providers/my-overview';
 import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delegate';
+import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import * as moment from 'moment';
 import { CoreTabsComponent } from '@components/tabs/tabs';
@@ -85,7 +86,8 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             private domUtils: CoreDomUtilsProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider,
             private courseHelper: CoreCourseHelperProvider, private sitesProvider: CoreSitesProvider,
             private siteHomeProvider: CoreSiteHomeProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
-            private eventsProvider: CoreEventsProvider, private utils: CoreUtilsProvider) {
+            private eventsProvider: CoreEventsProvider, private utils: CoreUtilsProvider,
+            private courseFormatDelegate: CoreCourseFormatDelegate) {
         this.loadSiteName();
     }
 
@@ -181,6 +183,15 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             this.domUtils.showErrorModalDefault(error, 'Error getting my overview data.');
         });
     }
+    
+    /**
+     * Open a course.
+     *
+     * @param {any} course The course to open.
+     */
+    openCourse(course: any): void {
+        this.courseFormatDelegate.openCourse(this.navCtrl, course);
+    }
 
     /**
      * Fetch the courses for my overview.
@@ -213,6 +224,7 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             this.filteredCourses = this.courses[this.courses.selected];
 
             this.initPrefetchCoursesIcons();
+            this.openCourse(this.filteredCourses[0]);
         }).catch((error) => {
             this.domUtils.showErrorModalDefault(error, 'Error getting my overview data.');
         });
