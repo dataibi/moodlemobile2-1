@@ -2,10 +2,21 @@
     <ion-navbar core-back-button>
         <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
 
-        <ion-buttons end></ion-buttons>
+        <!-- <ion-buttons end></ion-buttons> -->
+		<ion-fab id="user" top right>
+			<button ion-fab mini (click)="navToProfile()">
+				<core-icon name="contact"></core-icon>
+			</button>
+		</ion-fab>
     </ion-navbar>
 </ion-header>
 <ion-content>
+	<ion-fab center bottom>
+		<button ion-fab (click)="navToQrScanner()">
+			<core-icon name="md-barcode"></core-icon>
+		</button>
+	</ion-fab>
+
     <core-tabs>
         <!-- Course contents tab. -->
         <core-tab [title]="'core.course.contents' | translate">
@@ -28,11 +39,12 @@
                 </ion-content>
             </ng-template>
         </core-tab>
-        <!-- One tab per handler. -->
+        <!--
         <core-tab *ngFor="let handler of courseHandlers" [title]="handler.data.title | translate" class="{{handler.data.class}}">
             <ng-template>
                 <core-dynamic-component [component]="handler.data.component" [data]="handler.data.componentData"></core-dynamic-component>
             </ng-template>
         </core-tab>
+        -->
     </core-tabs>
 </ion-content>

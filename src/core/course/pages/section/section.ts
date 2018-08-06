@@ -375,6 +375,14 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.navCtrl.push('CoreCoursesCoursePreviewPage', {course: this.course, avoidOpenCourse: true});
     }
 
+    navToProfile(): void {
+        this.navCtrl.push('CoreMainMenuMorePage');
+    }
+
+    navToQrScanner(): void {
+        this.navCtrl.push(QrScannerPage, {isLogin: false});
+    }
+
     /**
      * Page destroyed.
      */
