@@ -14,7 +14,54 @@
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
 <!-- For later   <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description> -->
+<ion-segment [(ngModel)]="screen_to_show">
+    <ion-segment-button value="info">
+        info
+    </ion-segment-button>
+    <ion-segment-button value="images">
+        images
+    </ion-segment-button>
+    <ion-segment-button value="video">
+        video
+    </ion-segment-button>
+    <ion-segment-button value="activity">
+        activity
+    </ion-segment-button>
+</ion-segment>
 
+<div [ngSwitch]="screen_to_show">
+    <div *ngSwitchCase="'info'">
+        <div class="home-detail__view">
+            <div class="image___wrapper">
+
+            </div>
+
+
+            <div padding text-wrap>info</div>
+
+
+        </div>
+    </div>
+
+    <div *ngSwitchCase="'images'">
+
+                    <div class="slider-image"></div>
+                <h4 class="slider-title">images</h4>
+
+    </div>
+
+    <div *ngSwitchCase="'video'">
+        <div class="responsive-video">
+                video
+        </div>
+    </div>
+    <div *ngSwitchCase="'activity'">
+            activity
+    </div>
+</div>
+<button class="nav-floors-button" (click)="startTourNavigateToFloor()" ion-button icon-only>
+        <core-icon color="white" name="md-barcode"></core-icon>
+    </button>
     <div padding>
         <h2>Module</h2>
         <p>{{module}}</p>
@@ -24,7 +71,8 @@
         <h2>Image</h2>
         <p>{{image}}</p>
         <h2>Description</h2>
-        <p>{{description}}</p>
+        <p *ngFor="let paragraph of descriptionInParagraphsArray" [innerHTML]="paragraph"></p>
+        
         <h2>Pages</h2>
         <p *ngFor="let value of childPages">{{value}}</p>
 

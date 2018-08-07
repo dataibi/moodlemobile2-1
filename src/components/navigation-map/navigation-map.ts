@@ -1,3 +1,4 @@
+import { NavigationFloorsPage } from './../navigation-floors/navigation-floors';
 // (C) Copyright 2018 Jens-Michael Lohse
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +20,14 @@ import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main
 import { CoreAppProvider } from '@providers/app';
 import { AddonModPageHelperProvider } from '@addon/mod/page/providers/helper';
 import { AddonModPagePrefetchHandler } from '@addon/mod/page/providers/prefetch-handler';
+import { NavigationMapProvider } from './navigation-map-provider';
+import { NavController } from 'ionic-angular';
+
 
 @Component({
     selector: 'core-navigation-map',
     templateUrl: 'navigation-map.html',
+    providers: [NavigationMapProvider]
 })
 export class NavigationMapComponent extends CoreCourseModuleMainResourceComponent {
 
@@ -33,10 +38,13 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     childrenList: string;
     childSections: string[];
     description: string;
+    screen_to_show: string;
+    descriptionInParagraphsArray: string[]
 
     constructor(injector: Injector, private pageProvider: AddonModPageProvider,
         private courseProvider: CoreCourseProvider, private appProvider: CoreAppProvider,
-        private pageHelper: AddonModPageHelperProvider, private pagePrefetch: AddonModPagePrefetchHandler) {
+        private pageHelper: AddonModPageHelperProvider, private pagePrefetch: AddonModPagePrefetchHandler,
+        private navCtrl: NavController) {
         super(injector);
         this.childPages = new Array();
         this.childSections = new Array();
@@ -105,37 +113,68 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                     this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
                 }
             }));
-            
+
             return Promise.all(promises);
         });
     }
-    
+
     private parseDataFromPageContent(content: string): void {
         // Retrieve the navigation map data from the HTML content
+        console.log('content');
+        console.log(content);
         let imageTag = content.substring(content.indexOf('<img'));
+        console.log('imageTag');
+        console.log(imageTag);
         imageTag = imageTag.substring(0, imageTag.indexOf('>') + 1);
+        console.log('imageTag');
+        console.log(imageTag);
         this.image = imageTag;
-    
+
         let childList = content.substring(content.indexOf('<ol>') + 4);
+        console.log('childList');
+        console.log(childList);
         childList = childList.substring(0, childList.indexOf('</ol>'));
+        console.log('childList');
+        console.log(childList);
         this.childrenList = childList;
-    
+
         let description = content.substring(content.indexOf('</ol>') + 5);
+        this.descriptionInParagraphsArray = description.split('/<p>|</p>/');
+        console.log('description');
+        console.log(description);
+        console.log('this.descriptionInParagraphsArray');
+        console.log(this.descriptionInParagraphsArray);
         this.description = description;
-    
+
         const tokens = childList.split('</li>');
-        for ( let token of tokens) {
+        console.log('tokens');
+        console.log(tokens);
+        for (let token of tokens) {
             if (token.includes('/mod/page/')) {
                 token = token.substring(token.indexOf('php?id='));
+                console.log('token');
+                console.log(token);
                 token = token.substring(token.indexOf('=') + 1, token.indexOf('>') - 1);
+                console.log('token');
+                console.log(token);
                 this.childPages.push(token);
             } else if (token.includes('/course/view.php')) {
                 token = token.substring(token.indexOf('php?id='));
+                console.log('token');
+                console.log(token);
                 token = token.substring(token.indexOf('#') + 1, token.indexOf('>') - 1);
+                console.log('token');
+                console.log(token);
                 this.childSections.push(token);
             }
         }
-        
+
+    }
+
+    startTourNavigateToFloor() {
+        this.navCtrl.push(
+            NavigationFloorsPage
+        );
     }
 
 }

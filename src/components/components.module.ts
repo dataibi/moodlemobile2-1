@@ -1,3 +1,4 @@
+import { NavigationFloorsPage } from './navigation-floors/navigation-floors';
 // (C) Copyright 2015 Martin Dougiamas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,13 +86,15 @@ import { NavigationMapComponent } from './navigation-map/navigation-map';
         CoreIonTabsComponent,
         CoreIonTabComponent,
         QrScannerPage,
-        NavigationMapComponent
+        NavigationMapComponent,
+        NavigationFloorsPage
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
         CoreCoursePickerMenuPopoverComponent,
         CoreRecaptchaModalComponent,
-        QrScannerPage
+        QrScannerPage,
+        NavigationFloorsPage
     ],
     imports: [
         IonicModule,

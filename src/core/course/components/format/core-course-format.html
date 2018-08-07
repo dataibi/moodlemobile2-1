@@ -64,7 +64,7 @@
         <section ion-list *ngIf="section.hasContent && section.id != allSectionsId && section.section == 0">
             <div>
                 <P>{{section.modules[1].name}} {{course.id}}</P>
-               <core-navigation-map [module]="section.modules[1]" [courseId]="course.id" (dataRetrieved)="updateData($event)"></core-navigation-map>
+               <core-navigation-map [module]="section.modules[1]" [courseId]="course.id"></core-navigation-map>
             </div>
             <!-- Title is only displayed when viewing all sections. -->
             <ion-item-divider text-wrap color="light" *ngIf="selectedSection.id == allSectionsId && section.name">

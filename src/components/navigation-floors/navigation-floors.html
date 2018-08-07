@@ -1,0 +1,54 @@
+<ion-header>
+	<ion-navbar>
+		<ion-title>Home</ion-title>
+	</ion-navbar>
+</ion-header>
+
+<ion-content class="card-background-page">
+	<div [hidden]="!isLoading" text-center padding>
+		<ion-spinner></ion-spinner>
+	  </div>
+	  <ion-refresher (ionRefresh)="doRefresh($event)">
+		<ion-refresher-content
+		  pullingText="aktualisieren..."
+		>
+		</ion-refresher-content>
+	  </ion-refresher>
+	  <div *ngIf="!isLoading">
+		<ion-card>
+			<div class="wrapper">
+				<img [src]="museum_data.museum_image">
+	
+			</div>
+	
+			<ion-item>
+				<ion-icon name="football" item-start large></ion-icon>
+				<h2>{{museum_data?.museum_name}}</h2>
+				<p [innerHTML]="museum_data.museum_description" text-wrap></p>
+			</ion-item>
+		</ion-card>
+	
+		<p padding>please choose the floor</p>
+	
+		<ion-list>
+			<ion-item-sliding *ngFor="let floor of museum_data.floors; let i = index">
+				<ion-item>
+					<ion-thumbnail item-start>
+						<img [src]="floor.floor_image">
+					</ion-thumbnail>
+					<h2>{{floor?.floor}}</h2>
+					<p text-wrap>{{floor?.floor_description}}</p>
+					<button ion-button clear item-end (click)="showFloorPage(i)">View</button>
+				</ion-item>
+				<ion-item-options side="left">
+					<button ion-button color="primary">
+						<ion-icon name="text"></ion-icon>
+						activity
+					</button>
+				</ion-item-options>
+			</ion-item-sliding>
+	
+		</ion-list>
+	  </div>
+	
+</ion-content>
