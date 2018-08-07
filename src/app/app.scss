@@ -852,11 +852,14 @@ ion-modal,
 
 ion-app.cameraView, ion-app.cameraView ion-content, ion-app.cameraView .nav-decor {
   background: transparent none !important;
+  padding: 0 !important;
 }
 
 .ion-page  {
   background-color: transparent !important;
 }
+
+$base-size: 8px;
 
 $primary-color: #f98012;
 
@@ -864,3 +867,9 @@ $button-height: 32px;
 
 $button-height--big: $button-height * 1.5;
 $button-height--huge: $button-height * 2;
+
+$spacing--tiny: $base-size / 2;
+$spacing--small: $base-size;
+$spacing--medium: $base-size * 2;
+$spacing--large: $base-size * 3;
+$spacing--huge: $base-size * 5;

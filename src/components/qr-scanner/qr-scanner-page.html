@@ -1,16 +1,19 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-        Qr Scanner
-    </ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>
+            Qr Scanner
+        </ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-    <div float-end>
-        <button ion-button icon-only clear color="dark" (click)="closeAndGoBack()">
-            <core-icon name="md-close-circle"></core-icon>
-        </button>
+    <div class="qr_title-wrapper">
+        <div float-end>
+            <button ion-button icon-only clear color="dark" (click)="closeAndGoBack()">
+                <core-icon name="md-close-circle"></core-icon>
+            </button>
+            <button class="hided-send-button-reference" #sendbutton ion-button icon-only clear color="dark" (click)="sendJson()"></button>
+        </div>
+        <h3 class="qr_title">Please hold the camera in the middle of a qr code</h3>
     </div>
-  <p>{{scanned}}</p>
 </ion-content>

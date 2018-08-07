@@ -1,3 +1,4 @@
+import { QrReaderProvider } from './../providers/qrReader';
 // (C) Copyright 2015 Martin Dougiamas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,6 +57,7 @@ import { CoreUpdateManagerProvider } from '@providers/update-manager';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreFileHelperProvider } from '@providers/file-helper';
+
 
 // Core modules.
 import { CoreComponentsModule } from '@components/components.module';
@@ -261,7 +263,10 @@ export const CORE_PROVIDERS: any[] = [
         {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
         {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
         {provide: LocationStrategy, useClass: MockLocationStrategy},
-        QRScanner
+        QRScanner,
+        QrReaderProvider
+        
+
     ]
 })
 export class AppModule {

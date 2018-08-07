@@ -1,7 +1,7 @@
 qr-scanner-page {
 
     .content-md, .ion-app.md {
-        color: #3a3a3a;
+        color: $text-color;
         background-color: transparent !important;
     }
 
@@ -13,8 +13,16 @@ qr-scanner-page {
         background-color: transparent !important;
     }
 
+    .hided-send-button-reference {
+        display: none;
+    }
 
-
+    .qr_title {
+        background-color: $white;
+        color: $text-color;
+        margin: 0;
+        padding: $spacing--medium;
+    }
 }
 
 
