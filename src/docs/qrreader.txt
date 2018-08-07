@@ -1,0 +1,5 @@
+QrCode has to have a qrType property like this:
+
+{"username": "nicename", "password": "nicepassword", "qrType": "login"}
+
+known qrTypes are "login" and "exponate" so far
