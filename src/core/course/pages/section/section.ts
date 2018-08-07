@@ -27,6 +27,7 @@ import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from '..
 import { CoreCourseFormatComponent } from '../../components/format/format';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreTabsComponent } from '@components/tabs/tabs';
+import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -373,6 +374,14 @@ export class CoreCourseSectionPage implements OnDestroy {
      */
     openCourseSummary(): void {
         this.navCtrl.push('CoreCoursesCoursePreviewPage', {course: this.course, avoidOpenCourse: true});
+    }
+
+    navToProfile(): void {
+        this.navCtrl.push('CoreMainMenuMorePage');
+    }
+
+    navToQrScanner(): void {
+        this.navCtrl.push(QrScannerPage, {isLogin: false});
     }
 
     /**
