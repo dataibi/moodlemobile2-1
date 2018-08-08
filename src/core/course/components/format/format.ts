@@ -183,6 +183,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     protected setInputData(): void {
         this.data.course = this.course;
         this.data.sections = this.sections;
+        console.log('this.sections');
+        console.log(this.sections);
+        console.dir(this.sections);
         this.data.initialSectionId = this.initialSectionId;
         this.data.initialSectionNumber = this.initialSectionNumber;
         this.data.downloadEnabled = this.downloadEnabled;

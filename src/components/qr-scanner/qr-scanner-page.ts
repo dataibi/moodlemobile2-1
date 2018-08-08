@@ -18,6 +18,7 @@ export class QrScannerPage {
 	isLoginScan: boolean = false;
 	callingComponent: any;
 	typeOfQrCode: string;
+	courseData: any
 
 	constructor(
 		public navCtrl: NavController,
@@ -37,6 +38,8 @@ export class QrScannerPage {
 			this.openQr();
 
 		});
+		console.log('this.qrReaderProvider.getCourseData()');
+		console.log(this.qrReaderProvider.getCourseData());
 	}
 
 	ionViewWillLeave() {

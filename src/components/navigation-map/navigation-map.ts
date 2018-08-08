@@ -1,3 +1,4 @@
+import { QrReaderProvider } from './../../providers/qrReader';
 import { NavigationFloorsPage } from './../navigation-floors/navigation-floors';
 // (C) Copyright 2018 Jens-Michael Lohse
 //
@@ -13,7 +14,7 @@ import { NavigationFloorsPage } from './../navigation-floors/navigation-floors';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Injector } from '@angular/core';
+import { Component, Injector, Input, OnChanges } from '@angular/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonModPageProvider } from '@addon/mod/page/providers/page';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
@@ -22,6 +23,8 @@ import { AddonModPageHelperProvider } from '@addon/mod/page/providers/helper';
 import { AddonModPagePrefetchHandler } from '@addon/mod/page/providers/prefetch-handler';
 import { NavigationMapProvider } from './navigation-map-provider';
 import { NavController } from 'ionic-angular';
+import { safelyParseJSON } from '../../helpers/navigation_helpers';
+
 
 
 @Component({
@@ -29,7 +32,7 @@ import { NavController } from 'ionic-angular';
     templateUrl: 'navigation-map.html',
     providers: [NavigationMapProvider]
 })
-export class NavigationMapComponent extends CoreCourseModuleMainResourceComponent {
+export class NavigationMapComponent extends CoreCourseModuleMainResourceComponent implements OnChanges {
 
     canGetPage: boolean;
     contents: any;
@@ -40,11 +43,12 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     description: string;
     screen_to_show: string;
     descriptionInParagraphsArray: string[]
+    @Input() data: any; // all data for the courses
 
     constructor(injector: Injector, private pageProvider: AddonModPageProvider,
         private courseProvider: CoreCourseProvider, private appProvider: CoreAppProvider,
         private pageHelper: AddonModPageHelperProvider, private pagePrefetch: AddonModPagePrefetchHandler,
-        private navCtrl: NavController) {
+        private navCtrl: NavController, private qrReaderProvider: QrReaderProvider) {
         super(injector);
         this.childPages = new Array();
         this.childSections = new Array();
@@ -57,6 +61,52 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
             });
         });
+
+    }
+
+
+    howManyMapsDoWeHave(): number {
+        console.log('this.data in howManyMapsDoWeHave');
+        console.log(this.data);
+        let i: number = 0, nameJsonString: string, nameJsonObjectArray = [], mapAmountArray, startForSubstring: number, endForSubstring: number;
+        const generalModules = this.data.sections[1].modules; //general has to be here;
+        for (i; i < generalModules.length; i++) {
+            console.log('generalModules[i].name');
+            console.log(generalModules[i].name);
+            console.log("generalModules[i].name.indexOf({)");
+            console.log(generalModules[i].name.indexOf('{'));
+            console.log('generalModules[i].name.indexOf("}") + 1');
+            console.log(generalModules[i].name.indexOf('}') + 1);
+            startForSubstring = generalModules[i].name.indexOf('{');
+            endForSubstring = generalModules[i].name.indexOf('}') + 1;
+            
+            if (startForSubstring === 0 && endForSubstring !== -1) {
+                nameJsonString = generalModules[i].name.substring(startForSubstring, endForSubstring);
+                console.log('nameJsonString in howManyMapsDoWeHave');
+                console.log(nameJsonString);
+                nameJsonObjectArray[i] = safelyParseJSON(nameJsonString);
+            }
+            
+        }
+        
+        mapAmountArray = nameJsonObjectArray.filter(nameJsonObject => {
+            return !(nameJsonObject.room && nameJsonObject !== 'undefined'); //if the name object has room property its not only a map / We only want to have map object
+        });
+        console.log('mapAmountArray');
+        console.log(mapAmountArray.length);
+        console.log(mapAmountArray);
+
+
+        return mapAmountArray.length;
+    }
+
+    ngOnChanges() {
+        console.log('this.data in navigation');
+        console.log(this.data);
+        this.qrReaderProvider.setCourseData(this.data);
+        this.howManyMapsDoWeHave();
+
+
 
     }
 
