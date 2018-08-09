@@ -40,6 +40,10 @@
             <ion-icon name="help-buoy" item-start></ion-icon>
             <p>{{ 'core.mainmenu.help' | translate }}</p>
         </a> -->
+        <a ion-item (click)="openBadges()" title="{{ 'addon.badges.badges' | translate }}">
+            <ion-icon name="trophy" item-start></ion-icon>
+            <p>{{ 'addon.badges.badges' | translate }}</p>
+        </a>
         <a ion-item (click)="openSettings()" title="{{ 'core.mainmenu.appsettings' | translate }}">
             <ion-icon name="cog" item-start></ion-icon>
             <p>{{ 'core.mainmenu.appsettings' | translate }}</p>

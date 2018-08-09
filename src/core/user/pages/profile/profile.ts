@@ -104,6 +104,7 @@ export class CoreUserProfilePage {
             this.title = user.fullname;
 
             this.subscription = this.userDelegate.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
+
                 this.actionHandlers = [];
                 this.newPageHandlers = [];
                 this.communicationHandlers = [];
