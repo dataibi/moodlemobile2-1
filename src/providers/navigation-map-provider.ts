@@ -23,5 +23,15 @@ export class NavigationMapProvider {
 
     constructor() { }
 
+    private courseData: any;
+
+    public getCourseData(): any {
+        return this.courseData;
+    }
+
+    public setCourseData(courseData): void {
+        this.courseData = courseData;
+    }
+
   
 }

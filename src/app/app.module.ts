@@ -1,3 +1,4 @@
+import { NavigationMapProvider } from './../providers/navigation-map-provider';
 import { QrReaderProvider } from './../providers/qrReader';
 // (C) Copyright 2015 Martin Dougiamas
 //
@@ -264,7 +265,8 @@ export const CORE_PROVIDERS: any[] = [
         {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
         {provide: LocationStrategy, useClass: MockLocationStrategy},
         QRScanner,
-        QrReaderProvider
+        QrReaderProvider,
+        NavigationMapProvider
         
 
     ]

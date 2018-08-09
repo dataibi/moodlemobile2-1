@@ -22,19 +22,9 @@ export class QrReaderProvider {
 
     naviLoginDataEvent = new EventEmitter<any>();
 
-    private courseData: any;
-
     constructor() { }
 
     public emitLoginData(loginData): void {
         this.naviLoginDataEvent.emit(loginData);
-    }
-
-    public getCourseData(): any {
-        return this.courseData;
-    }
-
-    public setCourseData(courseData): void {
-        this.courseData = courseData;
     }
 }

@@ -4,6 +4,8 @@ import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { Component, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { Platform } from 'ionic-angular';
+import { safelyParseJSON } from '../../helpers/navigation_helpers';
+
 
 @Component({
 	selector: 'qr-scanner-page',
@@ -38,8 +40,6 @@ export class QrScannerPage {
 			this.openQr();
 
 		});
-		console.log('this.qrReaderProvider.getCourseData()');
-		console.log(this.qrReaderProvider.getCourseData());
 	}
 
 	ionViewWillLeave() {
@@ -62,26 +62,8 @@ export class QrScannerPage {
 		this.navCtrl.push(component, params_object);
 	}
 
-	/**
-     * parse json safely
-     *
-     * @param {any} json should be a string
-     * @return {any} false, undefined, or an object
-     */
-	safelyParseJSON(json): any {
-		// This function cannot be optimised, it's best to
-		// keep it small!
-		let parsed;
-		try {
-			parsed = JSON.parse(json);
-		} catch (e) {
-			return false;
-		}
-		return parsed; // Could be undefined!
-	}
-
 	whatQrCodeIsIt() {
-		let scanned_as_object: any = this.safelyParseJSON(this.scanned);
+		let scanned_as_object: any = safelyParseJSON(this.scanned);
 
 		if (scanned_as_object.qrType && scanned_as_object.qrType !== 'undefined') {
 			switch (scanned_as_object.qrType) {
