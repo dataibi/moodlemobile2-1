@@ -156,6 +156,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         }).finally(() => {
             this.loaded = true;
             this.refreshIcon = 'refresh';
+            console.log('loadcontent finally finish');
         });
     }
 

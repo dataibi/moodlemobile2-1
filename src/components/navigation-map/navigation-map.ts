@@ -44,7 +44,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     screen_to_show: string;
     descriptionInParagraphsArray: string[];
     mapsArray: number;
-    modulesArray: any; //to iterate and load the contents of all
+    // modulesArray: any; //to iterate and load the contents of all
     modulesContentArray: any = [];
     
 
@@ -113,7 +113,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        let i = 0;
+        let i = 0, modulesArray;
         console.log('changes');
         console.log(changes);
         console.log('this.data in navigation');
@@ -121,24 +121,25 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         if (changes.data.firstChange === true) {
             this.navigationMapProvider.setCourseData(this.data);
             this.mapsArray = this.howManyMapsAndWhereAreThey();
-            this.modulesArray = this.createMapsModulesArray();
+            modulesArray = this.createMapsModulesArray();
             // this.loadContent().then(() => {
             //     this.pageProvider.logView(this.module.instance).then(() => {
             //         this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
             //     });
             // });
-            this.module = this.modulesArray[0];
-            for (i; i < this.modulesArray.length; i++ ) {
-                
-                this.loadContent().then(() => {
-                    if (i < (this.modulesArray.length - 1)) {
-                        this.module = this.modulesArray[i + 1];//TODO: check this
-                    }
-                    this.pageProvider.logView(this.module.instance).then(() => {
-                        this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
-                    });
-                });
-            };
+            
+            // for (i; i < this.modulesArray.length; i++ ) {
+            //     this.module = this.modulesArray[0];
+            //     this.loadContent().then(() => {
+            //         // if (i < (this.modulesArray.length - 1)) {
+            //         //     this.module = this.modulesArray[i + 1];//TODO: check this
+            //         // }
+            //         this.pageProvider.logView(this.module.instance).then(() => {
+            //             this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            //         });
+            //     });
+            // };
+            this.asyncLoop(i, modulesArray);
         }
         
 
@@ -288,6 +289,22 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
             }
         }
 
+    }
+    async asyncLoop(i, arrayToLoop) {
+        for (i; i < arrayToLoop.length; i++ ) {
+            this.module = arrayToLoop[i];
+                console.log('this.module in asyncloop');
+                console.log(this.module);
+            await this.loadContent().then(() => {
+                // if (i < (this.modulesArray.length - 1)) {
+                //     this.module = this.modulesArray[i + 1];//TODO: check this
+                // }
+                console.log('loadcontent then');
+                this.pageProvider.logView(this.module.instance).then(() => {
+                    this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                });
+            });
+        };
     }
 
     startTourNavigateToFloor() {
