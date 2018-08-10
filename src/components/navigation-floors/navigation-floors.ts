@@ -11,16 +11,17 @@ import { NavigationMapProvider } from '@providers/navigation-map-provider';
 })
 export class NavigationFloorsPage implements OnInit {
 
-	maps: object[];
+	maps: any[];
 	mapData: any;
 	showMapIndex: number;
 	showRoomIndex: number;
 	mapDetailsAreShown: boolean;
+	// contentsplittedMaps: any[] = [];
 
 	
 
 	constructor(public navCtrl: NavController, private navParams: NavParams, private navigationMapProvider: NavigationMapProvider) {
-			this.maps = navParams.get("mapsArray");
+			this.maps = navParams.get("contentsplittedMaps");
 		}
 	
 
@@ -40,10 +41,21 @@ export class NavigationFloorsPage implements OnInit {
 	ngOnInit() {
 		this.mapDetailsAreShown = true;
 		this.showMapIndex = 0;
+		this.showRoomIndex = 0;
+
+		
+
+
 	}
 
 	ionViewWillEnter() {
 		this.mapData = this.navigationMapProvider.getCourseData().sections[1].modules;
+		// let i = 0;
+		// for (i; this.maps.length; i++) {
+		// 	this.parseDataFromPageContent(i, this.maps[i]);
+		// }
+		
+
 		
 	}
 
@@ -74,6 +86,58 @@ export class NavigationFloorsPage implements OnInit {
 		this.mapDetailsAreShown = false;
 
 	}
+
+	// private parseDataFromPageContent(i, content: any) {
+	// 	let imageTag: string, childList: string, description: string;
+    //     // Retrieve the navigation map data from the HTML content
+    //     console.log('content');
+    //     console.log(content);
+    //     imageTag = content.substring(content.indexOf('<img'));
+    //     console.log('imageTag');
+    //     console.log(imageTag);
+    //     imageTag = imageTag.substring(0, imageTag.indexOf('>') + 1);
+    //     console.log('imageTag');
+    //     console.log(imageTag);
+    //     this.contentsplittedMaps[i].image = imageTag;
+
+    //     childList = content.substring(content.indexOf('<ol>') + 4);
+    //     console.log('childList');
+    //     console.log(childList);
+    //     childList = childList.substring(0, childList.indexOf('</ol>'));
+    //     console.log('childList');
+	// 	console.log(childList);
+	// 	this.contentsplittedMaps[i].childrenList = childList;
+
+    //     description = content.substring(content.indexOf('</ol>') + 5);
+    //     this.contentsplittedMaps[i].descriptionInParagraphsArray = description.split('/<p>|</p>/');
+    //     console.log('description');
+    //     console.log(description);
+    //     this.contentsplittedMaps[i].description = description;
+
+    //     const tokens = childList.split('</li>');
+    //     console.log('tokens');
+    //     console.log(tokens);
+    //     for (let token of tokens) {
+    //         if (token.includes('/mod/page/')) {
+    //             token = token.substring(token.indexOf('php?id='));
+    //             console.log('token');
+    //             console.log(token);
+    //             token = token.substring(token.indexOf('=') + 1, token.indexOf('>') - 1);
+    //             console.log('token');
+    //             console.log(token);
+    //             this.contentsplittedMaps[i].childPages.push(token);
+    //         } else if (token.includes('/course/view.php')) {
+    //             token = token.substring(token.indexOf('php?id='));
+    //             console.log('token');
+    //             console.log(token);
+    //             token = token.substring(token.indexOf('#') + 1, token.indexOf('>') - 1);
+    //             console.log('token');
+    //             console.log(token);
+    //             this.contentsplittedMaps[i].childSections.push(token);
+    //         }
+    //     }
+
+    // }
 
 	// openRoomDetail(roomIndex, FloorIndex) {
 	// 	this.navCtrl.push(HomeDetailPage, { room: this.floor.floorSpots[room_index].room });

@@ -46,6 +46,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     mapsArray: number;
     // modulesArray: any; //to iterate and load the contents of all
     modulesContentArray: any = [];
+    contentsplittedMaps: any[] = [];
     
 
     constructor(injector: Injector, private pageProvider: AddonModPageProvider,
@@ -68,7 +69,11 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
 
     }
 
-
+    /**
+     * Create an Array with the whole modules contains maps to iterate to load the content.
+     *
+     * @return {object} With the maps and the index of them.
+     */
     howManyMapsAndWhereAreThey() {
         console.log('this.data in howManyMapsAndWhereAreThey');
         console.log(this.data);
@@ -113,7 +118,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        let i = 0, modulesArray;
+        let modulesArray, x = 0;
         console.log('changes');
         console.log(changes);
         console.log('this.data in navigation');
@@ -139,12 +144,50 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
             //         });
             //     });
             // };
-            this.asyncLoop(i, modulesArray);
+            this.createTheSplittedContentInArray(modulesArray);
+            // this.asyncLoop(i, modulesArray);
+            // console.log('this.modulesContentArray.length');
+            //     console.log(this.modulesContentArray.length);
+            // for (x; x < this.modulesContentArray.length; x++) {
+            //     console.log('this.modulesContentArray in for loop after asyncloop');
+            //     console.log(this.modulesContentArray);
+            //     this.parseDataFromPageContent(x, this.modulesContentArray[i]);
+            // }
+            
         }
         
 
 
 
+    }
+
+    async createTheSplittedContentInArray(modulesArray) {
+        let x: number = 0;
+        await this.asyncLoop(modulesArray);
+            console.log('this.modulesContentArray.length');
+            console.log(this.modulesContentArray.length);
+        for (x; x < this.modulesContentArray.length; x++) {
+            console.log('this.modulesContentArray in for loop after asyncloop');
+            console.log(this.modulesContentArray);
+            this.parseDataFromPageContent(x, this.modulesContentArray[x]);
+        }
+        console.log('this.contentsplittedMaps');
+            console.log(this.contentsplittedMaps);
+    }
+
+    async asyncLoop(arrayToLoop) { //has to merged in the async createTheSplittedContentInArray function
+        let i: number = 0;
+        for (i; i < arrayToLoop.length; i++ ) {
+            this.module = arrayToLoop[i];
+                console.log('this.module in asyncloop');
+                console.log(this.module);
+            await this.loadContent().then(() => {
+                console.log('loadcontent then');
+                this.pageProvider.logView(this.module.instance).then(() => {
+                    this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+                });
+            });
+        };
     }
     
     /**
@@ -225,8 +268,8 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                 this.modulesContentArray.push(content);
 
                 // this.parseDataFromPageContent(content);
-                console.log('content');
-                console.log(content);
+                console.log('this.modulesContentArray');
+                console.log(this.modulesContentArray);
 
                 if (downloadFailed && this.appProvider.isOnline()) {
                     // We could load the main file but the download failed. Show error message.
@@ -238,33 +281,94 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         });
     }
 
-    private parseDataFromPageContent(content: string): void {
+    // private parseDataFromPageContent(content: string): void {
+    //     // Retrieve the navigation map data from the HTML content
+    //     console.log('content');
+    //     console.log(content);
+    //     let imageTag = content.substring(content.indexOf('<img'));
+    //     console.log('imageTag');
+    //     console.log(imageTag);
+    //     imageTag = imageTag.substring(0, imageTag.indexOf('>') + 1);
+    //     console.log('imageTag');
+    //     console.log(imageTag);
+    //     this.image = imageTag;
+
+    //     let childList = content.substring(content.indexOf('<ol>') + 4);
+    //     console.log('childList');
+    //     console.log(childList);
+    //     childList = childList.substring(0, childList.indexOf('</ol>'));
+    //     console.log('childList');
+    //     console.log(childList);
+    //     this.childrenList = childList;
+
+    //     let description = content.substring(content.indexOf('</ol>') + 5);
+    //     this.descriptionInParagraphsArray = description.split('/<p>|</p>/');
+    //     console.log('description');
+    //     console.log(description);
+    //     console.log('this.descriptionInParagraphsArray');
+    //     console.log(this.descriptionInParagraphsArray);
+    //     this.description = description;
+
+    //     const tokens = childList.split('</li>');
+    //     console.log('tokens');
+    //     console.log(tokens);
+    //     for (let token of tokens) {
+    //         if (token.includes('/mod/page/')) {
+    //             token = token.substring(token.indexOf('php?id='));
+    //             console.log('token');
+    //             console.log(token);
+    //             token = token.substring(token.indexOf('=') + 1, token.indexOf('>') - 1);
+    //             console.log('token');
+    //             console.log(token);
+    //             this.childPages.push(token);
+    //         } else if (token.includes('/course/view.php')) {
+    //             token = token.substring(token.indexOf('php?id='));
+    //             console.log('token');
+    //             console.log(token);
+    //             token = token.substring(token.indexOf('#') + 1, token.indexOf('>') - 1);
+    //             console.log('token');
+    //             console.log(token);
+    //             this.childSections.push(token);
+    //         }
+    //     }
+
+    // }
+
+    private parseDataFromPageContent(i, content: any) {
+        let imageTag: string, childList: string, description: string, imageURL: string, matchForLastIndex;
+        this.contentsplittedMaps[i] = {};
         // Retrieve the navigation map data from the HTML content
         console.log('content');
         console.log(content);
-        let imageTag = content.substring(content.indexOf('<img'));
+        imageTag = content.substring(content.indexOf('<img'));
         console.log('imageTag');
         console.log(imageTag);
         imageTag = imageTag.substring(0, imageTag.indexOf('>') + 1);
         console.log('imageTag');
         console.log(imageTag);
-        this.image = imageTag;
+        
+        imageURL = imageTag.substring(imageTag.indexOf('src=') + 5);
+        matchForLastIndex = imageURL.match(/" |' /gi);
+        console.log('matchForLastIndex');
+        console.log(matchForLastIndex);
+        imageURL = imageURL.substring(0, imageURL.indexOf(matchForLastIndex[0]));
+        console.log('imageURL');
+        console.log(imageURL);
+        this.contentsplittedMaps[i].image = imageURL;
 
-        let childList = content.substring(content.indexOf('<ol>') + 4);
+        childList = content.substring(content.indexOf('<ol>') + 4);
         console.log('childList');
         console.log(childList);
         childList = childList.substring(0, childList.indexOf('</ol>'));
         console.log('childList');
-        console.log(childList);
-        this.childrenList = childList;
+		console.log(childList);
+		this.contentsplittedMaps[i].childrenList = childList;
 
-        let description = content.substring(content.indexOf('</ol>') + 5);
-        this.descriptionInParagraphsArray = description.split('/<p>|</p>/');
+        description = content.substring(content.indexOf('</ol>') + 5);
+        this.contentsplittedMaps[i].descriptionInParagraphsArray = description.split('/<p>|</p>/');
         console.log('description');
         console.log(description);
-        console.log('this.descriptionInParagraphsArray');
-        console.log(this.descriptionInParagraphsArray);
-        this.description = description;
+        this.contentsplittedMaps[i].description = description;
 
         const tokens = childList.split('</li>');
         console.log('tokens');
@@ -277,7 +381,8 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                 token = token.substring(token.indexOf('=') + 1, token.indexOf('>') - 1);
                 console.log('token');
                 console.log(token);
-                this.childPages.push(token);
+                this.contentsplittedMaps[i].childPages = [];
+                this.contentsplittedMaps[i].childPages.push(token);
             } else if (token.includes('/course/view.php')) {
                 token = token.substring(token.indexOf('php?id='));
                 console.log('token');
@@ -285,33 +390,17 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                 token = token.substring(token.indexOf('#') + 1, token.indexOf('>') - 1);
                 console.log('token');
                 console.log(token);
-                this.childSections.push(token);
+                this.contentsplittedMaps[i].childSections.push(token);
             }
         }
 
-    }
-    async asyncLoop(i, arrayToLoop) {
-        for (i; i < arrayToLoop.length; i++ ) {
-            this.module = arrayToLoop[i];
-                console.log('this.module in asyncloop');
-                console.log(this.module);
-            await this.loadContent().then(() => {
-                // if (i < (this.modulesArray.length - 1)) {
-                //     this.module = this.modulesArray[i + 1];//TODO: check this
-                // }
-                console.log('loadcontent then');
-                this.pageProvider.logView(this.module.instance).then(() => {
-                    this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
-                });
-            });
-        };
     }
 
     startTourNavigateToFloor() {
         this.navCtrl.push(
             NavigationFloorsPage,
             {
-                mapsArray: this.mapsArray
+                contentsplittedMaps: this.contentsplittedMaps // Content of the navigation maps (image, description, hostspots)
             }
         );
     }

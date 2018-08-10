@@ -6,17 +6,17 @@
 
 <ion-content class="card-background-page">
 	<ion-card>
-		<!-- <div class="wrapper">
-			<img (click)="showMapDetails()" [src]="maps.floor_image">
-			<div *ngFor="let spot of floor.floor_spots; let room_index = index">
+		<div class="wrapper">
+			<img (click)="showMapDetails()" [src]="maps[showMapIndex].image">
+			<!-- <div *ngFor="let spot of floor.floor_spots; let room_index = index">
 				<ion-fab [ngStyle]="{'left': spot.left + '%', 'top': spot.top + '%'}" class="ion_fab">
 					<button class="ion_fab--button" ion-fab (click)="showRoomDetails(room_index)" mini>
 						<ion-icon name="eye"></ion-icon>
 					</button>
 				</ion-fab>
-			</div>
+			</div> -->
 
-		</div> -->
+		</div>
 
 
 		<!-- <ion-item *ngIf="floor_detail_are_shown">
