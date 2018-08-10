@@ -12,15 +12,28 @@
             <ion-item text-center>
                 <div class="item-avatar-center">
                     <img class="avatar" [src]="user.profileimageurl" core-external-content alt="{{ 'core.pictureof' | translate:{$a: user.fullname} }}" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-                    <ion-icon name="create" class="core-icon-foreground" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"></ion-icon>
+                    <ion-icon name="create" class="core-icon-foreground" *ngIf="canChangeProfile" (click)="changeProfilePicture()"></ion-icon>
                 </div>
+                <!--
                 <h2><core-format-text [text]="user.fullname"></core-format-text></h2>
                 <p><core-format-text *ngIf="user.address" [text]="user.address"></core-format-text></p>
                 <p *ngIf="user.roles">
                     <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
                     <core-format-text [text]="user.roles"></core-format-text>
-                </p>
+                </p>-->
             </ion-item>
+
+			<ion-item text-wrap *ngIf="user.email">
+				<h2>{{ 'core.user.email' | translate }}</h2>
+				<p><core-format-text [text]="user.email"></core-format-text></p>
+				<ion-icon name="create" *ngIf="canChangeProfile" (click)="changeProfileEmail()"></ion-icon>
+			</ion-item>
+
+			<ion-item text-wrap *ngIf="user.fullname">
+				<h2>{{ 'core.user.fullname' | translate }}</h2>
+				<p><core-format-text [text]="user.fullname"></core-format-text></p>
+				<ion-icon name="create" *ngIf="canChangeProfile" (click)="changeProfileName()"></ion-icon>
+			</ion-item>
             
 			<!--
             <ion-grid class="core-user-communication-handlers" *ngIf="(communicationHandlers && communicationHandlers.length) || isLoadingHandlers">
