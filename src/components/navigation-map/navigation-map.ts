@@ -15,15 +15,25 @@ import { NavigationFloorsPage } from './../navigation-floors/navigation-floors';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Injector, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Injector, Input, OnChanges, SimpleChanges, Optional, ElementRef } from '@angular/core';
 import { CoreCourseProvider } from '@core/course/providers/course';
 import { AddonModPageProvider } from '@addon/mod/page/providers/page';
 import { CoreCourseModuleMainResourceComponent } from '@core/course/classes/main-resource-component';
 import { CoreAppProvider } from '@providers/app';
 import { AddonModPageHelperProvider } from '@addon/mod/page/providers/helper';
 import { AddonModPagePrefetchHandler } from '@addon/mod/page/providers/prefetch-handler';
-import { NavController } from 'ionic-angular';
+import { NavController, Content, Platform } from 'ionic-angular';
 import { safelyParseJSON } from '../../helpers/navigation_helpers';
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { CoreUtilsProvider } from '@providers/utils/utils';
+import { CoreSite } from '@classes/site';
+import { CoreLinkDirective } from '@directives/link';
+import { CoreUrlUtilsProvider } from '@providers/utils/url';
+import { CoreContentLinksHelperProvider } from '@core/contentlinks/providers/helper';
+import { CoreExternalContentDirective } from '@directives/external-content';
+import { CoreLoggerProvider } from '@providers/logger';
+import { CoreFilepoolProvider } from '@providers/filepool';
 
 
 
@@ -47,16 +57,35 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     // modulesArray: any; //to iterate and load the contents of all
     modulesContentArray: any = [];
     contentsplittedMaps: any[] = [];
+    siteId;
+    clean: boolean = false;
+    singleLine: boolean = false;
+    adaptImg;
+    contentForSubContainer = [];
+    fetchContentIndex: number = 0;
+
+    protected element: HTMLElement;
     
 
     constructor(injector: Injector, private pageProvider: AddonModPageProvider,
         private courseProvider: CoreCourseProvider, private appProvider: CoreAppProvider,
         private pageHelper: AddonModPageHelperProvider, private pagePrefetch: AddonModPagePrefetchHandler,
         private navCtrl: NavController,
-        private navigationMapProvider: NavigationMapProvider) {
+        private navigationMapProvider: NavigationMapProvider,
+        private sitesProvider: CoreSitesProvider,
+        private utils: CoreUtilsProvider, 
+        private urlUtils: CoreUrlUtilsProvider,
+        private contentLinksHelper: CoreContentLinksHelperProvider,
+        private loggerProvider: CoreLoggerProvider,
+        private filepoolProvider: CoreFilepoolProvider,
+        private platform: Platform,
+        element: ElementRef,
+        @Optional() private content: Content) {
         super(injector);
         this.childPages = new Array();
         this.childSections = new Array();
+        this.element = element.nativeElement;
+        this.element.classList.add('opacity-hide'); // Hide contents until they're treated.
     }
 
     ngOnInit(): void {
@@ -166,6 +195,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         await this.asyncLoop(modulesArray);
             console.log('this.modulesContentArray.length');
             console.log(this.modulesContentArray.length);
+            
         for (x; x < this.modulesContentArray.length; x++) {
             console.log('this.modulesContentArray in for loop after asyncloop');
             console.log(this.modulesContentArray);
@@ -221,7 +251,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchContent(refresh?: boolean): Promise<any> {
-        let downloadFailed = false;
+        let downloadFailed = false, index: number = 0;
         console.log('this.module in fetch');
         console.log(this.module);
 
@@ -266,6 +296,8 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
 
                 this.contents = content;
                 this.modulesContentArray.push(content);
+                this.formatContents(this.fetchContentIndex);
+                this.fetchContentIndex++;
 
                 // this.parseDataFromPageContent(content);
                 console.log('this.modulesContentArray');
@@ -394,6 +426,358 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
             }
         }
 
+    }
+
+    /**
+     * Apply formatText and set sub-directives.
+     *
+     * @return {Promise<HTMLElement>} Promise resolved with a div element containing the code.
+     */
+    protected formatContents(index): Promise<HTMLElement> {
+
+        let site: CoreSite;
+        // Retrieve the site since it might be needed later.
+        return this.sitesProvider.getSite(this.siteId).catch(() => {
+            // Error getting the site. This probably means that there is no current site and no siteId was supplied.
+        }).then((siteInstance: CoreSite) => {
+            site = siteInstance;
+
+            // Apply format text function.
+            return this.textUtils.formatText(this.contents, this.utils.isTrueOrOne(this.clean),
+                this.utils.isTrueOrOne(this.singleLine));
+        }).then((formatted) => {
+            const div = document.createElement('div'),
+                canTreatVimeo = site && site.isVersionGreaterEqualThan(['3.3.4', '3.4']);
+            let images,
+                anchors,
+                audios,
+                videos,
+                iframes,
+                buttons;
+
+            div.innerHTML = formatted;
+            console.log('div.innerHTML');
+            console.log(div.innerHTML);
+            images = Array.from(div.querySelectorAll('img'));
+            anchors = Array.from(div.querySelectorAll('a'));
+            audios = Array.from(div.querySelectorAll('audio'));
+            videos = Array.from(div.querySelectorAll('video'));
+            iframes = Array.from(div.querySelectorAll('iframe'));
+            buttons = Array.from(div.querySelectorAll('.button'));
+
+            // Walk through the content to find the links and add our directive to it.
+            // Important: We need to look for links first because in 'img' we add new links without core-link.
+            anchors.forEach((anchor) => {
+                // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
+                const linkDir = new CoreLinkDirective(anchor, this.domUtils, this.utils, this.sitesProvider, this.urlUtils,
+                    this.contentLinksHelper, this.navCtrl, this.content);
+                linkDir.capture = true;
+                linkDir.ngOnInit();
+
+                this.addExternalContent(anchor);
+            });
+
+            if (images && images.length > 0) {
+                // If cannot calculate element's width, use a medium number to avoid false adapt image icons appearing.
+                const elWidth = this.getElementWidth(this.element) || 100;
+
+                // Walk through the content to find images, and add our directive.
+                images.forEach((img: HTMLElement) => {
+                    this.addMediaAdaptClass(img);
+                    this.addExternalContent(img);
+                    if (this.utils.isTrueOrOne(this.adaptImg)) {
+                        this.adaptImage(elWidth, img);
+                    }
+                });
+            }
+
+            audios.forEach((audio) => {
+                this.treatMedia(audio);
+            });
+
+            videos.forEach((video) => {
+                this.treatVideoFilters(video);
+                this.treatMedia(video);
+            });
+
+            iframes.forEach((iframe) => {
+                this.treatIframe(iframe, site, canTreatVimeo);
+            });
+
+            // Handle buttons with inner links.
+            buttons.forEach((button: HTMLElement) => {
+                // Check if it has a link inside.
+                if (button.querySelector('a')) {
+                    button.classList.add('core-button-with-inner-link');
+                }
+            });
+            this.contentForSubContainer[index] = {}
+            this.contentForSubContainer[index]['images'] = images;
+            this.contentForSubContainer[index]['anchors'] = anchors;
+            this.contentForSubContainer[index]['audios'] = audios;
+            this.contentForSubContainer[index]['videos'] = videos;
+            this.contentForSubContainer[index]['iframes'] = iframes;
+            this.contentForSubContainer[index]['buttons'] = buttons;
+            console.log('images');
+            console.log(images);
+            console.log('anchors');
+            console.log(anchors);
+            console.log('audios');
+            console.log(audios);
+            console.log('videos');
+            console.log(videos);
+            console.log('iframes');
+            console.log(iframes);
+            console.log('buttons');
+            console.log(buttons);
+            console.log('this.contentForSubContainer');
+            console.log(this.contentForSubContainer);
+            return div;
+        });
+    }
+
+    /**
+     * Apply CoreExternalContentDirective to a certain element.
+     *
+     * @param {HTMLElement} element Element to add the attributes to.
+     */
+    protected addExternalContent(element: HTMLElement): void {
+        // Angular 2 doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
+        const extContent = new CoreExternalContentDirective(<any> element, this.loggerProvider, this.filepoolProvider,
+            this.platform, this.sitesProvider, this.domUtils, this.urlUtils, this.appProvider);
+
+        extContent.component = this.component;
+        extContent.componentId = this.componentId;
+        extContent.siteId = this.siteId;
+
+        extContent.ngAfterViewInit();
+    }
+
+    /**
+     * Returns the element width in pixels.
+     *
+     * @param {HTMLElement} element Element to get width from.
+     * @return {number} The width of the element in pixels. When 0 is returned it means the element is not visible.
+     */
+    protected getElementWidth(element: HTMLElement): number {
+        let width = this.domUtils.getElementWidth(element);
+
+        if (!width) {
+            // All elements inside are floating or inline. Change display mode to allow calculate the width.
+            const parentWidth = this.domUtils.getElementWidth(element.parentNode, true, false, false, true),
+                previousDisplay = getComputedStyle(element, null).display;
+
+            element.style.display = 'inline-block';
+
+            width = this.domUtils.getElementWidth(element);
+
+            // If width is incorrectly calculated use parent width instead.
+            if (parentWidth > 0 && (!width || width > parentWidth)) {
+                width = parentWidth;
+            }
+
+            element.style.display = previousDisplay;
+        }
+
+        return width;
+    }
+
+    /**
+     * Add class to adapt media to a certain element.
+     *
+     * @param {HTMLElement} element Element to add the class to.
+     */
+    protected addMediaAdaptClass(element: HTMLElement): void {
+        element.classList.add('core-media-adapt-width');
+    }
+
+    /**
+     * Wrap an image with a container to adapt its width and, if needed, add an anchor to view it in full size.
+     *
+     * @param {number} elWidth Width of the directive's element.
+     * @param {HTMLElement} img Image to adapt.
+     */
+    protected adaptImage(elWidth: number, img: HTMLElement): void {
+        const imgWidth = this.getElementWidth(img),
+            // Element to wrap the image.
+            container = document.createElement('span');
+
+        container.classList.add('core-adapted-img-container');
+        container.style.cssFloat = img.style.cssFloat; // Copy the float to correctly position the search icon.
+        if (img.classList.contains('atto_image_button_right')) {
+            container.classList.add('atto_image_button_right');
+        } else if (img.classList.contains('atto_image_button_left')) {
+            container.classList.add('atto_image_button_left');
+        }
+
+        this.domUtils.wrapElement(img, container);
+
+        if (imgWidth > elWidth) {
+            // The image has been adapted, add an anchor to view it in full size.
+            this.addMagnifyingGlass(container, img);
+        }
+    }
+
+    /**
+     * Add a magnifying glass icon to view an image at full size.
+     *
+     * @param {HTMLElement} container The container of the image.
+     * @param {HTMLElement} img The image.
+     */
+    addMagnifyingGlass(container: HTMLElement, img: HTMLElement): void {
+        const imgSrc = this.textUtils.escapeHTML(img.getAttribute('src')),
+            label = this.textUtils.escapeHTML(this.translate.instant('core.openfullimage')),
+            anchor = document.createElement('a');
+
+        anchor.classList.add('core-image-viewer-icon');
+        anchor.setAttribute('aria-label', label);
+        // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
+        anchor.innerHTML = '<ion-icon name="search" class="icon icon-md ion-md-search"></ion-icon>';
+
+        anchor.addEventListener('click', (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.domUtils.viewImage(imgSrc, img.getAttribute('alt'), this.component, this.componentId);
+        });
+
+        container.appendChild(anchor);
+    }
+
+    /**
+     * Add media adapt class and apply CoreExternalContentDirective to the media element and its sources and tracks.
+     *
+     * @param {HTMLElement} element Video or audio to treat.
+     */
+    protected treatMedia(element: HTMLElement): void {
+        this.addMediaAdaptClass(element);
+        this.addExternalContent(element);
+
+        const sources = Array.from(element.querySelectorAll('source')),
+            tracks = Array.from(element.querySelectorAll('track'));
+
+        sources.forEach((source) => {
+            source.setAttribute('target-src', source.getAttribute('src'));
+            source.removeAttribute('src');
+            this.addExternalContent(source);
+        });
+
+        tracks.forEach((track) => {
+            this.addExternalContent(track);
+        });
+    }
+
+    /**
+     * Treat video filters. Currently only treating youtube video using video JS.
+     *
+     * @param {HTMLElement} el Video element.
+     */
+    protected treatVideoFilters(video: HTMLElement): void {
+        // Treat Video JS Youtube video links and translate them to iframes.
+        if (!video.classList.contains('video-js')) {
+            return;
+        }
+
+        const data = this.textUtils.parseJSON(video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}'),
+            youtubeId = data.techOrder && data.techOrder[0] && data.techOrder[0] == 'youtube' && data.sources && data.sources[0] &&
+                data.sources[0].src && this.youtubeGetId(data.sources[0].src);
+
+        if (!youtubeId) {
+            return;
+        }
+
+        const iframe = document.createElement('iframe');
+        iframe.id = video.id;
+        iframe.src = 'https://www.youtube.com/embed/' + youtubeId;
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allowfullscreen', '1');
+        iframe.width = '100%';
+        iframe.height = '300';
+
+        // Replace video tag by the iframe.
+        video.parentNode.replaceChild(iframe, video);
+    }
+
+     /**
+     * Convenience function to extract YouTube Id to translate to embedded video.
+     * Based on http://stackoverflow.com/questions/3452546/javascript-regex-how-to-get-youtube-video-id-from-url
+     *
+     * @param {string} url URL of the video.
+     */
+    protected youtubeGetId(url: string): string {
+        const regExp = /^.*(?:(?:youtu.be\/)|(?:v\/)|(?:\/u\/\w\/)|(?:embed\/)|(?:watch\?))\??v?=?([^#\&\?]*).*/,
+            match = url.match(regExp);
+
+        return (match && match[1].length == 11) ? match[1] : '';
+    }
+
+    /**
+     * Add media adapt class and treat the iframe source.
+     *
+     * @param {HTMLIFrameElement} iframe Iframe to treat.
+     * @param {CoreSite} site Site instance.
+     * @param  {Boolean} canTreatVimeo Whether Vimeo videos can be treated in the site.
+     */
+    protected treatIframe(iframe: HTMLIFrameElement, site: CoreSite, canTreatVimeo: boolean): void {
+        this.addMediaAdaptClass(iframe);
+
+        if (iframe.src && canTreatVimeo) {
+            // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
+            const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)/);
+            if (matches && matches[1]) {
+                const newUrl = this.textUtils.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
+                    matches[1] + '&token=' + site.getToken();
+
+                // Width and height are mandatory, we need to calculate them.
+                let width, height;
+
+                if (iframe.width) {
+                    width = iframe.width;
+                } else {
+                    width = this.getElementWidth(iframe);
+                    if (!width) {
+                        width = window.innerWidth;
+                    }
+                }
+
+                if (iframe.height) {
+                    height = iframe.height;
+                } else {
+                    height = this.getElementHeight(iframe);
+                    if (!height) {
+                        height = width;
+                    }
+                }
+
+                // Always include the width and height in the URL.
+                iframe.src = newUrl + '&width=' + width + '&height=' + height;
+                if (!iframe.width) {
+                    iframe.width = width;
+                }
+                if (!iframe.height) {
+                    iframe.height = height;
+                }
+
+                // Do the iframe responsive.
+                if (iframe.parentElement.classList.contains('embed-responsive')) {
+                    iframe.addEventListener('load', () => {
+                        const css = document.createElement('style');
+                        css.setAttribute('type', 'text/css');
+                        css.innerHTML = 'iframe {width: 100%;height: 100%;}';
+                        iframe.contentDocument.head.appendChild(css);
+                    });
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the element height in pixels.
+     *
+     * @param {HTMLElement} elementAng Element to get height from.
+     * @return {number} The height of the element in pixels. When 0 is returned it means the element is not visible.
+     */
+    protected getElementHeight(element: HTMLElement): number {
+        return this.domUtils.getElementHeight(element) || 0;
     }
 
     startTourNavigateToFloor() {
