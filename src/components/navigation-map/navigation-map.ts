@@ -43,7 +43,7 @@ import { CoreFilepoolProvider } from '@providers/filepool';
 })
 export class NavigationMapComponent extends CoreCourseModuleMainResourceComponent implements OnChanges {
     @Input() data: any; // all data for the courses
-
+    mapIndexToShow: number  = 0;
     canGetPage: boolean;
     contents: any;
     image: string;
@@ -53,21 +53,23 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     description: string;
     screen_to_show: string;
     descriptionInParagraphsArray: string[];
-    mapsArray: number;
+    mapsArray: number; //Array with the whole modules contains maps
     // modulesArray: any; //to iterate and load the contents of all
-    modulesContentArray: any = [];
-    contentsplittedMaps: any[] = [];
+    modulesContentArray: any = [];  //the UNsplitted content of the modules as one html string and images with remote url
+    contentsplittedMaps: any[] = []; //the splitted content of the modules but images with remote url (hotspot coordinates are here)
     siteId;
     clean: boolean = false;
     singleLine: boolean = false;
     adaptImg;
-    contentForSubContainer = [];
-    fetchContentIndex: number = 0;
+    contentForSubContainer = []; //Array of: Image with file:// url {images: Array(1), anchors: Array(3), audios: Array(0), videos: Array(0), iframes: Array(0), …}
+    fetchContentIndex: number = 0; //for the arrayIndex of this.formatContents(this.fetchContentIndex) to create the this.contentForSubContainer[index] array;
 
     protected element: HTMLElement;
     
 
-    constructor(injector: Injector, private pageProvider: AddonModPageProvider,
+    constructor(
+        injector: Injector, 
+        private pageProvider: AddonModPageProvider,
         private courseProvider: CoreCourseProvider, private appProvider: CoreAppProvider,
         private pageHelper: AddonModPageHelperProvider, private pagePrefetch: AddonModPagePrefetchHandler,
         private navCtrl: NavController,
@@ -80,7 +82,9 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         private filepoolProvider: CoreFilepoolProvider,
         private platform: Platform,
         element: ElementRef,
-        @Optional() private content: Content) {
+        @Optional() private content: Content
+    ) {
+
         super(injector);
         this.childPages = new Array();
         this.childSections = new Array();
@@ -312,59 +316,6 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
             return Promise.all(promises);
         });
     }
-
-    // private parseDataFromPageContent(content: string): void {
-    //     // Retrieve the navigation map data from the HTML content
-    //     console.log('content');
-    //     console.log(content);
-    //     let imageTag = content.substring(content.indexOf('<img'));
-    //     console.log('imageTag');
-    //     console.log(imageTag);
-    //     imageTag = imageTag.substring(0, imageTag.indexOf('>') + 1);
-    //     console.log('imageTag');
-    //     console.log(imageTag);
-    //     this.image = imageTag;
-
-    //     let childList = content.substring(content.indexOf('<ol>') + 4);
-    //     console.log('childList');
-    //     console.log(childList);
-    //     childList = childList.substring(0, childList.indexOf('</ol>'));
-    //     console.log('childList');
-    //     console.log(childList);
-    //     this.childrenList = childList;
-
-    //     let description = content.substring(content.indexOf('</ol>') + 5);
-    //     this.descriptionInParagraphsArray = description.split('/<p>|</p>/');
-    //     console.log('description');
-    //     console.log(description);
-    //     console.log('this.descriptionInParagraphsArray');
-    //     console.log(this.descriptionInParagraphsArray);
-    //     this.description = description;
-
-    //     const tokens = childList.split('</li>');
-    //     console.log('tokens');
-    //     console.log(tokens);
-    //     for (let token of tokens) {
-    //         if (token.includes('/mod/page/')) {
-    //             token = token.substring(token.indexOf('php?id='));
-    //             console.log('token');
-    //             console.log(token);
-    //             token = token.substring(token.indexOf('=') + 1, token.indexOf('>') - 1);
-    //             console.log('token');
-    //             console.log(token);
-    //             this.childPages.push(token);
-    //         } else if (token.includes('/course/view.php')) {
-    //             token = token.substring(token.indexOf('php?id='));
-    //             console.log('token');
-    //             console.log(token);
-    //             token = token.substring(token.indexOf('#') + 1, token.indexOf('>') - 1);
-    //             console.log('token');
-    //             console.log(token);
-    //             this.childSections.push(token);
-    //         }
-    //     }
-
-    // }
 
     private parseDataFromPageContent(i, content: any) {
         let imageTag: string, childList: string, description: string, imageURL: string, matchForLastIndex;
@@ -598,6 +549,8 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
      * @param {HTMLElement} img Image to adapt.
      */
     protected adaptImage(elWidth: number, img: HTMLElement): void {
+        console.log('img in adaptIMg');
+        console.log(img);
         const imgWidth = this.getElementWidth(img),
             // Element to wrap the image.
             container = document.createElement('span');

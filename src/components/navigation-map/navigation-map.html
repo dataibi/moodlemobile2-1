@@ -10,11 +10,10 @@
 </core-navbar-buttons>
     
 <!-- Content. -->
-<h2>From navigation-map</h2>
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
 <!-- For later   <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description> -->
-<ion-segment [(ngModel)]="screen_to_show">
+<!-- <ion-segment [(ngModel)]="screen_to_show">
     <ion-segment-button value="info">
         info
     </ion-segment-button>
@@ -27,9 +26,9 @@
     <ion-segment-button value="activity">
         activity
     </ion-segment-button>
-</ion-segment>
+</ion-segment> -->
 
-<div [ngSwitch]="screen_to_show">
+<!-- <div [ngSwitch]="screen_to_show">
     <div *ngSwitchCase="'info'">
         <div class="home-detail__view">
             <div class="image___wrapper">
@@ -58,6 +57,13 @@
     <div *ngSwitchCase="'activity'">
             activity
     </div>
+</div> -->
+<div>
+    <span class="core-adapted-img-container">
+        <img [src]="contentForSubContainer[mapIndexToShow].images[0].currentSrc | safe_image" [alt]="contentForSubContainer[mapIndexToShow].images[0].alt" [ngClass]="contentForSubContainer[mapIndexToShow].images[0].classList"/>
+    </span>
+
+
 </div>
 <button class="nav-floors-button" (click)="startTourNavigateToFloor()" ion-button icon-only>
         <core-icon color="white" name="md-barcode"></core-icon>
