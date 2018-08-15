@@ -53,7 +53,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     description: string;
     screen_to_show: string;
     descriptionInParagraphsArray: string[];
-    mapsArray: number; //Array with the whole modules contains maps
+    // mapsArray: number; //Array with the whole modules contains maps
     // modulesArray: any; //to iterate and load the contents of all
     modulesContentArray: any = [];  //the UNsplitted content of the modules as one html string and images with remote url
     contentsplittedMaps: any[] = []; //the splitted content of the modules but images with remote url (hotspot coordinates are here)
@@ -62,7 +62,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     singleLine: boolean = false;
     adaptImg;
     contentForSubContainer = []; //Array of: Image with file:// url {images: Array(1), anchors: Array(3), audios: Array(0), videos: Array(0), iframes: Array(0), …}
-    fetchContentIndex: number = 0; //for the arrayIndex of this.formatContents(this.fetchContentIndex) to create the this.contentForSubContainer[index] array;
+    fetchContentIndex: number; //for the arrayIndex of this.formatContents(this.fetchContentIndex) to create the this.contentForSubContainer[index] array;
 
     protected element: HTMLElement;
     
@@ -158,7 +158,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         console.log(this.data);
         if (changes.data.firstChange === true) {
             this.navigationMapProvider.setCourseData(this.data);
-            this.mapsArray = this.howManyMapsAndWhereAreThey();
+            // this.mapsArray = this.howManyMapsAndWhereAreThey();  // what is the index of the modules we want
             modulesArray = this.createMapsModulesArray();
             // this.loadContent().then(() => {
             //     this.pageProvider.logView(this.module.instance).then(() => {
@@ -196,11 +196,12 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
 
     async createTheSplittedContentInArray(modulesArray) {
         let x: number = 0;
+        this.fetchContentIndex = 0; // We start with an index 0 for the loops
         await this.asyncLoop(modulesArray);
             console.log('this.modulesContentArray.length');
             console.log(this.modulesContentArray.length);
             
-        for (x; x < this.modulesContentArray.length; x++) {
+        for (x; x < this.modulesContentArray.length; x++) { // this.modulesContentArray is created after the asyncloop
             console.log('this.modulesContentArray in for loop after asyncloop');
             console.log(this.modulesContentArray);
             this.parseDataFromPageContent(x, this.modulesContentArray[x]);
@@ -209,10 +210,10 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
             console.log(this.contentsplittedMaps);
     }
 
-    async asyncLoop(arrayToLoop) { //has to merged in the async createTheSplittedContentInArray function
+    async asyncLoop(arrayToLoop) {
         let i: number = 0;
         for (i; i < arrayToLoop.length; i++ ) {
-            this.module = arrayToLoop[i];
+            this.module = arrayToLoop[i]; // What we want to have in this.fetchContent
                 console.log('this.module in asyncloop');
                 console.log(this.module);
             await this.loadContent().then(() => {
@@ -295,6 +296,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
 
             // Get the page HTML.
             promises.push(this.pageHelper.getPageHtml(this.module.contents, this.module.id).then((content) => {
+                let formatContent; 
                 // All data obtained, now fill the context menu.
                 this.fillContextMenu(refresh);
 
@@ -302,6 +304,9 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                 this.modulesContentArray.push(content);
                 this.formatContents(this.fetchContentIndex);
                 this.fetchContentIndex++;
+                console.log('this.contentForSubContainer in fetchContent');
+                console.log(this.contentForSubContainer);
+                
 
                 // this.parseDataFromPageContent(content);
                 console.log('this.modulesContentArray');
@@ -318,26 +323,26 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     }
 
     private parseDataFromPageContent(i, content: any) {
-        let imageTag: string, childList: string, description: string, imageURL: string, matchForLastIndex;
+        let imageTag: string, childList: string, description: string, imageURL: string, matchForLastIndex, hotspotForAscendingRooms = [], hotspotForAscendingRoomsSegments = [];
         this.contentsplittedMaps[i] = {};
         // Retrieve the navigation map data from the HTML content
         console.log('content');
         console.log(content);
-        imageTag = content.substring(content.indexOf('<img'));
-        console.log('imageTag');
-        console.log(imageTag);
-        imageTag = imageTag.substring(0, imageTag.indexOf('>') + 1);
-        console.log('imageTag');
-        console.log(imageTag);
+        // imageTag = content.substring(content.indexOf('<img'));
+        // console.log('imageTag');
+        // console.log(imageTag);
+        // imageTag = imageTag.substring(0, imageTag.indexOf('>') + 1);
+        // console.log('imageTag');
+        // console.log(imageTag);
         
-        imageURL = imageTag.substring(imageTag.indexOf('src=') + 5);
-        matchForLastIndex = imageURL.match(/" |' /gi);
-        console.log('matchForLastIndex');
-        console.log(matchForLastIndex);
-        imageURL = imageURL.substring(0, imageURL.indexOf(matchForLastIndex[0]));
-        console.log('imageURL');
-        console.log(imageURL);
-        this.contentsplittedMaps[i].image = imageURL;
+        // imageURL = imageTag.substring(imageTag.indexOf('src=') + 5);
+        // matchForLastIndex = imageURL.match(/" |' /gi);
+        // console.log('matchForLastIndex');
+        // console.log(matchForLastIndex);
+        // imageURL = imageURL.substring(0, imageURL.indexOf(matchForLastIndex[0]));
+        // console.log('imageURL');
+        // console.log(imageURL);
+        // this.contentsplittedMaps[i].image = imageURL;
 
         childList = content.substring(content.indexOf('<ol>') + 4);
         console.log('childList');
@@ -345,7 +350,23 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         childList = childList.substring(0, childList.indexOf('</ol>'));
         console.log('childList');
 		console.log(childList);
-		this.contentsplittedMaps[i].childrenList = childList;
+        this.contentsplittedMaps[i].childrenList = childList;
+        hotspotForAscendingRoomsSegments = childList.split('</li>');
+        hotspotForAscendingRoomsSegments.splice(-1,1); // remove last emtpy element
+        console.log('hotspotForAscendingRoomsSegments');
+        console.log(hotspotForAscendingRoomsSegments);
+        hotspotForAscendingRooms = hotspotForAscendingRoomsSegments.map((segment) => {
+            let hotspotXYcoordinates: any = {};
+            hotspotXYcoordinates.xValue = segment.substring(segment.indexOf('x-value:') + 8, segment.indexOf('y-value') - 2);
+            hotspotXYcoordinates.yValue = segment.substring(segment.indexOf('y-value:') + 8, segment.indexOf(')'));
+            return  hotspotXYcoordinates;
+        });
+        this.contentsplittedMaps[i].hotspotsCoordinates = hotspotForAscendingRooms;
+
+
+        console.log('hotspotForAscendingRooms');
+        console.log(hotspotForAscendingRooms);
+
 
         description = content.substring(content.indexOf('</ol>') + 5);
         this.contentsplittedMaps[i].descriptionInParagraphsArray = description.split('/<p>|</p>/');
@@ -376,6 +397,10 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                 this.contentsplittedMaps[i].childSections.push(token);
             }
         }
+        console.log('this.contentForSubContainer');
+        console.log(this.contentForSubContainer);
+
+        this.contentsplittedMaps[i].image = this.contentForSubContainer[i].images[0].currentSrc;
 
     }
 
@@ -462,27 +487,14 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                     button.classList.add('core-button-with-inner-link');
                 }
             });
-            this.contentForSubContainer[index] = {}
+            this.contentForSubContainer[index] = {};
             this.contentForSubContainer[index]['images'] = images;
             this.contentForSubContainer[index]['anchors'] = anchors;
             this.contentForSubContainer[index]['audios'] = audios;
             this.contentForSubContainer[index]['videos'] = videos;
             this.contentForSubContainer[index]['iframes'] = iframes;
             this.contentForSubContainer[index]['buttons'] = buttons;
-            console.log('images');
-            console.log(images);
-            console.log('anchors');
-            console.log(anchors);
-            console.log('audios');
-            console.log(audios);
-            console.log('videos');
-            console.log(videos);
-            console.log('iframes');
-            console.log(iframes);
-            console.log('buttons');
-            console.log(buttons);
-            console.log('this.contentForSubContainer');
-            console.log(this.contentForSubContainer);
+
             return div;
         });
     }

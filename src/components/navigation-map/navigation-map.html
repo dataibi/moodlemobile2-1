@@ -59,9 +59,10 @@
     </div>
 </div> -->
 <div>
-    <span class="core-adapted-img-container">
-        <img [src]="contentForSubContainer[mapIndexToShow].images[0].currentSrc | safe_image" [alt]="contentForSubContainer[mapIndexToShow].images[0].alt" [ngClass]="contentForSubContainer[mapIndexToShow].images[0].classList"/>
-    </span>
+    <div *ngIf="contentsplittedMaps[mapIndexToShow]" class="image-wrapper">
+        <!-- <div *ngFor="contentForSubContainer[mapIndexToShow].hotspotsCoordinates" class="hotspot">{{}}</div> -->
+        <img [src]="contentsplittedMaps[mapIndexToShow].image | safe_image" [alt]="contentForSubContainer[mapIndexToShow].images[0].alt" class="image"/>
+    </div>
 
 
 </div>

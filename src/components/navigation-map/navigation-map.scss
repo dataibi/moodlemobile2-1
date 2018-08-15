@@ -1,0 +1,17 @@
+core-navigation-map {
+
+    .image-wrapper {
+        font-size: 0px;
+        display: inline-block;
+    }
+
+    .image {
+    }
+
+    .hotspot {
+        height: $button-height;
+        width: $button-height;
+        border: 1px solid $primary-color;
+        border-radius: $button-height / 2;
+    }
+}
