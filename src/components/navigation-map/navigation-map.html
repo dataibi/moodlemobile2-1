@@ -58,14 +58,31 @@
             activity
     </div>
 </div> -->
-<div>
-    <div *ngIf="contentsplittedMaps[mapIndexToShow]" class="image-wrapper">
-        <!-- <div *ngFor="contentForSubContainer[mapIndexToShow].hotspotsCoordinates" class="hotspot">{{}}</div> -->
-        <img [src]="contentsplittedMaps[mapIndexToShow].image | safe_image" [alt]="contentForSubContainer[mapIndexToShow].images[0].alt" class="image"/>
+<ion-card *ngIf="modulesSplittedContentArray[mapIndexToShow]">
+    <div class="image-wrapper">
+        <div *ngFor="let hotspot of modulesSplittedContentArray[mapIndexToShow].hotspotsCoordinates; let i = index" [ngStyle]="{'left': hotspot.xValue + '%', 'top': hotspot.yValue + '%'}" class="hotspot">{{i+1}}</div>
+        <img [src]="modulesSplittedContentArray[mapIndexToShow].image | safe_image" [alt]="formattedContentArray[mapIndexToShow].images[0].alt" class="image"/>
     </div>
 
 
-</div>
+    <ion-item *ngIf="showImageDetails">
+      <ion-icon name="football" item-start large></ion-icon>
+      <h2>{{modulesSplittedContentArray[mapIndexToShow].name}}</h2>
+      <p [innerHTML]="modulesSplittedContentArray[mapIndexToShow].description" text-wrap></p>
+    </ion-item>
+
+    <!-- <ion-item *ngIf="!floor_detail_are_shown">
+      <h2 class="overall_detail_title">{{floor.floor_spots[room_index].room.name}}</h2>
+      <p class="overall__detail-description" text-wrap>{{floor.floor_spots[room_index].room.description}}</p>
+      <ion-fab class="ion_fab--entry" top right>
+        <button class="ion_fab--button-entry" ion-fab (click)="openMuseumDetail(room_index)" mini>
+          <ion-icon name="md-log-in"></ion-icon>
+        </button>
+      </ion-fab>
+    </ion-item> -->
+
+
+  </ion-card>
 <button class="nav-floors-button" (click)="startTourNavigateToFloor()" ion-button icon-only>
         <core-icon color="white" name="md-barcode"></core-icon>
     </button>

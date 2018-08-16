@@ -1,6 +1,7 @@
 core-navigation-map {
 
     .image-wrapper {
+        position: relative;
         font-size: 0px;
         display: inline-block;
     }
@@ -9,9 +10,17 @@ core-navigation-map {
     }
 
     .hotspot {
-        height: $button-height;
-        width: $button-height;
-        border: 1px solid $primary-color;
-        border-radius: $button-height / 2;
+        position: absolute;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: $button-height * 0.8;
+        width: $button-height * 0.8;
+        border: 2px solid $primary-color;
+        border-radius: $button-height * 0.4;
+        background: $white;
+        font-size: $font-size--small;
+        font-weight: bold;
+        transform: translate3d(-50%, -50%, 0);
     }
 }
