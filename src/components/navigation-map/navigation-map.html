@@ -81,8 +81,8 @@
       </ion-fab>
     </ion-item> -->
   </ion-card>
-
-  <ion-list *ngIf="modulesSplittedContentArray.length && modulesSplittedContentArray.length > 1">
+  <ion-card *ngIf="modulesSplittedContentArray.length && modulesSplittedContentArray.length > 1">
+  <ion-list>
     <ion-item-sliding *ngFor="let map of modulesSplittedContentArray; let i = index">
         <ion-item *ngIf="mapIndexToShow !== i">
             <ion-thumbnail item-start>
@@ -101,6 +101,7 @@
     </ion-item-sliding>
 
 </ion-list>
+</ion-card>
 <!-- <button class="nav-floors-button" (click)="startTourNavigateToFloor()" ion-button icon-only>
         <core-icon color="white" name="md-barcode"></core-icon>
     </button> -->
