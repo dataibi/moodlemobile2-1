@@ -54,16 +54,12 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     description: string;
     screen_to_show: string;
     descriptionInParagraphsArray: string[];
-    // mapsArray: number; //Array with the whole modules contains maps
-    // modulesArray: any; //to iterate and load the contents of all
     modulesContentArray: any = [];  //the UNsplitted content of the modules as one html string and images with remote url
     modulesSplittedContentArray: any[] = []; //the splitted content of the modules but images with remote url (hotspot coordinates are here) !!reserved for the maps only!!
     siteId;
     clean: boolean = false;
     singleLine: boolean = false;
     adaptImg;
-    formattedContentArray = []; //Array of: Image with file:// url {images: Array(1), anchors: Array(3), audios: Array(0), videos: Array(0), iframes: Array(0), …}
-    fetchContentIndex: number; //for the arrayIndex of this.formatContents(this.fetchContentIndex) to create the this.formattedContentArray[index] array;
 
     protected element: HTMLElement;
 
@@ -94,12 +90,6 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
 
     ngOnInit(): void {
         super.ngOnInit();
-        // this.loadContent().then(() => {
-        //     this.pageProvider.logView(this.module.instance).then(() => {
-        //         this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
-        //     });
-        // });
-
     }
 
     /**
@@ -158,56 +148,14 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         console.log(this.data);
         if (changes.data.firstChange === true) {
             this.navigationMapProvider.setCourseData(this.data);
-            // this.mapsArray = this.howManyMapsAndWhereAreThey();  // what is the index of the modules we want
             modulesArray = this.createMapsModulesArray();
-            // this.loadContent().then(() => {
-            //     this.pageProvider.logView(this.module.instance).then(() => {
-            //         this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
-            //     });
-            // });
-            
-            // for (i; i < this.modulesArray.length; i++ ) {
-            //     this.module = this.modulesArray[0];
-            //     this.loadContent().then(() => {
-            //         // if (i < (this.modulesArray.length - 1)) {
-            //         //     this.module = this.modulesArray[i + 1];//TODO: check this
-            //         // }
-            //         this.pageProvider.logView(this.module.instance).then(() => {
-            //             this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
-            //         });
-            //     });
-            // };
             this.createTheSplittedContentInArray(modulesArray);
-            // this.asyncLoop(i, modulesArray);
-            // console.log('this.modulesContentArray.length');
-            //     console.log(this.modulesContentArray.length);
-            // for (x; x < this.modulesContentArray.length; x++) {
-            //     console.log('this.modulesContentArray in for loop after asyncloop');
-            //     console.log(this.modulesContentArray);
-            //     this.parseDataFromPageContent(x, this.modulesContentArray[i]);
-            // }
-            
         }
-        
-
-
-
     }
 
     async createTheSplittedContentInArray(modulesArray) {
         let x: number = 0;
-        this.fetchContentIndex = 0; // We start with an index 0 for the loops
         await this.asyncLoop(modulesArray);
-            console.log('this.formattedContentArray after async');
-            console.log(this.formattedContentArray);
-            
-        // for (x; x < this.modulesContentArray.length; x++) { // this.modulesContentArray is created after the asyncloop
-        //     console.log('this.modulesContentArray in for loop after asyncloop');
-        //     console.log(this.modulesContentArray);
-        //     this.parseDataFromPageContent(x, this.modulesContentArray[x], modulesArray[x].name); // The name is not in the content, so we pass it here, too
-        // }
-        console.log('this.modulesSplittedContentArray');
-            console.log(this.modulesSplittedContentArray);
     }
 
     async asyncLoop(arrayToLoop) {
@@ -217,8 +165,6 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                 console.log('fetchModule in asyncloop');
                 console.log(fetchModule);
             await this.loadContent(undefined, arrayToLoop[i], i).then(() => {
-                console.log('loadcontent then this.formattedContentArray');
-                console.log(this.formattedContentArray);
                 this.pageProvider.logView(fetchModule.instance).then(() => {
                     this.courseProvider.checkModuleCompletion(this.courseId, fetchModule.completionstatus);
                 });
@@ -270,10 +216,6 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         .finally(() => {
             this.loaded = true;
             this.refreshIcon = 'refresh';
-            console.log('loadcontent finally finish');
-            console.log('this.formattedContentArray loadcontent finally');
-                console.log(this.formattedContentArray);
-            
         });
     }
 
@@ -344,17 +286,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
             })
             .then(() => {
                 return this.formatContents();
-            })
-            .then((formattedContent) => {
-                console.log('this.formattedContentArray in fetchContent then then');
-                console.log(this.formattedContentArray);
-                console.log('formattedContent in fetchContent then then');
-                console.log(formattedContent);
-                // this.fetchContentIndex++;
-                return formattedContent;
             }));
-            console.log('this.formattedContentArray in fetchContent');
-            console.log(this.formattedContentArray);
             return Promise.all(promises);
         });
     }
@@ -369,25 +301,6 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         hotspotForAscendingRoomsSegments = [],
         splittedName;
         this.modulesSplittedContentArray[i] = {},
-        
-        // Retrieve the navigation map data from the HTML content
-        console.log('content');
-        console.log(content);
-        // imageTag = content.substring(content.indexOf('<img'));
-        // console.log('imageTag');
-        // console.log(imageTag);
-        // imageTag = imageTag.substring(0, imageTag.indexOf('>') + 1);
-        // console.log('imageTag');
-        // console.log(imageTag);
-        
-        // imageURL = imageTag.substring(imageTag.indexOf('src=') + 5);
-        // matchForLastIndex = imageURL.match(/" |' /gi);
-        // console.log('matchForLastIndex');
-        // console.log(matchForLastIndex);
-        // imageURL = imageURL.substring(0, imageURL.indexOf(matchForLastIndex[0]));
-        // console.log('imageURL');
-        // console.log(imageURL);
-        // this.modulesSplittedContentArray[i].image = imageURL;
 
         childList = content.substring(content.indexOf('<ol>') + 4);
         console.log('childList');
@@ -442,8 +355,6 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                 this.modulesSplittedContentArray[i].childSections.push(token);
             }
         }
-        console.log('this.formattedContentArray');
-        console.log(this.formattedContentArray);
         splittedName = name.split('} ');
         this.modulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
 
@@ -550,57 +461,14 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                         button.classList.add('core-button-with-inner-link');
                     }
                 });
-                // this.formattedContentArray[index] = {};
-                // this.formattedContentArray[index]['images'] = images;
-                // this.formattedContentArray[index]['anchors'] = anchors;
-                // this.formattedContentArray[index]['audios'] = audios;
-                // this.formattedContentArray[index]['videos'] = videos;
-                // this.formattedContentArray[index]['iframes'] = iframes;
-                // this.formattedContentArray[index]['buttons'] = buttons;
-                
                 formattedContent['images'] = images;
                 formattedContent['anchors'] = anchors;
                 formattedContent['audios'] = audios;
                 formattedContent['videos'] = videos;
                 formattedContent['iframes'] = iframes;
                 formattedContent['buttons'] = buttons;
-                // this.formattedContentArray[index] = formattedContent;
-                console.log('this.formattedContentArray');
-                console.log(this.formattedContentArray);
                 return Promise.resolve(formattedContent);
             });
-
-            // audios.forEach((audio) => {
-            //     this.treatMedia(audio);
-            // });
-
-            // videos.forEach((video) => {
-            //     this.treatVideoFilters(video);
-            //     this.treatMedia(video);
-            // });
-
-            // iframes.forEach((iframe) => {
-            //     this.treatIframe(iframe, site, canTreatVimeo);
-            // });
-
-            // // Handle buttons with inner links.
-            // buttons.forEach((button: HTMLElement) => {
-            //     // Check if it has a link inside.
-            //     if (button.querySelector('a')) {
-            //         button.classList.add('core-button-with-inner-link');
-            //     }
-            // });
-            // this.formattedContentArray[index] = {};
-            // this.formattedContentArray[index]['images'] = images;
-            // this.formattedContentArray[index]['anchors'] = anchors;
-            // this.formattedContentArray[index]['audios'] = audios;
-            // this.formattedContentArray[index]['videos'] = videos;
-            // this.formattedContentArray[index]['iframes'] = iframes;
-            // this.formattedContentArray[index]['buttons'] = buttons;
-            // console.log('this.formattedContentArray');
-            // console.log(this.formattedContentArray);
-            // return div;
-
         });
     }
 
