@@ -57,7 +57,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     // mapsArray: number; //Array with the whole modules contains maps
     // modulesArray: any; //to iterate and load the contents of all
     modulesContentArray: any = [];  //the UNsplitted content of the modules as one html string and images with remote url
-    modulesSplittedContentArray: any[] = []; //the splitted content of the modules but images with remote url (hotspot coordinates are here)
+    modulesSplittedContentArray: any[] = []; //the splitted content of the modules but images with remote url (hotspot coordinates are here) !!reserved for the maps only!!
     siteId;
     clean: boolean = false;
     singleLine: boolean = false;
@@ -198,14 +198,14 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         let x: number = 0;
         this.fetchContentIndex = 0; // We start with an index 0 for the loops
         await this.asyncLoop(modulesArray);
-            console.log('this.modulesContentArray.length');
-            console.log(this.modulesContentArray.length);
+            console.log('this.formattedContentArray after async');
+            console.log(this.formattedContentArray);
             
-        for (x; x < this.modulesContentArray.length; x++) { // this.modulesContentArray is created after the asyncloop
-            console.log('this.modulesContentArray in for loop after asyncloop');
-            console.log(this.modulesContentArray);
-            this.parseDataFromPageContent(x, this.modulesContentArray[x], modulesArray[x].name); // The name is not in the content, so we pass it here, too
-        }
+        // for (x; x < this.modulesContentArray.length; x++) { // this.modulesContentArray is created after the asyncloop
+        //     console.log('this.modulesContentArray in for loop after asyncloop');
+        //     console.log(this.modulesContentArray);
+        //     this.parseDataFromPageContent(x, this.modulesContentArray[x], modulesArray[x].name); // The name is not in the content, so we pass it here, too
+        // }
         console.log('this.modulesSplittedContentArray');
             console.log(this.modulesSplittedContentArray);
     }
@@ -213,13 +213,14 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
     async asyncLoop(arrayToLoop) {
         let i: number = 0;
         for (i; i < arrayToLoop.length; i++ ) {
-            this.module = arrayToLoop[i]; // What we want to have in this.fetchContent
-                console.log('this.module in asyncloop');
-                console.log(this.module);
-            await this.loadContent().then(() => {
-                console.log('loadcontent then');
-                this.pageProvider.logView(this.module.instance).then(() => {
-                    this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
+            let fetchModule = arrayToLoop[i]; // What we want to have in this.fetchContent
+                console.log('fetchModule in asyncloop');
+                console.log(fetchModule);
+            await this.loadContent(undefined, arrayToLoop[i], i).then(() => {
+                console.log('loadcontent then this.formattedContentArray');
+                console.log(this.formattedContentArray);
+                this.pageProvider.logView(fetchModule.instance).then(() => {
+                    this.courseProvider.checkModuleCompletion(this.courseId, fetchModule.completionstatus);
                 });
             });
         };
@@ -249,40 +250,67 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
 
     }
 
+     /**
+     * Loads the component contents and shows the corresponding error.
+     *
+     * @param {boolean} [refresh] Whether we're refreshing data.
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected loadContent(refresh?: boolean, fetchModule?, index?): Promise<any> {
+        return this.fetchContent(refresh, fetchModule).catch((error) => {
+            // Error getting data, fail.
+            this.domUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+        })
+        .then((promiseall) => {
+            let formattedContent = promiseall[promiseall.length -1];
+            console.log('formattedContent');
+            console.log(formattedContent);
+            this.parseDataFromPageContent(index, this.modulesContentArray[index], fetchModule.name, formattedContent); // The name is not in the content, so we pass it here, too
+        })
+        .finally(() => {
+            this.loaded = true;
+            this.refreshIcon = 'refresh';
+            console.log('loadcontent finally finish');
+            console.log('this.formattedContentArray loadcontent finally');
+                console.log(this.formattedContentArray);
+            
+        });
+    }
+
     /**
      * Download page contents.
      *
      * @param {boolean} [refresh] Whether we're refreshing data.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchContent(refresh?: boolean): Promise<any> {
+    protected fetchContent(refresh?: boolean, fetchModule?): Promise<any> {
         let downloadFailed = false, index: number = 0;
-        console.log('this.module in fetch');
-        console.log(this.module);
+        console.log('fetchModule in fetch');
+        console.log(fetchModule);
 
-        // Download content. This function also loads module contents if needed.
-        return this.pagePrefetch.download(this.module, this.courseId).catch(() => {
+        // Download content. This function also loads fetchModule contents if needed.
+        return this.pagePrefetch.download(fetchModule, this.courseId).catch(() => {
             // Mark download as failed but go on since the main files could have been downloaded.
             downloadFailed = true;
         }).then(() => {
-            if (!this.module.contents.length) {
+            if (!fetchModule.contents.length) {
                 // Try to load module contents for offline usage.
-                return this.courseProvider.loadModuleContents(this.module, this.courseId);
+                return this.courseProvider.loadModuleContents(fetchModule, this.courseId);
             }
         }).then(() => {
             const promises = [];
 
             let getPagePromise;
 
-            // Get the module to get the latest title and description. Data should've been updated in download.
+            // Get the fetchModule to get the latest title and description. Data should've been updated in download.
             if (this.canGetPage) {
-                getPagePromise = this.pageProvider.getPageData(this.courseId, this.module.id);
-                console.log('this.module.id getPagePromise if');
-                console.log(this.module.id);
+                getPagePromise = this.pageProvider.getPageData(this.courseId, fetchModule.id);
+                console.log('fetchModule.id getPagePromise if');
+                console.log(fetchModule.id);
             } else {
-                getPagePromise = this.courseProvider.getModule(this.module.id, this.courseId);
-                console.log('this.module.id getPagePromise else');
-                console.log(this.module.id);
+                getPagePromise = this.courseProvider.getModule(fetchModule.id, this.courseId);
+                console.log('fetchModule.id getPagePromise else');
+                console.log(fetchModule.id);
             }
 
             promises.push(getPagePromise.then((page) => {
@@ -295,17 +323,14 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
             }));
 
             // Get the page HTML.
-            promises.push(this.pageHelper.getPageHtml(this.module.contents, this.module.id).then((content) => {
-                let formatContent; 
+            promises.push(this.pageHelper.getPageHtml(fetchModule.contents, fetchModule.id).then((content) => {
                 // All data obtained, now fill the context menu.
                 this.fillContextMenu(refresh);
 
                 this.contents = content;
                 this.modulesContentArray.push(content);
-                this.formatContents(this.fetchContentIndex);
-                this.fetchContentIndex++;
-                console.log('this.formattedContentArray in fetchContent');
-                console.log(this.formattedContentArray);
+                
+                
                 
 
                 // this.parseDataFromPageContent(content);
@@ -316,13 +341,25 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                     // We could load the main file but the download failed. Show error message.
                     this.domUtils.showErrorModal('core.errordownloadingsomefiles', true);
                 }
+            })
+            .then(() => {
+                return this.formatContents();
+            })
+            .then((formattedContent) => {
+                console.log('this.formattedContentArray in fetchContent then then');
+                console.log(this.formattedContentArray);
+                console.log('formattedContent in fetchContent then then');
+                console.log(formattedContent);
+                // this.fetchContentIndex++;
+                return formattedContent;
             }));
-
+            console.log('this.formattedContentArray in fetchContent');
+            console.log(this.formattedContentArray);
             return Promise.all(promises);
         });
     }
 
-    private parseDataFromPageContent(i, content: any, name) {
+    private parseDataFromPageContent(i, content: any, name, formattedContent) {
         let imageTag: string,
         childList: string,
         description: string,
@@ -408,9 +445,12 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         console.log('this.formattedContentArray');
         console.log(this.formattedContentArray);
         splittedName = name.split('} ');
-        this.modulesSplittedContentArray[i].name = splittedName.slice(-1);
+        this.modulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
 
-        this.modulesSplittedContentArray[i].image = this.formattedContentArray[i].images[0].currentSrc;
+        this.modulesSplittedContentArray[i].image = formattedContent.images[0].src;
+        this.modulesSplittedContentArray[i].imageAlt = formattedContent.images[0].alt;
+        console.log('this.modulesSplittedContentArray');
+        console.log(this.modulesSplittedContentArray);
     }
 
     /**
@@ -418,9 +458,9 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
      *
      * @return {Promise<HTMLElement>} Promise resolved with a div element containing the code.
      */
-    protected formatContents(index): Promise<HTMLElement> {
+    protected formatContents(): Promise<any> {
 
-        let site: CoreSite;
+        let site: CoreSite, promises = [], formattedContent = {};;
         // Retrieve the site since it might be needed later.
         return this.sitesProvider.getSite(this.siteId).catch(() => {
             // Error getting the site. This probably means that there is no current site and no siteId was supplied.
@@ -467,45 +507,100 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                 const elWidth = this.getElementWidth(this.element) || 100;
 
                 // Walk through the content to find images, and add our directive.
-                images.forEach((img: HTMLElement) => {
+                // promise = await (function imagesLoop(): void | Promise<any> {
+                //     images.forEach((img: HTMLElement) => {
+                //         let prom;
+                //         this.addMediaAdaptClass(img);
+                //         prom = this.addExternalContent(img);
+                //         if (this.utils.isTrueOrOne(this.adaptImg)) {
+                //             this.adaptImage(elWidth, img);
+                //         }
+                //         return prom;
+                //     });
+                // })();
+                images.forEach(async (img: HTMLElement) => {
+                    let promise;
                     this.addMediaAdaptClass(img);
-                    this.addExternalContent(img);
+                    promise = this.addExternalContent(img);
                     if (this.utils.isTrueOrOne(this.adaptImg)) {
                         this.adaptImage(elWidth, img);
                     }
+                    promises.push(promise);
                 });
             }
 
-            audios.forEach((audio) => {
-                this.treatMedia(audio);
+            return Promise.all(promises).then(() => {
+                audios.forEach((audio) => {
+                    this.treatMedia(audio);
+                });
+    
+                videos.forEach((video) => {
+                    this.treatVideoFilters(video);
+                    this.treatMedia(video);
+                });
+    
+                iframes.forEach((iframe) => {
+                    this.treatIframe(iframe, site, canTreatVimeo);
+                });
+    
+                // Handle buttons with inner links.
+                buttons.forEach((button: HTMLElement) => {
+                    // Check if it has a link inside.
+                    if (button.querySelector('a')) {
+                        button.classList.add('core-button-with-inner-link');
+                    }
+                });
+                // this.formattedContentArray[index] = {};
+                // this.formattedContentArray[index]['images'] = images;
+                // this.formattedContentArray[index]['anchors'] = anchors;
+                // this.formattedContentArray[index]['audios'] = audios;
+                // this.formattedContentArray[index]['videos'] = videos;
+                // this.formattedContentArray[index]['iframes'] = iframes;
+                // this.formattedContentArray[index]['buttons'] = buttons;
+                
+                formattedContent['images'] = images;
+                formattedContent['anchors'] = anchors;
+                formattedContent['audios'] = audios;
+                formattedContent['videos'] = videos;
+                formattedContent['iframes'] = iframes;
+                formattedContent['buttons'] = buttons;
+                // this.formattedContentArray[index] = formattedContent;
+                console.log('this.formattedContentArray');
+                console.log(this.formattedContentArray);
+                return Promise.resolve(formattedContent);
             });
 
-            videos.forEach((video) => {
-                this.treatVideoFilters(video);
-                this.treatMedia(video);
-            });
+            // audios.forEach((audio) => {
+            //     this.treatMedia(audio);
+            // });
 
-            iframes.forEach((iframe) => {
-                this.treatIframe(iframe, site, canTreatVimeo);
-            });
+            // videos.forEach((video) => {
+            //     this.treatVideoFilters(video);
+            //     this.treatMedia(video);
+            // });
 
-            // Handle buttons with inner links.
-            buttons.forEach((button: HTMLElement) => {
-                // Check if it has a link inside.
-                if (button.querySelector('a')) {
-                    button.classList.add('core-button-with-inner-link');
-                }
-            });
-            this.formattedContentArray[index] = {};
-            this.formattedContentArray[index]['images'] = images;
-            this.formattedContentArray[index]['anchors'] = anchors;
-            this.formattedContentArray[index]['audios'] = audios;
-            this.formattedContentArray[index]['videos'] = videos;
-            this.formattedContentArray[index]['iframes'] = iframes;
-            this.formattedContentArray[index]['buttons'] = buttons;
-            console.log('this.formattedContentArray');
-            console.log(this.formattedContentArray);
-            return div;
+            // iframes.forEach((iframe) => {
+            //     this.treatIframe(iframe, site, canTreatVimeo);
+            // });
+
+            // // Handle buttons with inner links.
+            // buttons.forEach((button: HTMLElement) => {
+            //     // Check if it has a link inside.
+            //     if (button.querySelector('a')) {
+            //         button.classList.add('core-button-with-inner-link');
+            //     }
+            // });
+            // this.formattedContentArray[index] = {};
+            // this.formattedContentArray[index]['images'] = images;
+            // this.formattedContentArray[index]['anchors'] = anchors;
+            // this.formattedContentArray[index]['audios'] = audios;
+            // this.formattedContentArray[index]['videos'] = videos;
+            // this.formattedContentArray[index]['iframes'] = iframes;
+            // this.formattedContentArray[index]['buttons'] = buttons;
+            // console.log('this.formattedContentArray');
+            // console.log(this.formattedContentArray);
+            // return div;
+
         });
     }
 
@@ -514,7 +609,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
      *
      * @param {HTMLElement} element Element to add the attributes to.
      */
-    protected addExternalContent(element: HTMLElement): void {
+    protected addExternalContent(element: HTMLElement): void | Promise<any> {
         // Angular 2 doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
         const extContent = new CoreExternalContentDirective(<any> element, this.loggerProvider, this.filepoolProvider,
             this.platform, this.sitesProvider, this.domUtils, this.urlUtils, this.appProvider);
@@ -523,7 +618,7 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         extContent.componentId = this.componentId;
         extContent.siteId = this.siteId;
 
-        extContent.ngAfterViewInit();
+        return extContent.ngAfterViewInit();
     }
 
     /**
@@ -762,6 +857,10 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
                 modulesSplittedContentArray: this.modulesSplittedContentArray // Content of the navigation maps (image, description, hostspots)
             }
         );
+    }
+
+    showFloorPage(i) {
+
     }
 
 }

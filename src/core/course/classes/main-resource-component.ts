@@ -139,7 +139,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param {boolean} [refresh] Whether we're refreshing data.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchContent(refresh?: boolean): Promise<any> {
+    protected fetchContent(refresh?: boolean, fetchModule?): Promise<any> {
         return Promise.resolve();
     }
 
@@ -149,7 +149,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param {boolean} [refresh] Whether we're refreshing data.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadContent(refresh?: boolean): Promise<any> {
+    protected loadContent(refresh?: boolean, fetchModule?): Promise<any> {
         return this.fetchContent(refresh).catch((error) => {
             // Error getting data, fail.
             this.domUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);

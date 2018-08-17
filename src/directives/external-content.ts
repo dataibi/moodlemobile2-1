@@ -51,7 +51,7 @@ export class CoreExternalContentDirective implements AfterViewInit {
     /**
      * View has been initialized
      */
-    ngAfterViewInit(): void {
+    ngAfterViewInit(): void | Promise<any> {
         const currentSite = this.sitesProvider.getCurrentSite(),
             siteId = this.siteId || (currentSite && currentSite.getId()),
             tagName = this.element.tagName;
@@ -88,7 +88,7 @@ export class CoreExternalContentDirective implements AfterViewInit {
         }
 
         const url = this.element.getAttribute(sourceAttr) || this.element.getAttribute(targetAttr);
-        this.handleExternalContent(targetAttr, url, siteId).catch(() => {
+        return this.handleExternalContent(targetAttr, url, siteId).catch(() => {
             // Ignore errors.
         });
     }
