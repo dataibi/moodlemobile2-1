@@ -1,5 +1,3 @@
-import { QrReaderProvider } from './../../../../providers/qrReader';
-import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-page';
 // (C) Copyright 2015 Martin Dougiamas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +11,8 @@ import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-pa
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+import { QrReaderProvider } from './../../../../providers/qrReader';
+import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-page';
 
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
@@ -61,11 +61,10 @@ export class CoreLoginCredentialsPage implements OnInit {
             private eventsProvider: CoreEventsProvider, private contentLinksDelegate: CoreContentLinksDelegate,
             private contentLinksHelper: CoreContentLinksHelperProvider, private qrReaderProvider: QrReaderProvider,
             private appCtrl: App) {
-                
+
         this.siteUrl = navParams.get('siteUrl');
         this.siteConfig = navParams.get('siteConfig');
         this.urlToOpen = navParams.get('urlToOpen');
-        
 
         this.credForm = fb.group({
             username: [navParams.get('username') || '', Validators.required],
@@ -74,10 +73,10 @@ export class CoreLoginCredentialsPage implements OnInit {
 
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.loginDataSubscription = this.qrReaderProvider.naviLoginDataEvent.subscribe(
             (loginData) => {
-                let loginDataObject = JSON.parse(loginData);
+                const loginDataObject = JSON.parse(loginData);
                 this.credForm = this.fb.group({
                     username: [loginDataObject.username || '', Validators.required],
                     password: [loginDataObject.password, Validators.required]
@@ -87,7 +86,7 @@ export class CoreLoginCredentialsPage implements OnInit {
         );
     }
 
-    ngOnDestroy(){
+    ngOnDestroy(): void {
         this.loginDataSubscription.unsubscribe();
       }
 
@@ -96,7 +95,7 @@ export class CoreLoginCredentialsPage implements OnInit {
      */
     ionViewDidLoad(): void {
             this.treatSiteConfig();
-    
+
             if (this.loginHelper.isFixedUrlSet()) {
                 // Fixed URL, we need to check if it uses browser SSO login.
                 this.checkSite(this.siteUrl);
@@ -191,7 +190,7 @@ export class CoreLoginCredentialsPage implements OnInit {
 
         // Get input data.
         const siteUrl = this.siteUrl,
-            username = this.credForm.value.username, //TODO: from database of qr code
+            username = this.credForm.value.username, // TODO: from database of qr code
             password = this.credForm.value.password;
 
         if (!this.siteChecked || this.isBrowserSSO) {
@@ -202,13 +201,14 @@ export class CoreLoginCredentialsPage implements OnInit {
                     // Site doesn't use browser SSO, throw app's login again.
                     return this.login();
                 }
-                
+
             });
+
             return;
         }
         if (!username) {
             this.domUtils.showErrorModal('core.login.usernamerequired', true);
-            
+
             return;
         }
         if (!password) {
@@ -222,7 +222,7 @@ export class CoreLoginCredentialsPage implements OnInit {
 
             return;
         }
-    
+
         const modal = this.domUtils.showModalLoading();
 
         // Start the authentication process.
@@ -309,5 +309,4 @@ export class CoreLoginCredentialsPage implements OnInit {
         );
     }
 
-    
 }

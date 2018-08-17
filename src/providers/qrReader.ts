@@ -24,7 +24,7 @@ export class QrReaderProvider {
 
     constructor() { }
 
-    public emitLoginData(loginData):void {
+    public emitLoginData(loginData): void {
         this.naviLoginDataEvent.emit(loginData);
       }
 }

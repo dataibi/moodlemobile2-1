@@ -166,14 +166,14 @@ export class CoreUserProfilePage {
      * Opens dialog to change profile email.
      */
     changeProfileEmail(): void {
-    
+
     }
 
     /**
      * Opens dialog to change profile name.
      */
     changeProfileName(): void {
-    
+
     }
 
     /**
