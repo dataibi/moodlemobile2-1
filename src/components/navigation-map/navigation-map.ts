@@ -727,8 +727,8 @@ export class NavigationMapComponent extends CoreCourseModuleMainResourceComponen
         );
     }
 
-    showFloorPage(i) {
-
+    changeMap(index) {
+        this.mapIndexToShow = index;
     }
 
 }

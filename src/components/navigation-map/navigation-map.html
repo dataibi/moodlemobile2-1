@@ -84,13 +84,13 @@
 
   <ion-list *ngIf="modulesSplittedContentArray.length && modulesSplittedContentArray.length > 1">
     <ion-item-sliding *ngFor="let map of modulesSplittedContentArray; let i = index">
-        <ion-item>
+        <ion-item *ngIf="mapIndexToShow !== i">
             <ion-thumbnail item-start>
                 <img [src]="map.image | safe_image">
             </ion-thumbnail>
             <h2>{{map.name}}</h2>
             <p text-wrap>{{map.description}}</p>
-            <button ion-button clear item-end (click)="showFloorPage(i)">View</button>
+            <button ion-button clear item-end (click)="changeMap(i)">View</button>
         </ion-item>
         <ion-item-options side="left">
             <button ion-button color="primary">
