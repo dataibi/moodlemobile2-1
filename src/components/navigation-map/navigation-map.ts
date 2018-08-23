@@ -69,6 +69,7 @@ export class NavigationMapComponent
     clean: boolean = false;
     singleLine: boolean = false;
     adaptImg;
+    roomModulesSplittedContentArray: any = []; // Only for the rooms
 
     protected element: HTMLElement;
 
@@ -182,32 +183,33 @@ export class NavigationMapComponent
         return mapAmountArray;
     }
 
-    ngOnChanges(changes: SimpleChanges) {
+    async ngOnChanges(changes: SimpleChanges) {
         let modulesArray,
+            roomModulesArray,
             x = 0;
-        console.log("changes");
-        console.log(changes);
-        console.log("this.data in navigation");
-        console.log(this.data);
         if (changes.data.firstChange === true) {
             this.navigationMapProvider.setCourseData(this.data);
             modulesArray = this.createMapsModulesArray("map");
-            this.createTheSplittedContentInArray(modulesArray);
+            await this.createTheSplittedContentInArray(modulesArray, 'map');
+            roomModulesArray = this.createMapsModulesArray("rooms");
+            console.log('roomModulesArray');
+        console.log(roomModulesArray);
+            this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
         }
     }
 
-    async createTheSplittedContentInArray(modulesArray) {
+    async createTheSplittedContentInArray(modulesArray, whatContent) {
         let x: number = 0;
-        await this.asyncLoop(modulesArray);
+        await this.asyncLoop(modulesArray, whatContent);
     }
 
-    async asyncLoop(arrayToLoop) {
+    async asyncLoop(arrayToLoop, whatContent) {
         let i: number = 0;
         for (i; i < arrayToLoop.length; i++) {
             let fetchModule = arrayToLoop[i]; // What we want to have in this.fetchContent
             console.log("fetchModule in asyncloop");
             console.log(fetchModule);
-            await this.loadContent(undefined, arrayToLoop[i], i).then(() => {
+            await this.loadContent(undefined, arrayToLoop[i], i, whatContent).then(() => {
                 this.pageProvider.logView(fetchModule.instance).then(() => {
                     this.courseProvider.checkModuleCompletion(
                         this.courseId,
@@ -224,15 +226,13 @@ export class NavigationMapComponent
      */
     createMapsModulesArray(whatContent) {
         let indizesArray = this.howManyMapsAndWhereAreThey(
-                this.mapIndexToShow,
-                whatContent
-            ),
+            this.mapIndexToShow,
+            whatContent
+        ),
             i: number = 0,
             modulesArray = [];
         console.log("indizesArray");
         console.log(indizesArray);
-        console.log("i");
-        console.log(i);
 
         for (i; i < indizesArray.length; i++) {
             console.log("this.data.sections[1].modules[indizesArray[i].index]");
@@ -257,7 +257,8 @@ export class NavigationMapComponent
     protected loadContent(
         refresh?: boolean,
         fetchModule?,
-        index?
+        index?,
+        whatContent?
     ): Promise<any> {
         return this.fetchContent(refresh, fetchModule)
             .catch(error => {
@@ -269,14 +270,17 @@ export class NavigationMapComponent
                 );
             })
             .then(promiseall => {
-                let formattedContent = promiseall[promiseall.length - 1];
+                
+                let {formattedContent, content} = promiseall[promiseall.length - 1];
                 console.log("formattedContent");
                 console.log(formattedContent);
                 this.parseDataFromPageContent(
                     index,
-                    this.modulesContentArray[index],
+                    // this.modulesContentArray[index],
+                    content,
                     fetchModule.name,
-                    formattedContent
+                    formattedContent,
+                    whatContent
                 ); // The name is not in the content, so we pass it here, too
             })
             .finally(() => {
@@ -358,11 +362,12 @@ export class NavigationMapComponent
                             this.fillContextMenu(refresh);
 
                             this.contents = content;
-                            this.modulesContentArray.push(content);
+                            content
+                            // this.modulesContentArray.push(content);
 
-                            // this.parseDataFromPageContent(content);
-                            console.log("this.modulesContentArray");
-                            console.log(this.modulesContentArray);
+                            // // this.parseDataFromPageContent(content);
+                            // console.log("this.modulesContentArray");
+                            // console.log(this.modulesContentArray);
 
                             if (downloadFailed && this.appProvider.isOnline()) {
                                 // We could load the main file but the download failed. Show error message.
@@ -371,16 +376,17 @@ export class NavigationMapComponent
                                     true
                                 );
                             }
+                            return content;
                         })
-                        .then(() => {
-                            return this.formatContents();
+                        .then((content) => {
+                            return this.formatContents(content);
                         })
                 );
                 return Promise.all(promises);
             });
     }
 
-    private parseDataFromPageContent(i, content: any, name, formattedContent) {
+    private parseDataFromPageContent(i, content: any, name, formattedContent, whatContent?) {
         let imageTag: string,
             childList: string,
             description: string,
@@ -389,85 +395,96 @@ export class NavigationMapComponent
             hotspotForAscendingRooms = [],
             hotspotForAscendingRoomsSegments = [],
             splittedName;
-        (this.modulesSplittedContentArray[i] = {}),
-            (childList = content.substring(content.indexOf("<ol>") + 4));
-        console.log("childList");
-        console.log(childList);
-        childList = childList.substring(0, childList.indexOf("</ol>"));
-        console.log("childList");
-        console.log(childList);
-        this.modulesSplittedContentArray[i].childrenList = childList;
-        hotspotForAscendingRoomsSegments = childList.split("</li>");
-        hotspotForAscendingRoomsSegments.splice(-1, 1); // remove last emtpy element
-        console.log("hotspotForAscendingRoomsSegments");
-        console.log(hotspotForAscendingRoomsSegments);
-        hotspotForAscendingRooms = hotspotForAscendingRoomsSegments.map(
-            segment => {
-                let hotspotXYcoordinates: any = {};
-                hotspotXYcoordinates.xValue = segment.substring(
-                    segment.indexOf("x-value:") + 8,
-                    segment.indexOf("y-value") - 2
-                );
-                hotspotXYcoordinates.yValue = segment.substring(
-                    segment.indexOf("y-value:") + 8,
-                    segment.indexOf(")")
-                );
-                return hotspotXYcoordinates;
-            }
-        );
-        this.modulesSplittedContentArray[
-            i
-        ].hotspotsCoordinates = hotspotForAscendingRooms;
 
-        console.log("hotspotForAscendingRooms");
-        console.log(hotspotForAscendingRooms);
+        if (whatContent === 'map') {
+            this.modulesSplittedContentArray[i] = {};
+                childList = content.substring(content.indexOf("<ol>") + 4);
+            console.log("childList");
+            console.log(childList);
+            childList = childList.substring(0, childList.indexOf("</ol>"));
+            console.log("childList");
+            console.log(childList);
+            this.modulesSplittedContentArray[i].childrenList = childList;
+            hotspotForAscendingRoomsSegments = childList.split("</li>");
+            hotspotForAscendingRoomsSegments.splice(-1, 1); // remove last emtpy element
+            console.log("hotspotForAscendingRoomsSegments");
+            console.log(hotspotForAscendingRoomsSegments);
+            hotspotForAscendingRooms = hotspotForAscendingRoomsSegments.map(
+                segment => {
+                    let hotspotXYcoordinates: any = {};
+                    hotspotXYcoordinates.xValue = segment.substring(
+                        segment.indexOf("x-value:") + 8,
+                        segment.indexOf("y-value") - 2
+                    );
+                    hotspotXYcoordinates.yValue = segment.substring(
+                        segment.indexOf("y-value:") + 8,
+                        segment.indexOf(")")
+                    );
+                    return hotspotXYcoordinates;
+                }
+            );
+            this.modulesSplittedContentArray[i].hotspotsCoordinates = hotspotForAscendingRooms;
 
-        description = content.substring(content.indexOf("</ol>") + 5);
-        this.modulesSplittedContentArray[
-            i
-        ].descriptionInParagraphsArray = description.split("/<p>|</p>/");
-        console.log("description");
-        console.log(description);
-        this.modulesSplittedContentArray[i].description = description;
+            console.log("hotspotForAscendingRooms");
+            console.log(hotspotForAscendingRooms);
 
-        const tokens = childList.split("</li>");
-        console.log("tokens");
-        console.log(tokens);
-        for (let token of tokens) {
-            if (token.includes("/mod/page/")) {
-                token = token.substring(token.indexOf("php?id="));
-                console.log("token");
-                console.log(token);
-                token = token.substring(
-                    token.indexOf("=") + 1,
-                    token.indexOf(">") - 1
-                );
-                console.log("token");
-                console.log(token);
-                this.modulesSplittedContentArray[i].childPages = [];
-                this.modulesSplittedContentArray[i].childPages.push(token);
-            } else if (token.includes("/course/view.php")) {
-                token = token.substring(token.indexOf("php?id="));
-                console.log("token");
-                console.log(token);
-                token = token.substring(
-                    token.indexOf("#") + 1,
-                    token.indexOf(">") - 1
-                );
-                console.log("token");
-                console.log(token);
-                this.modulesSplittedContentArray[i].childSections.push(token);
+            const tokens = childList.split("</li>");
+            console.log("tokens");
+            console.log(tokens);
+            for (let token of tokens) {
+                if (token.includes("/mod/page/")) {
+                    token = token.substring(token.indexOf("php?id="));
+                    console.log("token");
+                    console.log(token);
+                    token = token.substring(
+                        token.indexOf("=") + 1,
+                        token.indexOf(">") - 1
+                    );
+                    console.log("token");
+                    console.log(token);
+                    this.modulesSplittedContentArray[i].childPages = [];
+                    this.modulesSplittedContentArray[i].childPages.push(token);
+                } else if (token.includes("/course/view.php")) {
+                    token = token.substring(token.indexOf("php?id="));
+                    console.log("token");
+                    console.log(token);
+                    token = token.substring(
+                        token.indexOf("#") + 1,
+                        token.indexOf(">") - 1
+                    );
+                    console.log("token");
+                    console.log(token);
+                    this.modulesSplittedContentArray[i].childSections.push(token);
+                }
             }
         }
-        splittedName = name.split("} ");
-        this.modulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
 
-        this.modulesSplittedContentArray[i].image =
-            formattedContent.images[0].src;
-        this.modulesSplittedContentArray[i].imageAlt =
-            formattedContent.images[0].alt;
-        console.log("this.modulesSplittedContentArray");
-        console.log(this.modulesSplittedContentArray);
+
+        description = content.substring(content.indexOf("</ol>") + 5);
+        
+        console.log("description");
+        console.log(description);
+
+        splittedName = name.split("} ");
+
+
+        if (whatContent === 'map') {
+            this.modulesSplittedContentArray[i].description = description;
+            this.modulesSplittedContentArray[i].descriptionInParagraphsArray = description.split("/<p>|</p>/");
+            
+            this.modulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
+
+            this.modulesSplittedContentArray[i].image = formattedContent.images[0].src;
+            this.modulesSplittedContentArray[i].imageAlt = formattedContent.images[0].alt;
+            console.log("this.modulesSplittedContentArray");
+            console.log(this.modulesSplittedContentArray);
+        } else if (whatContent === 'rooms') {
+            this.roomModulesSplittedContentArray[i] = {};
+            this.roomModulesSplittedContentArray[i].image = formattedContent.images[0].src;
+            this.roomModulesSplittedContentArray[i].descriptionInParagraphsArray = description.split("/<p>|</p>/");
+            console.log("this.roomModulesSplittedContentArray");
+            console.log(this.roomModulesSplittedContentArray);
+        }
     }
 
     /**
@@ -475,7 +492,7 @@ export class NavigationMapComponent
      *
      * @return {Promise<HTMLElement>} Promise resolved with a div element containing the code.
      */
-    protected formatContents(): Promise<any> {
+    protected formatContents(content): Promise<any> {
         let site: CoreSite,
             promises = [],
             formattedContent = {};
@@ -490,7 +507,8 @@ export class NavigationMapComponent
 
                 // Apply format text function.
                 return this.textUtils.formatText(
-                    this.contents,
+                    // this.contents,
+                    content,
                     this.utils.isTrueOrOne(this.clean),
                     this.utils.isTrueOrOne(this.singleLine)
                 );
@@ -586,7 +604,7 @@ export class NavigationMapComponent
                     formattedContent["videos"] = videos;
                     formattedContent["iframes"] = iframes;
                     formattedContent["buttons"] = buttons;
-                    return Promise.resolve(formattedContent);
+                    return Promise.resolve({formattedContent: formattedContent, content: content});
                 });
             });
     }
@@ -628,12 +646,12 @@ export class NavigationMapComponent
         if (!width) {
             // All elements inside are floating or inline. Change display mode to allow calculate the width.
             const parentWidth = this.domUtils.getElementWidth(
-                    element.parentNode,
-                    true,
-                    false,
-                    false,
-                    true
-                ),
+                element.parentNode,
+                true,
+                false,
+                false,
+                true
+            ),
                 previousDisplay = getComputedStyle(element, null).display;
 
             element.style.display = "inline-block";
@@ -757,10 +775,10 @@ export class NavigationMapComponent
         }
 
         const data = this.textUtils.parseJSON(
-                video.getAttribute("data-setup") ||
-                    video.getAttribute("data-setup-lazy") ||
-                    "{}"
-            ),
+            video.getAttribute("data-setup") ||
+            video.getAttribute("data-setup-lazy") ||
+            "{}"
+        ),
             youtubeId =
                 data.techOrder &&
                 data.techOrder[0] &&
