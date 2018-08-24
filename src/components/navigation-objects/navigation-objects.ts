@@ -1,25 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { NavigationMapProvider } from '@providers/navigation-map-provider';
-import { NavigationObjectsPage } from '@components/navigation-objects/navigation-objects';
 // import { HomeDetailPage } from '../homeDetail/home-detail';
 // import { Museum } from '../../models/museum.model';
 // import { FloorPage } from '../floor/floor';
 
 @Component({
-	selector: 'page-navigation-floors',
-	templateUrl: 'navigation-floors.html'
+	selector: 'page-navigation-objects',
+	templateUrl: 'navigation-objects.html'
 })
-export class NavigationFloorsPage implements OnInit {
+export class NavigationObjectsPage implements OnInit {
 
 	roomTopicContent: any[];
-	roomContent: any;
+	title: string;
 
 	
 
 	constructor(public navCtrl: NavController, private navParams: NavParams, private navigationMapProvider: NavigationMapProvider) {
 			this.roomTopicContent = navParams.get("roomTopicContent");
-			this.roomContent = navParams.get("roomContent");
+			this.title = navParams.get("title");
 		}
 	
 
@@ -51,10 +50,6 @@ export class NavigationFloorsPage implements OnInit {
 	}
 
 	ionViewDidEnter() {
-	}
-
-	showRoomObjects() {
-		this.navCtrl.push(NavigationObjectsPage, { roomTopicContent: this.roomTopicContent, title: this.roomContent.name });
 	}
 
 	MapToShow(index) {

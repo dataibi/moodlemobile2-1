@@ -51,6 +51,7 @@ import { CoreIonTabsComponent } from './ion-tabs/ion-tabs';
 import { CoreIonTabComponent } from './ion-tabs/ion-tab';
 import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
 import { NavigationMapComponent } from './navigation-map/navigation-map';
+import { NavigationObjectsPage } from '@components/navigation-objects/navigation-objects';
 
 @NgModule({
     declarations: [
@@ -87,14 +88,16 @@ import { NavigationMapComponent } from './navigation-map/navigation-map';
         CoreIonTabComponent,
         QrScannerPage,
         NavigationMapComponent,
-        NavigationFloorsPage
+        NavigationFloorsPage,
+        NavigationObjectsPage
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
         CoreCoursePickerMenuPopoverComponent,
         CoreRecaptchaModalComponent,
         QrScannerPage,
-        NavigationFloorsPage
+        NavigationFloorsPage,
+        NavigationObjectsPage
     ],
     imports: [
         IonicModule,
