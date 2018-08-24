@@ -4,45 +4,14 @@ page-navigation-floors {
     text-align: center;
   }
 
-  //   .card-title {
-  //     position: absolute;
-  //     top: 36%;
-  //     font-size: 2.0em;
-  //     width: 100%;
-  //     font-weight: bold;
-  //     color: #fff;
-  //   }
 
-  //   .card-subtitle {
-  //     font-size: 1.0em;
-  //     position: absolute;
-  //     top: 52%;
-  //     width: 100%;
-  //     color: #fff;
-  //   }
-
-  .wrapper {
+  .button__wrapper {
     position: relative;
+    height: $spacing--huge * 2;
   }
 
-  .ion_fab {
+  .scroll-content ion-fab {
     position: absolute;
-  }
-
-  .ion_fab--button {
-    background: rgba(0, 0, 255, 0.6);
-  }
-
-  .ion_fab--button-entry {
-    background: green;
-  }
-
-  .overall_detail_title {
-	margin-top: $spacing--medium;
-  }
-
-  .overall__detail-description {
-    padding-bottom: $spacing--huge;
-    margin-top: $spacing--medium;
+    margin-bottom: 0;
   }
 }

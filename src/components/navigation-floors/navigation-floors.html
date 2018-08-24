@@ -1,42 +1,27 @@
 <ion-header>
 	<ion-navbar>
-		<ion-title>Home</ion-title>
+		<ion-title>{{roomContent.name}}</ion-title>
 	</ion-navbar>
 </ion-header>
 
 <ion-content class="card-background-page">
 	<ion-card>
-		<div class="wrapper">
-			<img (click)="showMapDetails()" [src]="maps[showMapIndex].image">
-			<!-- <div *ngFor="let spot of floor.floor_spots; let room_index = index">
-				<ion-fab [ngStyle]="{'left': spot.left + '%', 'top': spot.top + '%'}" class="ion_fab">
-					<button class="ion_fab--button" ion-fab (click)="showRoomDetails(room_index)" mini>
-						<ion-icon name="eye"></ion-icon>
-					</button>
-				</ion-fab>
-			</div> -->
-
+		<div class="image-wrapper">
+			<img [src]="roomContent.image | safe_image" [alt]="roomContent.name" class="image"/>
 		</div>
-
-
-		<!-- <ion-item *ngIf="floor_detail_are_shown">
-			<ion-icon name="football" item-start large></ion-icon>
-			<h2>{{floor.floor}}</h2>
-			<p [innerHTML]="floor.floor_description" text-wrap></p>
-		</ion-item>
-
-		<ion-item *ngIf="!floor_detail_are_shown">
-			<h2 class="overall_detail_title">{{floor.floor_spots[room_index].room.name}}</h2>
-			<p class="overall__detail-description" text-wrap>{{floor.floor_spots[room_index].room.description}}</p>
-			<ion-fab class="ion_fab--entry" top right>
-				<button class="ion_fab--button-entry" ion-fab (click)="openMuseumDetail(room_index)" mini>
-					<ion-icon name="md-log-in"></ion-icon>
+		<div class="button__wrapper">
+			<ion-fab class="button-show-room-object" center middle>
+				<button class="ion_fab--button" ion-fab (click)="showRoomObjects()" mini>
+					<ion-icon name="eye"></ion-icon>
 				</button>
 			</ion-fab>
-		</ion-item> -->
-
-
-	</ion-card>
+		</div>
+	
+	
+		<ion-item *ngIf="!showRoomDescription"> 
+		  <p *ngFor="let paragraph of roomContent.descriptionInParagraphsArray" [innerHTML]="paragraph" text-wrap></p>
+		</ion-item>
+	  </ion-card>
 	
 		<p padding>please choose the floor</p>
 	

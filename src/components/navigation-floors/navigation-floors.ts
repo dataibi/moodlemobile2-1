@@ -11,17 +11,14 @@ import { NavigationMapProvider } from '@providers/navigation-map-provider';
 })
 export class NavigationFloorsPage implements OnInit {
 
-	maps: any[];
-	mapData: any;
-	showMapIndex: number;
-	showRoomIndex: number;
-	mapDetailsAreShown: boolean;
-	// contentsplittedMaps: any[] = [];
+	roomTopicContent: any[];
+	roomContent: any[];
 
 	
 
 	constructor(public navCtrl: NavController, private navParams: NavParams, private navigationMapProvider: NavigationMapProvider) {
-			this.maps = navParams.get("contentsplittedMaps");
+			this.roomTopicContent = navParams.get("roomTopicContent");
+			this.roomContent = navParams.get("roomContent");
 		}
 	
 
@@ -39,17 +36,10 @@ export class NavigationFloorsPage implements OnInit {
 	// }
 
 	ngOnInit() {
-		this.mapDetailsAreShown = true;
-		this.showMapIndex = 0;
-		this.showRoomIndex = 0;
-
-		
-
-
 	}
 
 	ionViewWillEnter() {
-		this.mapData = this.navigationMapProvider.getCourseData().sections[1].modules;
+		// this.mapData = this.navigationMapProvider.getCourseData().sections[1].modules;
 		// let i = 0;
 		// for (i; this.maps.length; i++) {
 		// 	this.parseDataFromPageContent(i, this.maps[i]);
@@ -60,8 +50,6 @@ export class NavigationFloorsPage implements OnInit {
 	}
 
 	ionViewDidEnter() {
-		console.log('willenter course data');
-		console.log(this.mapData);
 	}
 
 	MapToShow(index) {
@@ -78,12 +66,9 @@ export class NavigationFloorsPage implements OnInit {
 	// }
 	
 	showMapDetails() {
-		this.mapDetailsAreShown = true;
 	}
 
 	showRoomDetails(showRoomIndex) {
-		this.showRoomIndex = showRoomIndex;
-		this.mapDetailsAreShown = false;
 
 	}
 

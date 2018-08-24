@@ -53,7 +53,8 @@ export class NavigationMapComponent
     @Input()
     data: any; // all data for the courses
     mapIndexToShow: number = 0;
-    showImageDetails: boolean = true;
+    roomIndexToShow: number = 0;
+    showRoomDescription: boolean = false;
     canGetPage: boolean;
     contents: any;
     image: string;
@@ -70,6 +71,7 @@ export class NavigationMapComponent
     singleLine: boolean = false;
     adaptImg;
     roomModulesSplittedContentArray: any = []; // Only for the rooms
+    roomsLoaded = false;
 
     protected element: HTMLElement;
 
@@ -108,7 +110,7 @@ export class NavigationMapComponent
      *
      * @return {object} With the maps and the index of them.
      */
-    howManyMapsAndWhereAreThey(mapIndex, whatContent) {
+    howManyMapsAndWhereAreThey(mapIndex, whatContent): any[] {
         console.log("this.data in howManyMapsAndWhereAreThey");
         console.log(this.data);
 
@@ -155,7 +157,7 @@ export class NavigationMapComponent
                 mapAmountArray = nameJsonObjectArray.filter(nameJsonObject => {
                     return !(
                         nameJsonObject.jsonObject.room &&
-                        nameJsonObject.jsonObject.room !== "undefined"
+                        typeof nameJsonObject.jsonObject.room !== "undefined"
                     ); //if the name object has room property its not only a map / We only want to have map object
                 });
                 break;
@@ -163,16 +165,26 @@ export class NavigationMapComponent
                 mapAmountArray = nameJsonObjectArray.filter(nameJsonObject => {
                     return (
                         nameJsonObject.jsonObject.room &&
-                        nameJsonObject.jsonObject.room !== "undefined" &&
+                        typeof nameJsonObject.jsonObject.room !== "undefined" &&
                         nameJsonObject.jsonObject.map === mapIndex + 1
                     );
                 });
                 break;
+            // case "exponats":
+            //     mapAmountArray = nameJsonObjectArray.filter(nameJsonObject => {
+            //         return (
+            //             nameJsonObject.jsonObject.room &&
+            //             nameJsonObject.jsonObject.room !== "undefined" &&
+            //             nameJsonObject.jsonObject.room === this.roomIndexToShow &&
+            //             nameJsonObject.jsonObject.map === mapIndex + 1
+            //         );
+            //     });
+            //     break;
             default:
                 mapAmountArray = nameJsonObjectArray.filter(nameJsonObject => {
                     return !(
                         nameJsonObject.jsonObject.room &&
-                        nameJsonObject.jsonObject.room !== "undefined"
+                        typeof nameJsonObject.jsonObject.room !== "undefined"
                     ); //if the name object has room property its not only a map / We only want to have map object
                 });
         }
@@ -182,6 +194,56 @@ export class NavigationMapComponent
 
         return mapAmountArray;
     }
+
+    getTopicContentOfOneRoom(): Promise<object> {
+        let sections: any[] = [], i = 0, promises: Promise<object>[] = [];
+
+        //get the inizes of the topics of the room
+
+        sections = this.data.sections.filter((oneSection, i) => {
+            let jsonString: string,
+                startForSubstring: number,
+                endForSubstring: number,
+                jsonStringObject: any;
+
+            if (oneSection.section &&
+                typeof oneSection.section !== 'undefined' &&
+                oneSection.section != 0) {
+
+                startForSubstring = oneSection.summary.indexOf("{");
+                endForSubstring = oneSection.summary.indexOf("}") + 1;
+
+                jsonString = oneSection.summary.substring(
+                    startForSubstring,
+                    endForSubstring
+                );
+
+                jsonStringObject = safelyParseJSON(jsonString);
+
+                if (jsonStringObject.map &&
+                    typeof jsonStringObject.map !== 'undefined' &&
+                    jsonStringObject.map === (this.mapIndexToShow + 1) &&
+                    jsonStringObject.room &&
+                    jsonStringObject.room !== 'undefined' &&
+                    jsonStringObject.room === (this.roomIndexToShow + 1)) {
+
+                    
+
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return false;
+        });
+
+        for (i; i < sections.length; i++) {
+            promises.push(this.formatContents(sections[i].summary, sections[i].section));
+        }
+        return Promise.all(promises);
+    }
+
+
 
     async ngOnChanges(changes: SimpleChanges) {
         let modulesArray,
@@ -193,7 +255,7 @@ export class NavigationMapComponent
             await this.createTheSplittedContentInArray(modulesArray, 'map');
             roomModulesArray = this.createMapsModulesArray("rooms");
             console.log('roomModulesArray');
-        console.log(roomModulesArray);
+            console.log(roomModulesArray);
             this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
         }
     }
@@ -218,6 +280,11 @@ export class NavigationMapComponent
                 });
             });
         }
+        this.loaded = true;
+        if (whatContent === 'rooms') {
+            this.roomsLoaded = true;
+        }
+        this.refreshIcon = "refresh";
     }
 
     /**
@@ -270,8 +337,8 @@ export class NavigationMapComponent
                 );
             })
             .then(promiseall => {
-                
-                let {formattedContent, content} = promiseall[promiseall.length - 1];
+
+                let { formattedContent, content } = promiseall[promiseall.length - 1];
                 console.log("formattedContent");
                 console.log(formattedContent);
                 this.parseDataFromPageContent(
@@ -284,8 +351,7 @@ export class NavigationMapComponent
                 ); // The name is not in the content, so we pass it here, too
             })
             .finally(() => {
-                this.loaded = true;
-                this.refreshIcon = "refresh";
+
             });
     }
 
@@ -398,7 +464,7 @@ export class NavigationMapComponent
 
         if (whatContent === 'map') {
             this.modulesSplittedContentArray[i] = {};
-                childList = content.substring(content.indexOf("<ol>") + 4);
+            childList = content.substring(content.indexOf("<ol>") + 4);
             console.log("childList");
             console.log(childList);
             childList = childList.substring(0, childList.indexOf("</ol>"));
@@ -461,7 +527,7 @@ export class NavigationMapComponent
 
 
         description = content.substring(content.indexOf("</ol>") + 5);
-        
+
         console.log("description");
         console.log(description);
 
@@ -471,7 +537,7 @@ export class NavigationMapComponent
         if (whatContent === 'map') {
             this.modulesSplittedContentArray[i].description = description;
             this.modulesSplittedContentArray[i].descriptionInParagraphsArray = description.split("/<p>|</p>/");
-            
+
             this.modulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
 
             this.modulesSplittedContentArray[i].image = formattedContent.images[0].src;
@@ -482,6 +548,7 @@ export class NavigationMapComponent
             this.roomModulesSplittedContentArray[i] = {};
             this.roomModulesSplittedContentArray[i].image = formattedContent.images[0].src;
             this.roomModulesSplittedContentArray[i].descriptionInParagraphsArray = description.split("/<p>|</p>/");
+            this.roomModulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
             console.log("this.roomModulesSplittedContentArray");
             console.log(this.roomModulesSplittedContentArray);
         }
@@ -492,7 +559,7 @@ export class NavigationMapComponent
      *
      * @return {Promise<HTMLElement>} Promise resolved with a div element containing the code.
      */
-    protected formatContents(content): Promise<any> {
+    protected formatContents(content, sectionId = undefined): Promise<any> {
         let site: CoreSite,
             promises = [],
             formattedContent = {};
@@ -604,7 +671,7 @@ export class NavigationMapComponent
                     formattedContent["videos"] = videos;
                     formattedContent["iframes"] = iframes;
                     formattedContent["buttons"] = buttons;
-                    return Promise.resolve({formattedContent: formattedContent, content: content});
+                    return Promise.resolve({ formattedContent: formattedContent, content: content, sectionId: sectionId });
                 });
             });
     }
@@ -908,6 +975,33 @@ export class NavigationMapComponent
     }
 
     changeMap(index) {
+        let roomModulesArray;
         this.mapIndexToShow = index;
+        this.showRoomDescription = false;
+        this.roomsLoaded = false;
+        roomModulesArray = this.createMapsModulesArray("rooms");
+        this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
+
+
+    }
+
+    showRoomDetails(index) {
+        this.roomIndexToShow = index;
+        this.showRoomDescription = true;
+    }
+
+    showMap() {
+        this.showRoomDescription = false;
+    }
+
+    async goToRoom(roomIndexToShow) {
+        let roomTopicContent: any[] = [];
+        roomTopicContent = (<any[]>await this.getTopicContentOfOneRoom());
+        console.log('getTopicContentOne Room');
+        console.log(roomTopicContent);
+        this.navCtrl.push(NavigationFloorsPage, {
+            roomTopicContent: roomTopicContent,
+            roomContent: this.roomModulesSplittedContentArray[roomIndexToShow]
+        });
     }
 }

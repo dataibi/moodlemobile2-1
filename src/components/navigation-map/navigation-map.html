@@ -60,15 +60,34 @@
 </div> -->
 <ion-card *ngIf="modulesSplittedContentArray[mapIndexToShow]">
     <div class="image-wrapper">
-        <div *ngFor="let hotspot of modulesSplittedContentArray[mapIndexToShow].hotspotsCoordinates; let i = index" [ngStyle]="{'left': hotspot.xValue + '%', 'top': hotspot.yValue + '%'}" class="hotspot">{{i+1}}</div>
-        <img [src]="modulesSplittedContentArray[mapIndexToShow].image | safe_image" [alt]="modulesSplittedContentArray[mapIndexToShow].imageAlt" class="image"/>
+        <div class="hotspot-wrapper" *ngIf="roomsLoaded">
+            <div 
+                *ngFor="let hotspot of modulesSplittedContentArray[mapIndexToShow].hotspotsCoordinates; let i = index"
+                [ngStyle]="{'left': hotspot.xValue + '%', 'top': hotspot.yValue + '%'}"
+                (click)="showRoomDetails(i)"
+                class="hotspot"
+            >
+
+                {{i+1}}
+            </div>
+        </div>
+        <img (click)="showMap()" [src]="modulesSplittedContentArray[mapIndexToShow].image | safe_image" [alt]="modulesSplittedContentArray[mapIndexToShow].imageAlt" class="image"/>
     </div>
 
 
-    <ion-item *ngIf="showImageDetails === true"> 
+    <ion-item *ngIf="!showRoomDescription"> 
       <ion-icon name="football" item-start large></ion-icon>
       <h2>{{modulesSplittedContentArray[mapIndexToShow].name}}</h2>
       <p [innerHTML]="modulesSplittedContentArray[mapIndexToShow].description" text-wrap></p>
+    </ion-item>
+    <ion-item *ngIf="showRoomDescription">
+        <ion-thumbnail item-start>
+            <img [src]="roomModulesSplittedContentArray[roomIndexToShow].image | safe_image">
+        </ion-thumbnail>
+        <h2>{{roomModulesSplittedContentArray[roomIndexToShow].name}}</h2>
+
+        <p *ngFor="let paragraph of roomModulesSplittedContentArray[roomIndexToShow].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
+        <button ion-button clear item-end (click)="goToRoom(roomIndexToShow)">View</button>
     </ion-item>
 
     <!-- <ion-item *ngIf="!floor_detail_are_shown">
