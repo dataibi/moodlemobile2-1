@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 
 /**
  * This service is for the navigation map.
  */
 @Injectable()
 export class NavigationMapProvider {
+
+    navigationSectionEvent = new EventEmitter<any>();
 
 
     constructor() { }
@@ -31,6 +33,10 @@ export class NavigationMapProvider {
 
     public setCourseData(courseData): void {
         this.courseData = courseData;
+    }
+
+    public emitnavigationSectionEvent(SectionId): void {
+        this.navigationSectionEvent.emit(SectionId);
     }
 
   

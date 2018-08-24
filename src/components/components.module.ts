@@ -89,7 +89,7 @@ import { NavigationObjectsPage } from '@components/navigation-objects/navigation
         QrScannerPage,
         NavigationMapComponent,
         NavigationFloorsPage,
-        NavigationObjectsPage
+        NavigationObjectsPage,
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
@@ -97,7 +97,7 @@ import { NavigationObjectsPage } from '@components/navigation-objects/navigation
         CoreRecaptchaModalComponent,
         QrScannerPage,
         NavigationFloorsPage,
-        NavigationObjectsPage
+        NavigationObjectsPage,
     ],
     imports: [
         IonicModule,
