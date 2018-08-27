@@ -111,6 +111,13 @@ export class CoreMainMenuMorePage implements OnDestroy {
     }
 
     /**
+     * Open badges page.
+     */
+    openBadges(): void {
+        this.navCtrl.push('AddonBadgesUserBadgesPage');
+    }
+
+    /**
      * Open settings page.
      */
     openSettings(): void {

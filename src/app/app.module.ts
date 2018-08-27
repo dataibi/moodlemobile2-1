@@ -1,5 +1,3 @@
-import { NavigationMapProvider } from './../providers/navigation-map-provider';
-import { QrReaderProvider } from './../providers/qrReader';
 // (C) Copyright 2015 Martin Dougiamas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +12,8 @@ import { QrReaderProvider } from './../providers/qrReader';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { NavigationMapProvider } from './../providers/navigation-map-provider';
+import { QrReaderProvider } from './../providers/qrReader';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, COMPILER_OPTIONS } from '@angular/core';
@@ -58,7 +58,6 @@ import { CoreUpdateManagerProvider } from '@providers/update-manager';
 import { CorePluginFileDelegate } from '@providers/plugin-file-delegate';
 import { CoreSyncProvider } from '@providers/sync';
 import { CoreFileHelperProvider } from '@providers/file-helper';
-
 
 // Core modules.
 import { CoreComponentsModule } from '@components/components.module';
@@ -268,8 +267,6 @@ export const CORE_PROVIDERS: any[] = [
         QRScanner,
         QrReaderProvider,
         NavigationMapProvider
-        
-
     ]
 })
 export class AppModule {

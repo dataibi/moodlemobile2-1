@@ -46,7 +46,7 @@ export class CoreUserProfilePage {
     user: any;
     title: string;
     isDeleted = false;
-    canChangeProfilePicture = false;
+    canChangeProfile = false;
     actionHandlers: CoreUserProfileHandlerData[] = [];
     newPageHandlers: CoreUserProfileHandlerData[] = [];
     communicationHandlers: CoreUserProfileHandlerData[] = [];
@@ -63,7 +63,7 @@ export class CoreUserProfilePage {
         this.site = this.sitesProvider.getCurrentSite();
 
         // Allow to change the profile image only in the app profile page.
-        this.canChangeProfilePicture =
+        this.canChangeProfile =
             (!this.courseId || this.courseId == this.site.getSiteHomeId()) &&
             this.userId == this.site.getUserId() &&
             this.site.canUploadFiles() &&
@@ -104,6 +104,7 @@ export class CoreUserProfilePage {
             this.title = user.fullname;
 
             this.subscription = this.userDelegate.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
+
                 this.actionHandlers = [];
                 this.newPageHandlers = [];
                 this.communicationHandlers = [];
@@ -159,6 +160,20 @@ export class CoreUserProfilePage {
                 this.domUtils.showErrorModal(message);
             }
         });
+    }
+
+    /**
+     * Opens dialog to change profile email.
+     */
+    changeProfileEmail(): void {
+
+    }
+
+    /**
+     * Opens dialog to change profile name.
+     */
+    changeProfileName(): void {
+
     }
 
     /**
