@@ -193,14 +193,14 @@ export class QrScannerPage {
 	}
 
 	sendJson(): void {
-		let data: any;
+		let data: any, currentPageIndex: number;
 		if (this.typeOfQrCode === 'login') {
 			this.qrReaderProvider.emitLoginData(this.scanned);
 		} else if (this.typeOfQrCode === 'section') {
 			data = safelyParseJSON(this.scanned);
-			console.log('data.sectionId');
-			console.log(data.sectionId);
+			currentPageIndex = this.navCtrl.getActive().index;
 			this.navigationMapProvider.emitnavigationSectionEvent(data.sectionId);
+			this.navCtrl.remove(1,(currentPageIndex - 2));
 			this.navCtrl.pop();
 		}
 	}
