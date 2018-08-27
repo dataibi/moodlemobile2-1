@@ -19,6 +19,7 @@ import { NavController, NavParams, AlertController, Platform } from 'ionic-angul
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { safelyParseJSON } from '../../helpers/navigation_helpers';
+import { NavigationMapProvider } from '@providers/navigation-map-provider';
 
 
 @Component({
@@ -43,7 +44,8 @@ export class QrScannerPage {
 // Was:		private zone: NgZone,
 		private platform: Platform,
 		private alertCtrl: AlertController,
-		private qrReaderProvider: QrReaderProvider
+		private qrReaderProvider: QrReaderProvider,
+		private navigationMapProvider: NavigationMapProvider
 	) {
 		this.isLoginScan = navParams.get('isLogin');
 		this.callingComponent = navParams.get('callingComponent');
@@ -85,8 +87,8 @@ export class QrScannerPage {
 				case 'login':
 					this.typeOfQrCode = 'login';
 					break;
-				case 'exponate':
-					this.typeOfQrCode = 'exponate';
+				case 'section':
+					this.typeOfQrCode = 'section';
 					break;
 				default:
 					this.typeOfQrCode = 'unknown';
@@ -102,7 +104,8 @@ export class QrScannerPage {
 		const typeOfQrCode = this.whatQrCodeIsIt();
 		if (this.callingComponent && this.callingComponent instanceof CoreLoginCredentialsPage && typeOfQrCode === 'login') {
 			return true;
-
+		} else if (typeOfQrCode === 'section') {
+			return true;
 		} else {
 			return false;
 		}
@@ -190,8 +193,12 @@ export class QrScannerPage {
 	}
 
 	sendJson(): void {
+		let data: any;
 		if (this.typeOfQrCode === 'login') {
 			this.qrReaderProvider.emitLoginData(this.scanned);
+		} else if (this.typeOfQrCode === 'section') {
+			data = safelyParseJSON(this.scanned);
+			this.navigationMapProvider.emitnavigationSectionEvent(data.sectionId);
 		}
 	}
 }
