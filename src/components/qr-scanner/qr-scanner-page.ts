@@ -20,7 +20,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { safelyParseJSON } from '../../helpers/navigation_helpers';
 import { NavigationMapProvider } from '@providers/navigation-map-provider';
-
+import { CoreCourseFormatComponent } from '../../core/course/components/format/format';
 
 @Component({
 	selector: 'qr-scanner-page',
@@ -198,7 +198,10 @@ export class QrScannerPage {
 			this.qrReaderProvider.emitLoginData(this.scanned);
 		} else if (this.typeOfQrCode === 'section') {
 			data = safelyParseJSON(this.scanned);
+			console.log('data.sectionId');
+			console.log(data.sectionId);
 			this.navigationMapProvider.emitnavigationSectionEvent(data.sectionId);
+			this.navCtrl.pop();
 		}
 	}
 }
