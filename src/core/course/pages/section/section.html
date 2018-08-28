@@ -1,5 +1,13 @@
 <ion-header>
-    <ion-navbar core-back-button>
+    <div *ngIf="course.fullname == title" class="toolbar toolbar-md toolbar-background toolbar-background-md">
+        <ion-title ><core-format-text [text]="title"></core-format-text></ion-title>
+        <ion-fab id="user" top right>
+            <button ion-fab mini (click)="navToProfile()">
+                <core-icon name="contact"></core-icon>
+            </button>
+        </ion-fab>
+    </div>
+    <ion-navbar *ngIf="course.fullname != title" core-back-button>
         <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
 
         <!-- <ion-buttons end></ion-buttons> -->
