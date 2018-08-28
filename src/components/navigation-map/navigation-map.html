@@ -1,66 +1,25 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons end>
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
-        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
-        <core-context-menu-item [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
-        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="600" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"></core-context-menu-item>
-        <core-context-menu-item *ngIf="size" [priority]="500" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()" [iconAction]="'trash'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()"
+            [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon"
+            [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="600" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon"
+            [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="500" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()"
+            [iconAction]="'trash'"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
-    
+
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
 
-<!-- For later   <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"></core-course-module-description> -->
-<!-- <ion-segment [(ngModel)]="screen_to_show">
-    <ion-segment-button value="info">
-        info
-    </ion-segment-button>
-    <ion-segment-button value="images">
-        images
-    </ion-segment-button>
-    <ion-segment-button value="video">
-        video
-    </ion-segment-button>
-    <ion-segment-button value="activity">
-        activity
-    </ion-segment-button>
-</ion-segment> -->
-
-<!-- <div [ngSwitch]="screen_to_show">
-    <div *ngSwitchCase="'info'">
-        <div class="home-detail__view">
-            <div class="image___wrapper">
-
-            </div>
-
-
-            <div padding text-wrap>info</div>
-
-
-        </div>
-    </div>
-
-    <div *ngSwitchCase="'images'">
-
-                    <div class="slider-image"></div>
-                <h4 class="slider-title">images</h4>
-
-    </div>
-
-    <div *ngSwitchCase="'video'">
-        <div class="responsive-video">
-                video
-        </div>
-    </div>
-    <div *ngSwitchCase="'activity'">
-            activity
-    </div>
-</div> -->
-<ion-card *ngIf="modulesSplittedContentArray[mapIndexToShow]">
+    <!-- <ion-card *ngIf="modulesSplittedContentArray[mapIndexToShow]">
     <div class="image-wrapper">
-        <div class="hotspot-wrapper" *ngIf="roomsLoaded">
+        <div class="hotspot-wrapper" *ngIf="hotspotsLoaded">
             <div 
                 *ngFor="let hotspot of modulesSplittedContentArray[mapIndexToShow].hotspotsCoordinates; let i = index"
                 [ngStyle]="{'left': hotspot.xValue + '%', 'top': hotspot.yValue + '%'}"
@@ -90,15 +49,6 @@
         <button ion-button clear item-end (click)="goToRoom(roomIndexToShow)">View</button>
     </ion-item>
 
-    <!-- <ion-item *ngIf="!floor_detail_are_shown">
-      <h2 class="overall_detail_title">{{floor.floor_spots[room_index].room.name}}</h2>
-      <p class="overall__detail-description" text-wrap>{{floor.floor_spots[room_index].room.description}}</p>
-      <ion-fab class="ion_fab--entry" top right>
-        <button class="ion_fab--button-entry" ion-fab (click)="openMuseumDetail(room_index)" mini>
-          <ion-icon name="md-log-in"></ion-icon>
-        </button>
-      </ion-fab>
-    </ion-item> -->
   </ion-card>
   <ion-card *ngIf="modulesSplittedContentArray.length && modulesSplittedContentArray.length > 1">
   <ion-list>
@@ -120,28 +70,104 @@
     </ion-item-sliding>
 
 </ion-list>
-</ion-card>
-<!-- <button class="nav-floors-button" (click)="startTourNavigateToFloor()" ion-button icon-only>
-        <core-icon color="white" name="md-barcode"></core-icon>
-    </button> -->
-    <div padding>
-        <!-- <h2>Module</h2>
-        <p>{{module}}</p>
-        <h2>Course</h2>
-        <p>{{courseId}}</p>
+</ion-card> -->
 
-        <h2>Image</h2>
-        <p>{{image}}</p>
-        <h2>Description</h2>
-        <p *ngFor="let paragraph of descriptionInParagraphsArray" [innerHTML]="paragraph"></p>
-        
-        <h2>Pages</h2>
-        <p *ngFor="let value of childPages">{{value}}</p>
+    <ng-container *ngTemplateOutlet="mapOrRoomTemplate; context: {sectionContent: modulesSplittedContentArray.length ? { map: modulesSplittedContentArray, index: mapIndexToShow, isMap: true} : { map: roomModulesSplittedContentArray, index: roomMapToShow, isMap: false}}"></ng-container>
 
-        <h2>Sections</h2>
-        <p *ngFor="let section of childSections">{{section}}</p> -->
+    <!-- Template to render first section. -->
+    <ng-template #mapOrRoomTemplate let-content="sectionContent">
+        <ion-card *ngIf="content.map[content.index]">
+            <div class="image-wrapper">
+                <div class="hotspot-wrapper" *ngIf="hotspotsLoaded">
+                    <div *ngFor="let hotspot of content.map[content.index].hotspotsCoordinates; let i = index" [ngStyle]="{'left': hotspot.xValue + '%', 'top': hotspot.yValue + '%'}"
+                        (click)="showRoomDetails(i)" class="hotspot">
 
-        <!-- <core-format-text [component]="component" [componentId]="componentId" [text]="contents"></core-format-text> -->
-    </div>
+                        {{i+1}}
+                    </div>
+                </div>
+                <img (click)="showMap(content.isMap === true ? 'map' : 'room')" [src]="content.map[content.index].image | safe_image" [alt]="content.map[content.index].imageAlt"
+                    class="image" />
+            </div>
+
+            <div *ngIf="content.isMap === true">
+                <ion-item *ngIf="!showRoomDescription">
+                    <ion-icon name="football" item-start large></ion-icon>
+                    <h2>{{content.map[content.index].name}}</h2>
+                    <p [innerHTML]="content.map[content.index].description" text-wrap></p>
+                </ion-item>
+                <ion-item *ngIf="showRoomDescription">
+                    <ion-thumbnail item-start>
+                        <img [src]="roomModulesSplittedContentArray[roomIndexToShow].image | safe_image">
+                    </ion-thumbnail>
+                    <h2>{{roomModulesSplittedContentArray[roomIndexToShow].name}}</h2>
+
+                    <p *ngFor="let paragraph of roomModulesSplittedContentArray[roomIndexToShow].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
+                    <button ion-button clear item-end (click)="goToRoom(roomIndexToShow)">View</button>
+                </ion-item>
+            </div>
+
+            <div *ngIf="content.isMap === false">
+                <ion-item *ngIf="!showExponatDescription">
+                    <ion-icon name="football" item-start large></ion-icon>
+                    <h2>{{content[content.index].name}}</h2>
+                    <p [innerHTML]="content.map[content.index].description" text-wrap></p>
+                </ion-item>
+                <ion-item *ngIf="showExponatDescription">
+                    <ion-thumbnail item-start>
+                        <img [src]="roomModulesSplittedContentArray[roomIndexToShow].image | safe_image">
+                    </ion-thumbnail>
+                    <h2>{{roomTopicContent[topicIndexToShow].name}}</h2>
+
+                    <p *ngFor="let paragraph of roomModulesSplittedContentArray[roomIndexToShow].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
+                    <button ion-button clear item-end (click)="goToRoom(roomIndexToShow)">View</button>
+                </ion-item>
+            </div>
+
+        </ion-card>
+        <ion-card *ngIf="content.map.length && content.map.length > 1">
+            <ion-list *ngIf="content.isMap === true">
+                <ion-item-sliding *ngFor="let map of content.map; let i = index">
+
+                    <ion-item *ngIf="mapIndexToShow !== i">
+                        <ion-thumbnail item-start>
+                            <img [src]="map.image | safe_image">
+                        </ion-thumbnail>
+                        <h2>{{map.name}}</h2>
+                        <p text-wrap>{{map.description}}</p>
+                        <button ion-button clear item-end (click)="changeMap(i)">View</button>
+                    </ion-item>
+                    <ion-item-options side="left">
+                        <button ion-button color="primary">
+                            <ion-icon name="text"></ion-icon>
+                            activity
+                        </button>
+                    </ion-item-options>
+                </ion-item-sliding>
+
+            </ion-list>
+            <ion-list *ngIf="content.isMap === false">
+                <ion-item-sliding *ngFor="let map of content.map; let i = index">
+
+                    <ion-item *ngIf="roomIndexToShow !== i">
+                        <ion-thumbnail item-start>
+                            <img [src]="map.image | safe_image">
+                        </ion-thumbnail>
+                        <h2>{{map.name}}</h2>
+                        <p text-wrap>{{map.description}}</p>
+                        <button ion-button clear item-end (click)="changeMap(i)">View</button>
+                    </ion-item>
+                    <ion-item-options side="left">
+                        <button ion-button color="primary">
+                            <ion-icon name="text"></ion-icon>
+                            activity
+                        </button>
+                    </ion-item-options>
+                </ion-item-sliding>
+
+            </ion-list>
+        </ion-card>
+    </ng-template>
+
+
 
 </core-loading>

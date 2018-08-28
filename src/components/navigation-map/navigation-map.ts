@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { NavigationMapProvider } from "./../../providers/navigation-map-provider";
-import { QrReaderProvider } from "./../../providers/qrReader";
 import { NavigationFloorsPage } from "./../navigation-floors/navigation-floors";
 
 import {
@@ -33,7 +32,6 @@ import { AddonModPagePrefetchHandler } from "@addon/mod/page/providers/prefetch-
 import { NavController, Content, Platform } from "ionic-angular";
 import { safelyParseJSON } from "../../helpers/navigation_helpers";
 import { CoreSitesProvider } from "@providers/sites";
-import { CoreTextUtilsProvider } from "@providers/utils/text";
 import { CoreUtilsProvider } from "@providers/utils/utils";
 import { CoreSite } from "@classes/site";
 import { CoreLinkDirective } from "@directives/link";
@@ -54,7 +52,9 @@ export class NavigationMapComponent
     data: any; // all data for the courses
     mapIndexToShow: number = 0;
     roomIndexToShow: number = 0;
+    topicIndexToShow: number = 0;
     showRoomDescription: boolean = false;
+    showExponatDescription: boolean = false;
     canGetPage: boolean;
     contents: any;
     image: string;
@@ -71,7 +71,9 @@ export class NavigationMapComponent
     singleLine: boolean = false;
     adaptImg;
     roomModulesSplittedContentArray: any = []; // Only for the rooms
-    roomsLoaded = false;
+    hotspotsLoaded = false;
+    isMapInThisProject: boolean = true;
+    roomMapToShow: number = 0;
 
     protected element: HTMLElement;
 
@@ -246,13 +248,18 @@ export class NavigationMapComponent
 
 
     async ngOnChanges(changes: SimpleChanges) {
-        let modulesArray,
+        let mapModulesArray,
             roomModulesArray,
             x = 0;
         if (changes.data.firstChange === true) {
             this.navigationMapProvider.setCourseData(this.data);
-            modulesArray = this.createMapsModulesArray("map");
-            await this.createTheSplittedContentInArray(modulesArray, 'map');
+            mapModulesArray = this.createMapsModulesArray("map");
+            if (mapModulesArray.length) {
+                await this.createTheSplittedContentInArray(mapModulesArray, 'map');
+            } else {
+                this.isMapInThisProject = false;
+            }
+            
             roomModulesArray = this.createMapsModulesArray("rooms");
             console.log('roomModulesArray');
             console.log(roomModulesArray);
@@ -282,7 +289,7 @@ export class NavigationMapComponent
         }
         this.loaded = true;
         if (whatContent === 'rooms') {
-            this.roomsLoaded = true;
+            this.hotspotsLoaded = true;
         }
         this.refreshIcon = "refresh";
     }
@@ -978,7 +985,7 @@ export class NavigationMapComponent
         let roomModulesArray;
         this.mapIndexToShow = index;
         this.showRoomDescription = false;
-        this.roomsLoaded = false;
+        this.hotspotsLoaded = false;
         roomModulesArray = this.createMapsModulesArray("rooms");
         this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
 
@@ -990,8 +997,12 @@ export class NavigationMapComponent
         this.showRoomDescription = true;
     }
 
-    showMap() {
-        this.showRoomDescription = false;
+    showMap(mode) {
+        if (mode === 'map') {
+            this.showRoomDescription = false;
+        } else if (mode === 'room') {
+            this.showExponatDescription = false;
+        }
     }
 
     async goToRoom(roomIndexToShow) {
