@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseModuleDelegate } from '../../providers/module-delegate';
-
+import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
 /**
  * Component that displays info about an unsupported module.
  */
@@ -31,7 +32,8 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
     isSupportedByTheApp: boolean;
     moduleName: string;
 
-    constructor(private courseProvider: CoreCourseProvider, private moduleDelegate: CoreCourseModuleDelegate) { }
+    constructor(private courseProvider: CoreCourseProvider, private moduleDelegate: CoreCourseModuleDelegate, private sanitizer: DomSanitizer) {
+     }
 
     /**
      * Component being initialized.
@@ -41,4 +43,8 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
         this.isSupportedByTheApp = this.moduleDelegate.hasHandler(this.module.modname);
         this.moduleName = this.courseProvider.translateModuleName(this.module.modname);
     }
+
+   redirectURL(): SafeResourceUrl { // S bypassSecurityTrustResourceUrl
+    return this.sanitizer.bypassSecurityTrustResourceUrl('http://150.145.114.110/moodleproxy/p5.php?redir=' + this.module.url);
+  }
 }

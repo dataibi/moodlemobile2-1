@@ -1,4 +1,4 @@
-<div padding>
+<!-- div padding>
     <core-course-module-description [description]="module.description"></core-course-module-description>
     <h2 *ngIf="!isDisabledInSite && isSupportedByTheApp">{{ 'core.whoops' | translate }}</h2>
     <h2 *ngIf="isDisabledInSite || !isSupportedByTheApp">{{ 'core.uhoh' | translate }}</h2>
@@ -15,4 +15,10 @@
             <ion-icon name="open"></ion-icon>
         </a>
     </div>
+</div -->
+<!-- DAVIDE -->
+<div padding>
+    <core-course-module-description [description]="module.description"></core-course-module-description>
+    <h2 *ngIf="!isDisabledInSite && isSupportedByTheApp">{{ 'core.whoops' | translate }}</h2>
+    <iframe [src]="redirectURL()" width="100%" height="600px"></iframe>
 </div>
