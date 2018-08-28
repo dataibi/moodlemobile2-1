@@ -111,8 +111,8 @@
             <div *ngIf="content.isMap === false">
                 <ion-item *ngIf="!showExponatDescription">
                     <ion-icon name="football" item-start large></ion-icon>
-                    <h2>{{content[content.index].name}}</h2>
-                    <p [innerHTML]="content.map[content.index].description" text-wrap></p>
+                    <h2>{{content.map[content.index].name}}</h2>
+                    <p *ngFor="let paragraph of content.map[content.index].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
                 </ion-item>
                 <ion-item *ngIf="showExponatDescription">
                     <ion-thumbnail item-start>

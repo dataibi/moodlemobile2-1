@@ -160,7 +160,7 @@ export class NavigationMapComponent
                 );
                 nameJsonObjectArray[i].index = i;
             } else {
-                nameJsonObjectArray[i].jsonObject = { room: "forFilter" };
+                nameJsonObjectArray[i].jsonObject = { room: "forFilter" }; // Delete this row?
             }
         }
 
@@ -178,11 +178,21 @@ export class NavigationMapComponent
                 break;
             case "rooms":
                 mapAmountArray = nameJsonObjectArray.filter(nameJsonObject => {
-                    return (
-                        nameJsonObject.jsonObject.room &&
-                        typeof nameJsonObject.jsonObject.room !== "undefined" &&
-                        nameJsonObject.jsonObject.map === mapIndex + 1
-                    );
+                    if(this.isMapInThisProject === true) {
+                        return (
+                            nameJsonObject.jsonObject.room &&
+                            typeof nameJsonObject.jsonObject.room !== "undefined" &&
+                            nameJsonObject.jsonObject.room !== 'forFilter' &&
+                            nameJsonObject.jsonObject.map === mapIndex + 1
+                        );
+                    } else {
+                        return (
+                            nameJsonObject.jsonObject.room &&
+                            typeof nameJsonObject.jsonObject.room !== "undefined" &&
+                            nameJsonObject.jsonObject.room !== 'forFilter'
+                        );
+                    }
+                    
                 });
                 break;
             // case "exponats":
@@ -480,9 +490,10 @@ export class NavigationMapComponent
             splittedName,
             isHotspots: number;
 
-        isHotspots = content.indexOf("<ol>");
-        if (isHotspots !== -1) {
-            childList = content.substring(isHotspots + 4);
+            console.log('content in parse');
+            console.log(content);
+
+            childList = content.substring(content.indexOf("<ol>") + 4);
             console.log("childList");
             console.log(childList);
             childList = childList.substring(0, childList.indexOf("</ol>"));
@@ -495,9 +506,13 @@ export class NavigationMapComponent
             console.log(hotspotForAscendingRoomsSegments);
             hotspotForAscendingRooms = hotspotForAscendingRoomsSegments.map(
                 segment => {
-                    let hotspotXYcoordinates: any = {};
+                    let hotspotXYcoordinates: any = {}, xStart: number;
+                    xStart = segment.indexOf("x-value:");
+                    if (xStart === -1) {
+                        return hotspotXYcoordinates;
+                    }
                     hotspotXYcoordinates.xValue = segment.substring(
-                        segment.indexOf("x-value:") + 8,
+                        xStart + 8,
                         segment.indexOf("y-value") - 2
                     );
                     hotspotXYcoordinates.yValue = segment.substring(
@@ -511,7 +526,7 @@ export class NavigationMapComponent
 
             console.log("hotspotForAscendingRooms");
             console.log(hotspotForAscendingRooms);
-        }
+        
 
 
         // const tokens = childList.split("</li>");
@@ -556,7 +571,7 @@ export class NavigationMapComponent
         if (whatContent === 'map') {
             this.modulesSplittedContentArray[i] = {};
             this.modulesSplittedContentArray[i].childrenList = isHotspots !== -1 ? childList : '';
-            this.modulesSplittedContentArray[i].hotspotsCoordinates = isHotspots !== -1 ? hotspotForAscendingRooms : [];
+            this.modulesSplittedContentArray[i].hotspotsCoordinates = Object.keys(hotspotForAscendingRooms[0]).length ? hotspotForAscendingRooms : [];
             this.modulesSplittedContentArray[i].description = description;
             this.modulesSplittedContentArray[i].descriptionInParagraphsArray = description.split("/<p>|</p>/");
             this.modulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
@@ -567,7 +582,7 @@ export class NavigationMapComponent
         } else if (whatContent === 'rooms') {
             this.roomModulesSplittedContentArray[i] = {};
             this.roomModulesSplittedContentArray[i].childrenList = isHotspots !== -1 ? childList : '';
-            this.roomModulesSplittedContentArray[i].hotspotsCoordinates = isHotspots !== -1 ? hotspotForAscendingRooms : [];
+            this.roomModulesSplittedContentArray[i].hotspotsCoordinates = Object.keys(hotspotForAscendingRooms[0]).length ? hotspotForAscendingRooms : [];
             this.roomModulesSplittedContentArray[i].image = formattedContent.images[0].src;
             this.roomModulesSplittedContentArray[i].descriptionInParagraphsArray = description.split("/<p>|</p>/");
             this.roomModulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
