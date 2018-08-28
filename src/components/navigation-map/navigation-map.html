@@ -87,6 +87,7 @@
                 </div>
                 <img (click)="showMap(content.isMap === true ? 'map' : 'room')" [src]="content.map[content.index].image | safe_image" [alt]="content.map[content.index].imageAlt"
                     class="image" />
+
             </div>
 
             <div *ngIf="content.isMap === true">
@@ -94,13 +95,14 @@
                     <ion-icon name="football" item-start large></ion-icon>
                     <h2>{{content.map[content.index].name}}</h2>
                     <p [innerHTML]="content.map[content.index].description" text-wrap></p>
+
+                    <button ion-button clear item-end (click)="goToList(i, content.isMap ? 'rooms' : 'exponats')">View</button>
                 </ion-item>
                 <ion-item *ngIf="showRoomDescription">
                     <ion-thumbnail item-start>
                         <img [src]="roomModulesSplittedContentArray[roomIndexToShow].image | safe_image">
                     </ion-thumbnail>
                     <h2>{{roomModulesSplittedContentArray[roomIndexToShow].name}}</h2>
-
                     <p *ngFor="let paragraph of roomModulesSplittedContentArray[roomIndexToShow].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
                     <button ion-button clear item-end (click)="goToRoom(roomIndexToShow)">View</button>
                 </ion-item>
@@ -124,17 +126,48 @@
             </div>
 
         </ion-card>
+        <div *ngIf="content.isMap === true && visible" [@slideInOut]>
+            <ion-card>
+                <ion-list>
+                    <ion-item-sliding *ngFor="let room of roomModulesSplittedContentArray; let i = index">
+                        <ion-item>
+                            <ion-thumbnail item-start>
+                                <img [src]="room.image | safe_image" [alt]="room.imageAlt" class="image" />
+                            </ion-thumbnail>
+                            <h2>{{room.name}}</h2>
+                            <p *ngFor="let paragraph of room.descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
+                            <button ion-button clear item-end (click)="goToRoom(i)">View</button>
+                        </ion-item>
+                        <ion-item-options side="left">
+                            <button ion-button color="primary">
+                                <ion-icon name="text"></ion-icon>
+                                activity
+                            </button>
+                            <!-- <div *ngIf="show_inline">
+                                    <div class="testcont"></div>
+                                    <div class="responsive-video">
+                                    <iframe src="https://www.youtube.com/watch?v=k7CzNCc1Krg"
+                                    width="1600" height="900" frameborder="0" webkitAllowFullScreen
+                                    mozallowfullscreen allowFullScreen></iframe>
+                                    </div>
+                                </div> -->
+                        </ion-item-options>
+                    </ion-item-sliding>
+
+                </ion-list>
+        </ion-card>
+        </div>
         <ion-card *ngIf="content.map.length && content.map.length > 1">
             <ion-list *ngIf="content.isMap === true">
                 <ion-item-sliding *ngFor="let map of content.map; let i = index">
 
-                    <ion-item *ngIf="mapIndexToShow !== i">
+                    <ion-item (click)="changeMap(i)" *ngIf="mapIndexToShow !== i">
                         <ion-thumbnail item-start>
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
                         <h2>{{map.name}}</h2>
                         <p text-wrap>{{map.description}}</p>
-                        <button ion-button clear item-end (click)="changeMap(i)">View</button>
+                        <!-- <button ion-button clear item-end (click)="changeMap(i)">View</button> -->
                     </ion-item>
                     <ion-item-options side="left">
                         <button ion-button color="primary">
@@ -148,13 +181,13 @@
             <ion-list *ngIf="content.isMap === false">
                 <ion-item-sliding *ngFor="let map of content.map; let i = index">
 
-                    <ion-item *ngIf="roomIndexToShow !== i">
+                    <ion-item (click)="changeMap(i)" *ngIf="roomIndexToShow !== i">
                         <ion-thumbnail item-start>
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
                         <h2>{{map.name}}</h2>
                         <p text-wrap>{{map.description}}</p>
-                        <button ion-button clear item-end (click)="changeMap(i)">View</button>
+                        <!-- <button ion-button clear item-end (click)="changeMap(i)">View</button> -->
                     </ion-item>
                     <ion-item-options side="left">
                         <button ion-button color="primary">

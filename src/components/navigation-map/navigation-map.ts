@@ -40,10 +40,22 @@ import { CoreContentLinksHelperProvider } from "@core/contentlinks/providers/hel
 import { CoreExternalContentDirective } from "@directives/external-content";
 import { CoreLoggerProvider } from "@providers/logger";
 import { CoreFilepoolProvider } from "@providers/filepool";
+import { trigger, transition, animate, style } from '@angular/animations'
 
 @Component({
     selector: "core-navigation-map",
-    templateUrl: "navigation-map.html"
+    templateUrl: "navigation-map.html",
+    animations: [
+        trigger('slideInOut', [
+          transition(':enter', [
+            style({transform: 'translateY(-100%)'}),
+            animate('200ms ease-in', style({transform: 'translateY(0%)'}))
+          ]),
+          transition(':leave', [
+            animate('200ms ease-in', style({transform: 'translateY(-100%)'}))
+          ])
+        ])
+      ]
 })
 export class NavigationMapComponent
     extends CoreCourseModuleMainResourceComponent
@@ -74,6 +86,7 @@ export class NavigationMapComponent
     hotspotsLoaded = false;
     isMapInThisProject: boolean = true;
     roomMapToShow: number = 0;
+    visible: boolean = false;
 
     protected element: HTMLElement;
 
@@ -229,7 +242,7 @@ export class NavigationMapComponent
                     jsonStringObject.room !== 'undefined' &&
                     jsonStringObject.room === (this.roomIndexToShow + 1)) {
 
-                    
+
 
                     return true;
                 } else {
@@ -259,7 +272,7 @@ export class NavigationMapComponent
             } else {
                 this.isMapInThisProject = false;
             }
-            
+
             roomModulesArray = this.createMapsModulesArray("rooms");
             console.log('roomModulesArray');
             console.log(roomModulesArray);
@@ -460,24 +473,22 @@ export class NavigationMapComponent
     }
 
     private parseDataFromPageContent(i, content: any, name, formattedContent, whatContent?) {
-        let imageTag: string,
-            childList: string,
+        let childList: string,
             description: string,
-            imageURL: string,
-            matchForLastIndex,
             hotspotForAscendingRooms = [],
             hotspotForAscendingRoomsSegments = [],
-            splittedName;
+            splittedName,
+            isHotspots: number;
 
-        if (whatContent === 'map') {
-            this.modulesSplittedContentArray[i] = {};
-            childList = content.substring(content.indexOf("<ol>") + 4);
+        isHotspots = content.indexOf("<ol>");
+        if (isHotspots !== -1) {
+            childList = content.substring(isHotspots + 4);
             console.log("childList");
             console.log(childList);
             childList = childList.substring(0, childList.indexOf("</ol>"));
             console.log("childList");
             console.log(childList);
-            this.modulesSplittedContentArray[i].childrenList = childList;
+
             hotspotForAscendingRoomsSegments = childList.split("</li>");
             hotspotForAscendingRoomsSegments.splice(-1, 1); // remove last emtpy element
             console.log("hotspotForAscendingRoomsSegments");
@@ -496,41 +507,42 @@ export class NavigationMapComponent
                     return hotspotXYcoordinates;
                 }
             );
-            this.modulesSplittedContentArray[i].hotspotsCoordinates = hotspotForAscendingRooms;
+
 
             console.log("hotspotForAscendingRooms");
             console.log(hotspotForAscendingRooms);
-
-            const tokens = childList.split("</li>");
-            console.log("tokens");
-            console.log(tokens);
-            for (let token of tokens) {
-                if (token.includes("/mod/page/")) {
-                    token = token.substring(token.indexOf("php?id="));
-                    console.log("token");
-                    console.log(token);
-                    token = token.substring(
-                        token.indexOf("=") + 1,
-                        token.indexOf(">") - 1
-                    );
-                    console.log("token");
-                    console.log(token);
-                    this.modulesSplittedContentArray[i].childPages = [];
-                    this.modulesSplittedContentArray[i].childPages.push(token);
-                } else if (token.includes("/course/view.php")) {
-                    token = token.substring(token.indexOf("php?id="));
-                    console.log("token");
-                    console.log(token);
-                    token = token.substring(
-                        token.indexOf("#") + 1,
-                        token.indexOf(">") - 1
-                    );
-                    console.log("token");
-                    console.log(token);
-                    this.modulesSplittedContentArray[i].childSections.push(token);
-                }
-            }
         }
+
+
+        // const tokens = childList.split("</li>");
+        // console.log("tokens");
+        // console.log(tokens);
+        // for (let token of tokens) {
+        //     if (token.includes("/mod/page/")) {
+        //         token = token.substring(token.indexOf("php?id="));
+        //         console.log("token");
+        //         console.log(token);
+        //         token = token.substring(
+        //             token.indexOf("=") + 1,
+        //             token.indexOf(">") - 1
+        //         );
+        //         console.log("token");
+        //         console.log(token);
+        //         this.modulesSplittedContentArray[i].childPages = [];
+        //         this.modulesSplittedContentArray[i].childPages.push(token);
+        //     } else if (token.includes("/course/view.php")) {
+        //         token = token.substring(token.indexOf("php?id="));
+        //         console.log("token");
+        //         console.log(token);
+        //         token = token.substring(
+        //             token.indexOf("#") + 1,
+        //             token.indexOf(">") - 1
+        //         );
+        //         console.log("token");
+        //         console.log(token);
+        //         this.modulesSplittedContentArray[i].childSections.push(token);
+        //     }
+        // }
 
 
         description = content.substring(content.indexOf("</ol>") + 5);
@@ -542,20 +554,24 @@ export class NavigationMapComponent
 
 
         if (whatContent === 'map') {
+            this.modulesSplittedContentArray[i] = {};
+            this.modulesSplittedContentArray[i].childrenList = isHotspots !== -1 ? childList : '';
+            this.modulesSplittedContentArray[i].hotspotsCoordinates = isHotspots !== -1 ? hotspotForAscendingRooms : [];
             this.modulesSplittedContentArray[i].description = description;
             this.modulesSplittedContentArray[i].descriptionInParagraphsArray = description.split("/<p>|</p>/");
-
             this.modulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
-
             this.modulesSplittedContentArray[i].image = formattedContent.images[0].src;
             this.modulesSplittedContentArray[i].imageAlt = formattedContent.images[0].alt;
             console.log("this.modulesSplittedContentArray");
             console.log(this.modulesSplittedContentArray);
         } else if (whatContent === 'rooms') {
             this.roomModulesSplittedContentArray[i] = {};
+            this.roomModulesSplittedContentArray[i].childrenList = isHotspots !== -1 ? childList : '';
+            this.roomModulesSplittedContentArray[i].hotspotsCoordinates = isHotspots !== -1 ? hotspotForAscendingRooms : [];
             this.roomModulesSplittedContentArray[i].image = formattedContent.images[0].src;
             this.roomModulesSplittedContentArray[i].descriptionInParagraphsArray = description.split("/<p>|</p>/");
             this.roomModulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
+            this.roomModulesSplittedContentArray[i].imageAlt = formattedContent.images[0].alt;
             console.log("this.roomModulesSplittedContentArray");
             console.log(this.roomModulesSplittedContentArray);
         }
@@ -1014,5 +1030,13 @@ export class NavigationMapComponent
             roomTopicContent: roomTopicContent,
             roomContent: this.roomModulesSplittedContentArray[roomIndexToShow]
         });
+    }
+
+    goToList(index, mode) {
+        this.visible = !this.visible;
+        // this.navCtrl.push(NavigationFloorsPage, {
+        //     roomTopicContent: roomTopicContent,
+        //     roomContent: this.roomModulesSplittedContentArray[roomIndexToShow]
+        // });
     }
 }
