@@ -1,4 +1,3 @@
-import { NavigationFloorsPage } from './navigation-floors/navigation-floors';
 // (C) Copyright 2015 Martin Dougiamas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +12,7 @@ import { NavigationFloorsPage } from './navigation-floors/navigation-floors';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { NavigationFloorsPage } from './navigation-floors/navigation-floors';
 import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';

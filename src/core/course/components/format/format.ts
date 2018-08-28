@@ -124,14 +124,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }, this.sitesProvider.getCurrentSiteId());
     }
 
-    ionViewWillEnter() {
-		if (this.sectionFromNavParam) {
-            this.sectionChanged(this.sections[this.sectionFromNavParam]);
-        }
+    // ionViewWillEnter() {
+	// 	if (this.sectionFromNavParam) {
+    //         this.sectionChanged(this.sections[this.sectionFromNavParam]);
+    //     }
 		
 
 		
-    }
+    // }
 
     /**
      * Component being initialized.

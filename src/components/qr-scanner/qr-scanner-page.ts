@@ -15,11 +15,10 @@
 import { QrReaderProvider } from './../../providers/qrReader';
 import { CoreLoginCredentialsPage } from './../../core/login/pages/credentials/credentials';
 import { NavController, NavParams, AlertController, Platform } from 'ionic-angular';
-// Was: import { Component, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { safelyParseJSON } from '../../helpers/navigation_helpers';
-
+import { NavigationMapProvider } from '@providers/navigation-map-provider';
 
 @Component({
 	selector: 'qr-scanner-page',
@@ -40,10 +39,10 @@ export class QrScannerPage {
 		public navCtrl: NavController,
 		navParams: NavParams,
 		private qrScanner: QRScanner,
-// Was:		private zone: NgZone,
 		private platform: Platform,
 		private alertCtrl: AlertController,
-		private qrReaderProvider: QrReaderProvider
+		private qrReaderProvider: QrReaderProvider,
+		private navigationMapProvider: NavigationMapProvider
 	) {
 		this.isLoginScan = navParams.get('isLogin');
 		this.callingComponent = navParams.get('callingComponent');
@@ -85,8 +84,8 @@ export class QrScannerPage {
 				case 'login':
 					this.typeOfQrCode = 'login';
 					break;
-				case 'exponate':
-					this.typeOfQrCode = 'exponate';
+				case 'section':
+					this.typeOfQrCode = 'section';
 					break;
 				default:
 					this.typeOfQrCode = 'unknown';
@@ -98,11 +97,17 @@ export class QrScannerPage {
 		return this.typeOfQrCode;
 	}
 
+	/**
+     * Returns whether the qr code is valid.
+     *
+     * @return {boolean} whether the qr code is valid
+     */
 	doesQrCodeAndCalledComponentMatch(): boolean {
 		const typeOfQrCode = this.whatQrCodeIsIt();
 		if (this.callingComponent && this.callingComponent instanceof CoreLoginCredentialsPage && typeOfQrCode === 'login') {
 			return true;
-
+		} else if (typeOfQrCode === 'section') {
+			return true;
 		} else {
 			return false;
 		}
@@ -125,19 +130,25 @@ export class QrScannerPage {
 		alert.present();
 	}
 
-	isScanned(): boolean {
-		return this.scanned !== '';
-	}
-
+	/**
+	 * Only for the transparent background and css
+	 * @return {void}
+	 */
 	showCamera(): void {
 		(window.document.querySelector('ion-app') as HTMLElement).classList.add('cameraView');
 	}
+
+	/**
+	 * Only for the transparent background and css
+	 * @return {void}
+	 */
 	hideCamera(): void {
 		(window.document.querySelector('ion-app') as HTMLElement).classList.remove('cameraView');
 	}
 
 	/**
-	 * test permission for scanner, open camera for qr reader and create subscription for scanned material
+	 * Test permission for scanner, open camera for qr reader and create subscription for scanned material
+	 * @return {void}
 	 */
 	openQr(): void {
 		// Optionally request the permission early
@@ -147,9 +158,6 @@ export class QrScannerPage {
 
 				// Start scanning
 				this.scanSubscribe = this.qrScanner.scan().subscribe((text: string) => {
-					// Was: this.zone.run(
-					// Was:	() => this.scanned = text
-					// Was: );
 
 					this.scanned = text;
 					if (this.doesQrCodeAndCalledComponentMatch()) {
@@ -163,12 +171,9 @@ export class QrScannerPage {
 				});
 
 				this.showCamera();
-				// Show camera preview
 				this.qrScanner.show()
 					.then((data: QRScannerStatus) => {
-						// Was: console.log('datashowing', data);
 					}, (err) => {
-						// Was: alert(err);
 
 					});
 
@@ -189,9 +194,21 @@ export class QrScannerPage {
     	});
 	}
 
+	/**
+     * Sends the qr reader readed data to the components or emits the event to emit data.
+     *
+     * @return {void}
+     */
 	sendJson(): void {
+		let data: any, currentPageIndex: number;
 		if (this.typeOfQrCode === 'login') {
 			this.qrReaderProvider.emitLoginData(this.scanned);
+		} else if (this.typeOfQrCode === 'section') {
+			data = safelyParseJSON(this.scanned);
+			currentPageIndex = this.navCtrl.getActive().index;
+			this.navigationMapProvider.emitnavigationSectionEvent(data.sectionId);
+			this.navCtrl.remove(1,(currentPageIndex - 2));
+			this.navCtrl.pop();
 		}
 	}
 }
