@@ -29,6 +29,7 @@ import { NavController } from 'ionic-angular/navigation/nav-controller';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
 import { NavigationMapProvider } from '@providers/navigation-map-provider';
 import { Subscription } from 'rxjs';
+import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -395,5 +396,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.dynamicComponents.forEach((component) => {
             component.callComponentFunction('ionViewDidLeave');
         });
+    }
+
+    navToQrScanner(): void {
+        this.navCtrl.push(QrScannerPage, {isLogin: false});
+    }
+
+    navToMapView() {
+        this.sectionChanged(this.sections[1]);
     }
 }

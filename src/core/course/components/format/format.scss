@@ -38,6 +38,31 @@ core-course-format {
             line-height: 44px;
         }
     }
+
+    // .navigation-button__wrapper {
+    //     margin-top: 60px;
+    // }
+
+    .navigation-button__centerer {
+        position: fixed;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        top: 62px;
+        left: 50%;
+        transform: translate3d(-50%,0,0);
+    }
+
+    .navigation-button {
+        position: fix;
+        z-index: 100;
+
+        &.left {
+            margin-right: $spacing--medium;
+        }
+    }
+
+    
 }
 
 .core-section-select {

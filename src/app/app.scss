@@ -876,3 +876,7 @@ $spacing--huge: $base-size * 5;
 
 $font-size: $base-size * 2;
 $font-size--small: $base-size * 1.5;
+
+core-course-format .core-format-progress-list {
+  padding-top: 70px;
+}
