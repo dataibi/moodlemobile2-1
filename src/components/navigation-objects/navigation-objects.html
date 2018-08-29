@@ -12,7 +12,7 @@
 		  <ion-thumbnail item-start>
 			<img [src]="topic.formattedContent.images[0].src | safe_image" [alt]="topic.name" class="image"/>
 		  </ion-thumbnail>
-		  <!-- <h2>{{topic.name}}</h2> -->
+		  <h2>{{topic.sectionName}}</h2>
 		  <!-- <p text-wrap>{{topic.description_short}}</p> -->
 		  <button ion-button clear item-end (click)="showRoomObjectPage(i)">View</button>
 		</ion-item>

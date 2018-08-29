@@ -24,6 +24,8 @@ export class NavigationObjectsPage {
 		private viewCtrl: ViewController) {
 			this.roomTopicContent = navParams.get("roomTopicContent");
 			this.title = navParams.get("title");
+			console.log('this.title');
+			console.log(this.title);
 		}
 	
 	showRoomObjectPage(index) {

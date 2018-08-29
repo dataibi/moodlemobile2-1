@@ -80,7 +80,7 @@
             <div class="image-wrapper">
                 <div class="hotspot-wrapper" *ngIf="hotspotsLoaded">
                     <div *ngFor="let hotspot of content.map[content.index].hotspotsCoordinates; let i = index" [ngStyle]="{'left': hotspot.xValue + '%', 'top': hotspot.yValue + '%'}"
-                        (click)="showRoomDetails(i)" class="hotspot">
+                        (click)="showRoomDetails(i, content.isMap === true ? 'room' : 'topic')" class="hotspot">
 
                         {{i+1}}
                     </div>
@@ -89,7 +89,8 @@
                     class="image" />
 
             </div>
-
+            
+            <!-- Info under Image if content is map -->
             <div *ngIf="content.isMap === true">
                 <ion-item *ngIf="!showRoomDescription">
                     <ion-icon name="football" item-start large></ion-icon>
@@ -108,24 +109,28 @@
                 </ion-item>
             </div>
 
+            <!-- Info under Image if content is room -->
             <div *ngIf="content.isMap === false">
                 <ion-item *ngIf="!showExponatDescription">
                     <ion-icon name="football" item-start large></ion-icon>
                     <h2>{{content.map[content.index].name}}</h2>
                     <p *ngFor="let paragraph of content.map[content.index].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
+                    <button ion-button clear item-end (click)="goToList(i, content.isMap ? 'rooms' : 'exponats')">View</button>
                 </ion-item>
                 <ion-item *ngIf="showExponatDescription">
                     <ion-thumbnail item-start>
-                        <img [src]="roomModulesSplittedContentArray[roomIndexToShow].image | safe_image">
+                        <img [src]="exponatModulesSplittedContentArray[topicIndexToShow].formattedContent.images[0].src | safe_image">
                     </ion-thumbnail>
-                    <h2>{{roomTopicContent[topicIndexToShow].name}}</h2>
+                    <h2>{{exponatModulesSplittedContentArray[topicIndexToShow].sectionName}}</h2>
 
-                    <p *ngFor="let paragraph of roomModulesSplittedContentArray[roomIndexToShow].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
-                    <button ion-button clear item-end (click)="goToRoom(roomIndexToShow)">View</button>
+                    <!-- <p *ngFor="let paragraph of roomModulesSplittedContentArray[roomIndexToShow].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p> -->
+                    <button ion-button clear item-end (click)="showTopic(exponatModulesSplittedContentArray[topicIndexToShow].sectionId)">View</button>
                 </ion-item>
             </div>
 
         </ion-card>
+
+        <!-- all rooms slide in under image if content is map -->
         <div *ngIf="content.isMap === true && visible" [@slideInOut]>
             <ion-card>
                 <ion-list>
@@ -157,11 +162,46 @@
                 </ion-list>
         </ion-card>
         </div>
+
+        <!-- all exponats slide in under image if content is room -->
+        <div *ngIf="content.isMap === false && visible" [@slideInOut]>
+            <ion-card>
+                <ion-list>
+                    <ion-item-sliding *ngFor="let exponat of exponatModulesSplittedContentArray; let i = index">
+                        <ion-item>
+                            <ion-thumbnail item-start>
+                                <img [src]="exponat.formattedContent.images[0].src | safe_image" [alt]="exponat.formattedContent.images[0].alt" class="image" />
+                            </ion-thumbnail>
+                            <h2>{{exponat.sectionName}}</h2>
+                            <!-- <p *ngFor="let paragraph of room.descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p> -->
+                            <button ion-button clear item-end (click)="showTopic(exponat.sectionId)">View</button>
+                        </ion-item>
+                        <ion-item-options side="left">
+                            <button ion-button color="primary">
+                                <ion-icon name="text"></ion-icon>
+                                activity
+                            </button>
+                            <!-- <div *ngIf="show_inline">
+                                    <div class="testcont"></div>
+                                    <div class="responsive-video">
+                                    <iframe src="https://www.youtube.com/watch?v=k7CzNCc1Krg"
+                                    width="1600" height="900" frameborder="0" webkitAllowFullScreen
+                                    mozallowfullscreen allowFullScreen></iframe>
+                                    </div>
+                                </div> -->
+                        </ion-item-options>
+                    </ion-item-sliding>
+
+                </ion-list>
+        </ion-card>
+        </div>
+
+
         <ion-card *ngIf="content.map.length && content.map.length > 1">
             <ion-list *ngIf="content.isMap === true">
                 <ion-item-sliding *ngFor="let map of content.map; let i = index">
 
-                    <ion-item (click)="changeMap(i)" *ngIf="mapIndexToShow !== i">
+                    <ion-item (click)="changeMap(i, 'map')" *ngIf="mapIndexToShow !== i">
                         <ion-thumbnail item-start>
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
@@ -181,7 +221,7 @@
             <ion-list *ngIf="content.isMap === false">
                 <ion-item-sliding *ngFor="let map of content.map; let i = index">
 
-                    <ion-item (click)="changeMap(i)" *ngIf="roomIndexToShow !== i">
+                    <ion-item (click)="changeMap(i, 'room')" *ngIf="roomMapToShow !== i">
                         <ion-thumbnail item-start>
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>

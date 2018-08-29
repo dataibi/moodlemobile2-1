@@ -47,15 +47,15 @@ import { trigger, transition, animate, style } from '@angular/animations'
     templateUrl: "navigation-map.html",
     animations: [
         trigger('slideInOut', [
-          transition(':enter', [
-            style({transform: 'translateY(-100%)'}),
-            animate('200ms ease-in', style({transform: 'translateY(0%)'}))
-          ]),
-          transition(':leave', [
-            animate('200ms ease-in', style({transform: 'translateY(-100%)'}))
-          ])
+            transition(':enter', [
+                style({ transform: 'translateY(-100%)' }),
+                animate('200ms ease-in', style({ transform: 'translateY(0%)' }))
+            ]),
+            transition(':leave', [
+                animate('200ms ease-in', style({ transform: 'translateY(-100%)' }))
+            ])
         ])
-      ]
+    ]
 })
 export class NavigationMapComponent
     extends CoreCourseModuleMainResourceComponent
@@ -87,6 +87,8 @@ export class NavigationMapComponent
     isMapInThisProject: boolean = true;
     roomMapToShow: number = 0;
     visible: boolean = false;
+    exponatModulesSplittedContentArray: any = []; // Only for the exponats
+
 
     protected element: HTMLElement;
 
@@ -178,7 +180,7 @@ export class NavigationMapComponent
                 break;
             case "rooms":
                 mapAmountArray = nameJsonObjectArray.filter(nameJsonObject => {
-                    if(this.isMapInThisProject === true) {
+                    if (this.isMapInThisProject === true) {
                         return (
                             nameJsonObject.jsonObject.room &&
                             typeof nameJsonObject.jsonObject.room !== "undefined" &&
@@ -192,7 +194,7 @@ export class NavigationMapComponent
                             nameJsonObject.jsonObject.room !== 'forFilter'
                         );
                     }
-                    
+
                 });
                 break;
             // case "exponats":
@@ -245,25 +247,31 @@ export class NavigationMapComponent
 
                 jsonStringObject = safelyParseJSON(jsonString);
 
-                if (jsonStringObject.map &&
-                    typeof jsonStringObject.map !== 'undefined' &&
-                    jsonStringObject.map === (this.mapIndexToShow + 1) &&
+                if (this.isMapInThisProject === true) {
+                    if (jsonStringObject.map &&
+                        typeof jsonStringObject.map !== 'undefined' &&
+                        jsonStringObject.map === (this.mapIndexToShow + 1) &&
+                        jsonStringObject.room &&
+                        jsonStringObject.room !== 'undefined' &&
+                        jsonStringObject.room === (this.roomIndexToShow + 1)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else if (
                     jsonStringObject.room &&
                     jsonStringObject.room !== 'undefined' &&
                     jsonStringObject.room === (this.roomIndexToShow + 1)) {
-
-
-
                     return true;
                 } else {
+
                     return false;
                 }
             }
-            return false;
         });
 
         for (i; i < sections.length; i++) {
-            promises.push(this.formatContents(sections[i].summary, sections[i].section));
+            promises.push(this.formatContents(sections[i].summary, sections[i].section, sections[i].name));
         }
         return Promise.all(promises);
     }
@@ -282,11 +290,15 @@ export class NavigationMapComponent
             } else {
                 this.isMapInThisProject = false;
             }
-
             roomModulesArray = this.createMapsModulesArray("rooms");
             console.log('roomModulesArray');
             console.log(roomModulesArray);
             this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
+
+            if (this.isMapInThisProject === false) {
+                this.exponatModulesSplittedContentArray = (<any[]>await this.getTopicContentOfOneRoom());
+                this.hotspotsLoaded = true;
+            }
         }
     }
 
@@ -311,7 +323,7 @@ export class NavigationMapComponent
             });
         }
         this.loaded = true;
-        if (whatContent === 'rooms') {
+        if (whatContent === 'rooms' && this.isMapInThisProject === true) { //if we have only rooms, spots are for topics and should be shown, if topics are loaded
             this.hotspotsLoaded = true;
         }
         this.refreshIcon = "refresh";
@@ -490,43 +502,43 @@ export class NavigationMapComponent
             splittedName,
             isHotspots: number;
 
-            console.log('content in parse');
-            console.log(content);
+        console.log('content in parse');
+        console.log(content);
 
-            childList = content.substring(content.indexOf("<ol>") + 4);
-            console.log("childList");
-            console.log(childList);
-            childList = childList.substring(0, childList.indexOf("</ol>"));
-            console.log("childList");
-            console.log(childList);
+        childList = content.substring(content.indexOf("<ol>") + 4);
+        console.log("childList");
+        console.log(childList);
+        childList = childList.substring(0, childList.indexOf("</ol>"));
+        console.log("childList");
+        console.log(childList);
 
-            hotspotForAscendingRoomsSegments = childList.split("</li>");
-            hotspotForAscendingRoomsSegments.splice(-1, 1); // remove last emtpy element
-            console.log("hotspotForAscendingRoomsSegments");
-            console.log(hotspotForAscendingRoomsSegments);
-            hotspotForAscendingRooms = hotspotForAscendingRoomsSegments.map(
-                segment => {
-                    let hotspotXYcoordinates: any = {}, xStart: number;
-                    xStart = segment.indexOf("x-value:");
-                    if (xStart === -1) {
-                        return hotspotXYcoordinates;
-                    }
-                    hotspotXYcoordinates.xValue = segment.substring(
-                        xStart + 8,
-                        segment.indexOf("y-value") - 2
-                    );
-                    hotspotXYcoordinates.yValue = segment.substring(
-                        segment.indexOf("y-value:") + 8,
-                        segment.indexOf(")")
-                    );
+        hotspotForAscendingRoomsSegments = childList.split("</li>");
+        hotspotForAscendingRoomsSegments.splice(-1, 1); // remove last emtpy element
+        console.log("hotspotForAscendingRoomsSegments");
+        console.log(hotspotForAscendingRoomsSegments);
+        hotspotForAscendingRooms = hotspotForAscendingRoomsSegments.map(
+            segment => {
+                let hotspotXYcoordinates: any = {}, xStart: number;
+                xStart = segment.indexOf("x-value:");
+                if (xStart === -1) {
                     return hotspotXYcoordinates;
                 }
-            );
+                hotspotXYcoordinates.xValue = segment.substring(
+                    xStart + 8,
+                    segment.indexOf("y-value") - 2
+                );
+                hotspotXYcoordinates.yValue = segment.substring(
+                    segment.indexOf("y-value:") + 8,
+                    segment.indexOf(")")
+                );
+                return hotspotXYcoordinates;
+            }
+        );
 
 
-            console.log("hotspotForAscendingRooms");
-            console.log(hotspotForAscendingRooms);
-        
+        console.log("hotspotForAscendingRooms");
+        console.log(hotspotForAscendingRooms);
+
 
 
         // const tokens = childList.split("</li>");
@@ -597,7 +609,7 @@ export class NavigationMapComponent
      *
      * @return {Promise<HTMLElement>} Promise resolved with a div element containing the code.
      */
-    protected formatContents(content, sectionId = undefined): Promise<any> {
+    protected formatContents(content, sectionId = undefined, sectionName = undefined): Promise<any> {
         let site: CoreSite,
             promises = [],
             formattedContent = {};
@@ -709,7 +721,7 @@ export class NavigationMapComponent
                     formattedContent["videos"] = videos;
                     formattedContent["iframes"] = iframes;
                     formattedContent["buttons"] = buttons;
-                    return Promise.resolve({ formattedContent: formattedContent, content: content, sectionId: sectionId });
+                    return Promise.resolve({ formattedContent: formattedContent, content: content, sectionId: sectionId, sectionName: sectionName });
                 });
             });
     }
@@ -1012,20 +1024,44 @@ export class NavigationMapComponent
         });
     }
 
-    changeMap(index) {
-        let roomModulesArray;
-        this.mapIndexToShow = index;
-        this.showRoomDescription = false;
-        this.hotspotsLoaded = false;
-        roomModulesArray = this.createMapsModulesArray("rooms");
-        this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
-
-
+    async changeMap(index, mode): Promise<object> {
+        let roomModulesArray: any, exponatModulesSplittedContentArray: any;
+        if (mode === 'map') {
+            this.mapIndexToShow = index;
+            this.showRoomDescription = false;
+            this.hotspotsLoaded = false;
+            this.visible = false;
+            this.roomModulesSplittedContentArray = [];
+            roomModulesArray = this.createMapsModulesArray("rooms");
+            this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
+            return roomModulesArray;
+        } else if (mode === 'room') {
+            this.roomMapToShow = index;
+            this.roomIndexToShow = index;
+            this.showExponatDescription = false;
+            this.hotspotsLoaded = false;
+            this.visible = false;
+            this.exponatModulesSplittedContentArray = [];
+            exponatModulesSplittedContentArray = (<any[]> await this.getTopicContentOfOneRoom());
+            this.hotspotsLoaded = true;
+            this.exponatModulesSplittedContentArray = exponatModulesSplittedContentArray;
+            return exponatModulesSplittedContentArray;
+        }
+        
+       
     }
 
-    showRoomDetails(index) {
-        this.roomIndexToShow = index;
-        this.showRoomDescription = true;
+    showRoomDetails(index, mode): void {
+        if (mode === 'room') {
+            this.roomIndexToShow = index;
+            this.showRoomDescription = true;
+        } else if (mode === 'topic') {
+            console.log('exponatModulesSplittedContentArray');
+            console.log(this.exponatModulesSplittedContentArray);
+            this.topicIndexToShow = index;
+            this.showExponatDescription = true;
+        }
+        
     }
 
     showMap(mode) {
@@ -1038,6 +1074,7 @@ export class NavigationMapComponent
 
     async goToRoom(roomIndexToShow) {
         let roomTopicContent: any[] = [];
+        this.roomIndexToShow = roomIndexToShow;
         roomTopicContent = (<any[]>await this.getTopicContentOfOneRoom());
         console.log('getTopicContentOne Room');
         console.log(roomTopicContent);
@@ -1053,5 +1090,9 @@ export class NavigationMapComponent
         //     roomTopicContent: roomTopicContent,
         //     roomContent: this.roomModulesSplittedContentArray[roomIndexToShow]
         // });
+    }
+
+    showTopic(sectionId) {
+        this.navigationMapProvider.emitnavigationSectionEvent(sectionId);
     }
 }
