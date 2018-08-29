@@ -1,6 +1,6 @@
 <ion-header>
 	<ion-navbar>
-		<ion-title>{{title}} exponats</ion-title>
+		<ion-title>{{roomContent.name}} exponats</ion-title>
 	</ion-navbar>
 </ion-header>
 
@@ -16,20 +16,12 @@
 		  <!-- <p text-wrap>{{topic.description_short}}</p> -->
 		  <button ion-button clear item-end (click)="showRoomObjectPage(i)">View</button>
 		</ion-item>
-		<ion-item-options side="left">
+		<!-- <ion-item-options side="left">
 		  <button ion-button color="primary">
 			<ion-icon name="text"></ion-icon>
 			activity
 		  </button>
-		  <!-- <div *ngIf="show_inline">
-			  <div class="testcont"></div>
-			  <div class="responsive-video">
-				<iframe src="https://www.youtube.com/watch?v=k7CzNCc1Krg"
-				width="1600" height="900" frameborder="0" webkitAllowFullScreen
-				mozallowfullscreen allowFullScreen></iframe>
-				</div>
-			</div> -->
-		</ion-item-options>
+		</ion-item-options> -->
 	  </ion-item-sliding>
 	  
 	</ion-list>

@@ -14,7 +14,7 @@ import { ViewController } from 'ionic-angular/navigation/view-controller';
 export class NavigationObjectsPage {
 
 	roomTopicContent: any;
-	title: string;
+	roomContent: any;
 
 	
 
@@ -23,21 +23,15 @@ export class NavigationObjectsPage {
 		private navigationMapProvider: NavigationMapProvider,
 		private viewCtrl: ViewController) {
 			this.roomTopicContent = navParams.get("roomTopicContent");
-			this.title = navParams.get("title");
-			console.log('this.title');
-			console.log(this.title);
+			this.roomContent = navParams.get("roomContent");
+
+			console.log('contentn in objects');
+			console.log(this.roomContent);
 		}
 	
 	showRoomObjectPage(index) {
-		console.log('this.roomTopicContent');
-		console.log(this.roomTopicContent);
-		console.log('this.navCtrl.getViews()');
-		console.log(this.navCtrl.length());
-		this.navCtrl.remove(2, 1);
-		console.log('this.navCtrl.getViews() after');
-		console.log(this.navCtrl.length());
-		console.log('this.roomTopicContent[index].sectionId');
-		console.log(this.roomTopicContent[index].sectionId);
+		let currentPageIndex: number = this.navCtrl.getActive().index;
+		this.navCtrl.remove(2,(currentPageIndex - 2));
 		this.navigationMapProvider.emitnavigationSectionEvent(this.roomTopicContent[index].sectionId);
 		this.navCtrl.pop();
 	}

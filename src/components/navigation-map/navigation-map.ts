@@ -41,6 +41,7 @@ import { CoreExternalContentDirective } from "@directives/external-content";
 import { CoreLoggerProvider } from "@providers/logger";
 import { CoreFilepoolProvider } from "@providers/filepool";
 import { trigger, transition, animate, style } from '@angular/animations'
+import { NavigationObjectsPage } from "@components/navigation-objects/navigation-objects";
 
 @Component({
     selector: "core-navigation-map",
@@ -222,7 +223,7 @@ export class NavigationMapComponent
         return mapAmountArray;
     }
 
-    getTopicContentOfOneRoom(): Promise<object> {
+    getTopicContentOfOneRoom(roomIndexToShow): Promise<object> {
         let sections: any[] = [], i = 0, promises: Promise<object>[] = [];
 
         //get the inizes of the topics of the room
@@ -253,7 +254,7 @@ export class NavigationMapComponent
                         jsonStringObject.map === (this.mapIndexToShow + 1) &&
                         jsonStringObject.room &&
                         jsonStringObject.room !== 'undefined' &&
-                        jsonStringObject.room === (this.roomIndexToShow + 1)) {
+                        jsonStringObject.room === (roomIndexToShow + 1)) {
                         return true;
                     } else {
                         return false;
@@ -261,7 +262,7 @@ export class NavigationMapComponent
                 } else if (
                     jsonStringObject.room &&
                     jsonStringObject.room !== 'undefined' &&
-                    jsonStringObject.room === (this.roomIndexToShow + 1)) {
+                    jsonStringObject.room === (roomIndexToShow + 1)) {
                     return true;
                 } else {
 
@@ -296,7 +297,7 @@ export class NavigationMapComponent
             this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
 
             if (this.isMapInThisProject === false) {
-                this.exponatModulesSplittedContentArray = (<any[]>await this.getTopicContentOfOneRoom());
+                this.exponatModulesSplittedContentArray = (<any[]>await this.getTopicContentOfOneRoom(this.roomIndexToShow));
                 this.hotspotsLoaded = true;
             }
         }
@@ -1042,7 +1043,7 @@ export class NavigationMapComponent
             this.hotspotsLoaded = false;
             this.visible = false;
             this.exponatModulesSplittedContentArray = [];
-            exponatModulesSplittedContentArray = (<any[]> await this.getTopicContentOfOneRoom());
+            exponatModulesSplittedContentArray = (<any[]> await this.getTopicContentOfOneRoom(index));
             this.hotspotsLoaded = true;
             this.exponatModulesSplittedContentArray = exponatModulesSplittedContentArray;
             return exponatModulesSplittedContentArray;
@@ -1075,9 +1076,12 @@ export class NavigationMapComponent
     async goToRoom(roomIndexToShow) {
         let roomTopicContent: any[] = [];
         this.roomIndexToShow = roomIndexToShow;
-        roomTopicContent = (<any[]>await this.getTopicContentOfOneRoom());
+        roomTopicContent = (<any[]>await this.getTopicContentOfOneRoom(roomIndexToShow));
         console.log('getTopicContentOne Room');
         console.log(roomTopicContent);
+        console.log('this.roomModulesSplittedContentArray[roomIndexToShow] in gotoroom');
+        console.log(this.roomModulesSplittedContentArray[roomIndexToShow]);
+
         this.navCtrl.push(NavigationFloorsPage, {
             roomTopicContent: roomTopicContent,
             roomContent: this.roomModulesSplittedContentArray[roomIndexToShow]
@@ -1094,5 +1098,20 @@ export class NavigationMapComponent
 
     showTopic(sectionId) {
         this.navigationMapProvider.emitnavigationSectionEvent(sectionId);
+    }
+
+    async goStraightToTopic(roomIndex) {
+        let roomTopicContent: any[] = [];
+        roomTopicContent = (<any[]>await this.getTopicContentOfOneRoom(roomIndex));
+        // this.navCtrl.push(NavigationFloorsPage, {
+        //     roomTopicContent: roomTopicContent,
+        //     roomContent: this.roomModulesSplittedContentArray[roomIndexToShow]
+        // });
+        this.navCtrl.push(NavigationObjectsPage,
+            {
+                roomTopicContent: roomTopicContent,
+                roomContent: this.roomModulesSplittedContentArray[roomIndex]
+            }
+        );
     }
 }

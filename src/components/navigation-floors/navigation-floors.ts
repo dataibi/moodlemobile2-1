@@ -54,7 +54,7 @@ export class NavigationFloorsPage implements OnInit {
 	}
 
 	showRoomObjects() {
-		this.navCtrl.push(NavigationObjectsPage, { roomTopicContent: this.roomTopicContent, title: this.roomContent.name });
+		this.navCtrl.push(NavigationObjectsPage, { roomTopicContent: this.roomTopicContent, roomContent: this.roomContent });
 	}
 
 	MapToShow(index) {
