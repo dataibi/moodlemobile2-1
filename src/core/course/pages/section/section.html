@@ -7,16 +7,6 @@
             </button>
         </ion-fab>
     </div>
-    <ion-navbar *ngIf="course.fullname != title" core-back-button>
-        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
-
-        <!-- <ion-buttons end></ion-buttons> -->
-		<ion-fab id="user" top right>
-			<button ion-fab mini (click)="navToProfile()">
-				<core-icon name="contact"></core-icon>
-			</button>
-		</ion-fab>
-    </ion-navbar>
 </ion-header>
 <ion-content>
 	<ion-fab center bottom>

@@ -108,10 +108,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.autoSaveError = error;
             this.cdr.detectChanges();
         });
+        
     }
 
     /**
-     * Component being destroyed.
+     * Component being destroyed.xw
      */
     ngOnDestroy(): void {
         // Stop auto save.
@@ -331,7 +332,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      * @return {Promise<void>} Promise resolved when done.
      */
     finishAttempt(userFinish?: boolean, timeUp?: boolean): Promise<void> {
-        let promise;
+/*      
+		let promise;
 
         // Show confirm if the user clicked the finish button and the quiz is in progress.
         if (!timeUp && this.attempt.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
@@ -339,8 +341,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
         } else {
             promise = Promise.resolve();
         }
+*/
 
-        return promise.then(() => {
+//        return promise.then(() => {
             const modal = this.domUtils.showModalLoading('core.sending', true);
 
             return this.processAttempt(userFinish, timeUp).then(() => {
@@ -357,9 +360,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             }).finally(() => {
                 modal.dismiss();
             });
-        }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true);
-        });
+//        }).catch((error) => {
+//            this.domUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true);
+//        });
     }
 
     /**
@@ -445,6 +448,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.preventSubmitMessages = this.quizProvider.getPreventSubmitMessages(this.summaryQuestions);
 
             this.attempt.dueDateWarning = this.quizProvider.getAttemptDueDateWarning(this.quiz, this.attempt);
+            
+            this.finishAttempt(true);
 
             // Log summary as viewed.
             this.quizProvider.logViewAttemptSummary(this.attempt.id, this.preflightData).catch((error) => {

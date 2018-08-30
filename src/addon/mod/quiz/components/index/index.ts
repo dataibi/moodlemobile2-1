@@ -438,6 +438,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         } else {
             this.autoReview = undefined;
         }
+        
+        this.attemptQuiz();
     }
 
     /**
