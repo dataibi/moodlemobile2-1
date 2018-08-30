@@ -8,7 +8,19 @@
 
 <!-- Default course format. -->
 <core-dynamic-component [component]="courseFormatComponent" [data]="data" class="paddingTopComponent">
-
+    <div *ngIf="selectedSection.section === 0" class="navigation-button__wrapper">
+        <button class="navigation-button" ion-fab (click)="navToQrScanner()">
+            <core-icon name="md-barcode"></core-icon>
+        </button>
+    </div>
+    <div *ngIf="selectedSection.section !== 0" class="navigation-button__wrapper">
+        <button class="navigation-button" ion-fab (click)="navToQrScanner()">
+            <core-icon name="md-barcode"></core-icon>
+        </button>
+        <button class="navigation-button right" ion-fab (click)="navToMapView()">
+            <core-icon name="compass"></core-icon>
+        </button>
+    </div>
 
     <!-- Course summary. By default we only display the course progress. -->
     <core-dynamic-component [component]="courseSummaryComponent" [data]="data" class="progressComponent">
@@ -24,19 +36,7 @@
     </core-dynamic-component>
 
     <core-loading [hideUntil]="loaded">
-        <div *ngIf="selectedSection.section === 0" class="navigation-button__wrapper">
-            <button class="navigation-button" ion-fab (click)="navToQrScanner()">
-                <core-icon name="md-barcode"></core-icon>
-            </button>
-        </div>
-        <div *ngIf="selectedSection.section !== 0" class="navigation-button__wrapper">
-            <button class="navigation-button" ion-fab (click)="navToQrScanner()">
-                <core-icon name="md-barcode"></core-icon>
-            </button>
-            <button class="navigation-button right" ion-fab (click)="navToMapView()">
-                <core-icon name="compass"></core-icon>
-            </button>
-        </div>
+        
         <!-- Section selector. -->
         <!-- <core-dynamic-component [component]="sectionSelectorComponent" [data]="data">
             <div text-wrap *ngIf="displaySectionSelector && sections && sections.length" no-padding class="clearfix">

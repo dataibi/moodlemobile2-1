@@ -21,7 +21,8 @@ import {
     OnChanges,
     SimpleChanges,
     Optional,
-    ElementRef
+    ElementRef,
+    ViewChild
 } from "@angular/core";
 import { CoreCourseProvider } from "@core/course/providers/course";
 import { AddonModPageProvider } from "@addon/mod/page/providers/page";
@@ -61,8 +62,7 @@ import { NavigationObjectsPage } from "@components/navigation-objects/navigation
 export class NavigationMapComponent
     extends CoreCourseModuleMainResourceComponent
     implements OnChanges {
-    @Input()
-    data: any; // all data for the courses
+    @Input() data: any; // all data for the courses
     mapIndexToShow: number = 0;
     roomIndexToShow: number = 0;
     topicIndexToShow: number = 0;
@@ -304,12 +304,11 @@ export class NavigationMapComponent
     }
 
     async createTheSplittedContentInArray(modulesArray, whatContent) {
-        let x: number = 0;
         await this.asyncLoop(modulesArray, whatContent);
     }
 
     async asyncLoop(arrayToLoop, whatContent) {
-        let i: number = 0;
+        let i: number = 0, imageCardWrapper;
         for (i; i < arrayToLoop.length; i++) {
             let fetchModule = arrayToLoop[i]; // What we want to have in this.fetchContent
             console.log("fetchModule in asyncloop");
@@ -1043,13 +1042,13 @@ export class NavigationMapComponent
             this.hotspotsLoaded = false;
             this.visible = false;
             this.exponatModulesSplittedContentArray = [];
-            exponatModulesSplittedContentArray = (<any[]> await this.getTopicContentOfOneRoom(index));
+            exponatModulesSplittedContentArray = (<any[]>await this.getTopicContentOfOneRoom(index));
             this.hotspotsLoaded = true;
             this.exponatModulesSplittedContentArray = exponatModulesSplittedContentArray;
             return exponatModulesSplittedContentArray;
         }
-        
-       
+
+
     }
 
     showRoomDetails(index, mode): void {
@@ -1062,7 +1061,7 @@ export class NavigationMapComponent
             this.topicIndexToShow = index;
             this.showExponatDescription = true;
         }
-        
+
     }
 
     showMap(mode) {
