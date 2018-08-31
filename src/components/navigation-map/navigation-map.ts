@@ -250,7 +250,7 @@ export class NavigationMapComponent
                 if (this.isMapInThisProject === true) {
                     if (jsonStringObject.map &&
                         typeof jsonStringObject.map !== 'undefined' &&
-                        jsonStringObject.map === (roomIndexToShow + 1) &&
+                        jsonStringObject.map === (this.mapIndexToShow + 1) &&
                         jsonStringObject.room &&
                         jsonStringObject.room !== 'undefined' &&
                         jsonStringObject.room === (roomIndexToShow + 1)) {
@@ -1023,7 +1023,7 @@ export class NavigationMapComponent
         });
     }
 
-    async changeMap(index, mode): Promise<object> {
+    async changeMap(index, mode): Promise<void> {
         let roomModulesArray: any, exponatModulesSplittedContentArray: any;
         if (mode === 'map') {
             this.showRoomDescription = false;
@@ -1033,7 +1033,6 @@ export class NavigationMapComponent
             roomModulesArray = this.createMapsModulesArray("rooms", index);
             await this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
             this.mapIndexToShow = index;
-            return roomModulesArray;
         } else if (mode === 'room') {
             this.showExponatDescription = false;
             this.hotspotsLoaded = false;
@@ -1044,7 +1043,6 @@ export class NavigationMapComponent
             this.hotspotsLoaded = true;
             this.roomMapToShow = index;
             this.roomIndexToShow = index;
-            return exponatModulesSplittedContentArray;
         }
 
 
