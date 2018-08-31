@@ -21,8 +21,7 @@ import {
     OnChanges,
     SimpleChanges,
     Optional,
-    ElementRef,
-    ViewChild
+    ElementRef
 } from "@angular/core";
 import { CoreCourseProvider } from "@core/course/providers/course";
 import { AddonModPageProvider } from "@addon/mod/page/providers/page";
@@ -251,7 +250,7 @@ export class NavigationMapComponent
                 if (this.isMapInThisProject === true) {
                     if (jsonStringObject.map &&
                         typeof jsonStringObject.map !== 'undefined' &&
-                        jsonStringObject.map === (this.mapIndexToShow + 1) &&
+                        jsonStringObject.map === (roomIndexToShow + 1) &&
                         jsonStringObject.room &&
                         jsonStringObject.room !== 'undefined' &&
                         jsonStringObject.room === (roomIndexToShow + 1)) {
@@ -285,13 +284,13 @@ export class NavigationMapComponent
             x = 0;
         if (changes.data.firstChange === true) {
             this.navigationMapProvider.setCourseData(this.data);
-            mapModulesArray = this.createMapsModulesArray("map");
+            mapModulesArray = this.createMapsModulesArray("map", this.mapIndexToShow);
             if (mapModulesArray.length) {
                 await this.createTheSplittedContentInArray(mapModulesArray, 'map');
             } else {
                 this.isMapInThisProject = false;
             }
-            roomModulesArray = this.createMapsModulesArray("rooms");
+            roomModulesArray = this.createMapsModulesArray("rooms", this.mapIndexToShow);
             console.log('roomModulesArray');
             console.log(roomModulesArray);
             this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
@@ -333,9 +332,9 @@ export class NavigationMapComponent
      * Create an Array with the whole modules contains maps to iterate to load the content.
      *
      */
-    createMapsModulesArray(whatContent) {
+    createMapsModulesArray(whatContent, index) {
         let indizesArray = this.howManyMapsAndWhereAreThey(
-            this.mapIndexToShow,
+            index,
             whatContent
         ),
             i: number = 0,
@@ -1027,24 +1026,24 @@ export class NavigationMapComponent
     async changeMap(index, mode): Promise<object> {
         let roomModulesArray: any, exponatModulesSplittedContentArray: any;
         if (mode === 'map') {
-            this.mapIndexToShow = index;
             this.showRoomDescription = false;
             this.hotspotsLoaded = false;
             this.visible = false;
             this.roomModulesSplittedContentArray = [];
-            roomModulesArray = this.createMapsModulesArray("rooms");
-            this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
+            roomModulesArray = this.createMapsModulesArray("rooms", index);
+            await this.createTheSplittedContentInArray(roomModulesArray, 'rooms');
+            this.mapIndexToShow = index;
             return roomModulesArray;
         } else if (mode === 'room') {
-            this.roomMapToShow = index;
-            this.roomIndexToShow = index;
             this.showExponatDescription = false;
             this.hotspotsLoaded = false;
             this.visible = false;
             this.exponatModulesSplittedContentArray = [];
             exponatModulesSplittedContentArray = (<any[]>await this.getTopicContentOfOneRoom(index));
-            this.hotspotsLoaded = true;
             this.exponatModulesSplittedContentArray = exponatModulesSplittedContentArray;
+            this.hotspotsLoaded = true;
+            this.roomMapToShow = index;
+            this.roomIndexToShow = index;
             return exponatModulesSplittedContentArray;
         }
 
@@ -1087,12 +1086,8 @@ export class NavigationMapComponent
         });
     }
 
-    goToList(index, mode) {
+    goToList() {
         this.visible = !this.visible;
-        // this.navCtrl.push(NavigationFloorsPage, {
-        //     roomTopicContent: roomTopicContent,
-        //     roomContent: this.roomModulesSplittedContentArray[roomIndexToShow]
-        // });
     }
 
     showTopic(sectionId) {
@@ -1102,10 +1097,6 @@ export class NavigationMapComponent
     async goStraightToTopic(roomIndex) {
         let roomTopicContent: any[] = [];
         roomTopicContent = (<any[]>await this.getTopicContentOfOneRoom(roomIndex));
-        // this.navCtrl.push(NavigationFloorsPage, {
-        //     roomTopicContent: roomTopicContent,
-        //     roomContent: this.roomModulesSplittedContentArray[roomIndexToShow]
-        // });
         this.navCtrl.push(NavigationObjectsPage,
             {
                 roomTopicContent: roomTopicContent,
