@@ -73,7 +73,7 @@
                     </button>
                 </ion-col>
                 <ion-col *ngIf="nextPage >= -1">
-                    <button ion-button block icon-end (click)="changePage(nextPage)">
+                    <button ion-button block icon-end (click)="finishAttempt(true)">
                         {{ 'core.next' | translate }}
                         <ion-icon name="arrow-forward" md="ios-arrow-forward"></ion-icon>
                     </button>

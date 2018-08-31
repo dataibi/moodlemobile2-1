@@ -83,7 +83,7 @@ export class AddonModQuizReviewPage implements OnInit {
             });
         }).finally(() => {
             this.loaded = true;
-			this.navCtrl.remove(2,2);
+			//this.navCtrl.remove(2,2);
         });
     }
 

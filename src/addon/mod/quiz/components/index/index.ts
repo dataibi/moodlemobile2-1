@@ -84,7 +84,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             if (!this.quizData) {
                 return;
             }
-
+			this.attemptQuiz();
             this.quizProvider.logViewQuiz(this.quizData.id).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
             }).catch((error) => {
@@ -438,8 +438,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         } else {
             this.autoReview = undefined;
         }
-        
-        this.attemptQuiz();
     }
 
     /**

@@ -448,8 +448,6 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.preventSubmitMessages = this.quizProvider.getPreventSubmitMessages(this.summaryQuestions);
 
             this.attempt.dueDateWarning = this.quizProvider.getAttemptDueDateWarning(this.quiz, this.attempt);
-            
-            this.finishAttempt(true);
 
             // Log summary as viewed.
             this.quizProvider.logViewAttemptSummary(this.attempt.id, this.preflightData).catch((error) => {
