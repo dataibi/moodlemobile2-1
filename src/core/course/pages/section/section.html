@@ -1,11 +1,6 @@
 <ion-header>
     <div *ngIf="course.fullname == title" class="toolbar toolbar-md toolbar-background toolbar-background-md">
         <ion-title ><core-format-text [text]="title"></core-format-text></ion-title>
-        <ion-fab id="user" top right>
-            <button ion-fab mini (click)="navToProfile()">
-                <core-icon name="contact"></core-icon>
-            </button>
-        </ion-fab>
     </div>
 </ion-header>
 <ion-content>
@@ -14,7 +9,11 @@
 			<core-icon name="md-barcode"></core-icon>
 		</button>
 	</ion-fab>
-	
+	<ion-fab id="user" top right>
+		<button ion-fab mini (click)="navToProfile()">
+			<core-icon name="contact"></core-icon>
+		</button>
+	</ion-fab>	
     <core-tabs>
         <!-- Course contents tab. -->
         <core-tab [title]="'core.course.contents' | translate">
