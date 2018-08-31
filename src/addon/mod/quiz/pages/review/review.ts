@@ -83,6 +83,7 @@ export class AddonModQuizReviewPage implements OnInit {
             });
         }).finally(() => {
             this.loaded = true;
+            // Fabiano: pages stack simplyfied
 			this.navCtrl.remove(2,1);
         });
     }

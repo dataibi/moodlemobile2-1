@@ -332,6 +332,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      * @return {Promise<void>} Promise resolved when done.
      */
     finishAttempt(userFinish?: boolean, timeUp?: boolean): Promise<void> {
+    
+    // Fabiano: removed popup confirmation
 /*      
 		let promise;
 
