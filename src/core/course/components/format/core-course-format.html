@@ -14,11 +14,11 @@
         </button>
     </div>
     <div *ngIf="selectedSection.section !== 0" class="navigation-button__wrapper">
-        <button class="navigation-button" ion-fab (click)="navToQrScanner()">
-            <core-icon name="md-barcode"></core-icon>
-        </button>
-        <button class="navigation-button right" ion-fab (click)="navToMapView()">
+        <button class="navigation-button" ion-fab (click)="navToMapView()">
             <core-icon name="compass"></core-icon>
+        </button>
+        <button class="navigation-button right" ion-fab (click)="navToQrScanner()">
+            <core-icon name="md-barcode"></core-icon>
         </button>
     </div>
 
@@ -78,7 +78,7 @@
 
 <!-- Template to render first section. -->
 <ng-template #firstSectionTemplate let-section="section">
-    <section ion-list *ngIf="section.hasContent && section.id != allSectionsId && section.section == 0">
+    <section class="paddingBottomContent" ion-list *ngIf="section.hasContent && section.id != allSectionsId && section.section == 0">
         <!-- <div class="navigation-button__wrapper">
                     <div class="navigation-button__centerer">
                         <button class="navigation-button" ion-fab (click)="navToQrScanner()">
@@ -109,7 +109,7 @@
 
 <!-- Template to render a section. -->
 <ng-template #sectionTemplate let-section="section">
-    <section ion-list *ngIf="section.hasContent && section.id != allSectionsId">
+    <section class="paddingBottomContent" ion-list *ngIf="section.hasContent && section.id != allSectionsId">
 
         <!-- Title is only displayed when viewing all sections. -->
         <ion-item-divider text-wrap color="light" *ngIf="selectedSection.id == allSectionsId && section.name">

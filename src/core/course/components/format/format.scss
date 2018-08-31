@@ -41,12 +41,11 @@ core-course-format {
 
     .navigation-button__wrapper {
         position: fixed;
-        left: 50%;
-        top: 62px;
+        right: $spacing--large;
+        bottom: $spacing--large;
         display: flex;
         justify-content: center;
-        height: 100px;
-        transform: translate3d(-50%,0,0);
+        // height: 100px;
         z-index: 2;
     }
 
@@ -55,6 +54,10 @@ core-course-format {
         &.right {
             margin-left: $spacing--large;
         }
+    }
+
+    .paddingBottomContent {
+        padding-bottom: 90px;
     }
 }
 
