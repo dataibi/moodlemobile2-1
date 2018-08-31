@@ -43,7 +43,7 @@
                 </div>
 
                 <!-- Info under Image if content is map -->
-                <div *ngIf="content.isMap === true">
+                <div *ngIf="content.isMap === true" (click)="expandDescription()">
                     <ion-item *ngIf="!showRoomDescription">
                         <h2>{{content.map[content.index].name}}</h2>
                         <!-- <p [innerHTML]="content.map[content.index].description" text-wrap></p> -->

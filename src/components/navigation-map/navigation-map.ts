@@ -29,7 +29,7 @@ import { CoreCourseModuleMainResourceComponent } from "@core/course/classes/main
 import { CoreAppProvider } from "@providers/app";
 import { AddonModPageHelperProvider } from "@addon/mod/page/providers/helper";
 import { AddonModPagePrefetchHandler } from "@addon/mod/page/providers/prefetch-handler";
-import { NavController, Content, Platform } from "ionic-angular";
+import { NavController, Content, Platform, ModalController } from "ionic-angular";
 import { safelyParseJSON } from "../../helpers/navigation_helpers";
 import { CoreSitesProvider } from "@providers/sites";
 import { CoreUtilsProvider } from "@providers/utils/utils";
@@ -42,6 +42,8 @@ import { CoreLoggerProvider } from "@providers/logger";
 import { CoreFilepoolProvider } from "@providers/filepool";
 import { trigger, transition, animate, style } from '@angular/animations'
 import { NavigationObjectsPage } from "@components/navigation-objects/navigation-objects";
+import { NavigationModalPage } from "@components/navigation-modal/navigation-modal";
+import { CoreTextUtilsProvider } from "@providers/utils/text";
 
 @Component({
     selector: "core-navigation-map",
@@ -88,6 +90,7 @@ export class NavigationMapComponent
     roomMapToShow: number = 0;
     visible: boolean = false;
     exponatModulesSplittedContentArray: any = []; // Only for the exponats
+    
 
 
     protected element: HTMLElement;
@@ -108,6 +111,8 @@ export class NavigationMapComponent
         private loggerProvider: CoreLoggerProvider,
         private filepoolProvider: CoreFilepoolProvider,
         private platform: Platform,
+        public modalCtrl: ModalController,
+        protected textUtils: CoreTextUtilsProvider,
         element: ElementRef,
         @Optional() private content: Content
     ) {
@@ -499,11 +504,20 @@ export class NavigationMapComponent
             hotspotForAscendingRooms = [],
             hotspotForAscendingRoomsSegments = [],
             splittedName,
-            isHotspots: number;
+            isHotspots: number,
+            shortDescription: string,
+            shortDescriptionStart: number;
 
         console.log('content in parse');
         console.log(content);
-
+        shortDescriptionStart = content.indexOf("<h5>");
+        if (shortDescriptionStart !== -1) {
+            shortDescription = content.substring(shortDescriptionStart + 4, content.indexOf("</h5>"));
+        } else {
+            shortDescription = 'no short description found';
+        }
+        console.log("shortDescription");
+        console.log(shortDescription);
         childList = content.substring(content.indexOf("<ol>") + 4);
         console.log("childList");
         console.log(childList);
@@ -571,7 +585,7 @@ export class NavigationMapComponent
         // }
 
 
-        description = content.substring(content.indexOf("</ol>") + 5);
+        description = content.substring(content.indexOf("</h5>") + 5);
 
         console.log("description");
         console.log(description);
@@ -588,6 +602,7 @@ export class NavigationMapComponent
             this.modulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
             this.modulesSplittedContentArray[i].image = formattedContent.images[0].src;
             this.modulesSplittedContentArray[i].imageAlt = formattedContent.images[0].alt;
+            this.modulesSplittedContentArray[i].shortDescription = shortDescription;
             console.log("this.modulesSplittedContentArray");
             console.log(this.modulesSplittedContentArray);
         } else if (whatContent === 'rooms') {
@@ -598,6 +613,7 @@ export class NavigationMapComponent
             this.roomModulesSplittedContentArray[i].descriptionInParagraphsArray = description.split("/<p>|</p>/");
             this.roomModulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
             this.roomModulesSplittedContentArray[i].imageAlt = formattedContent.images[0].alt;
+            this.roomModulesSplittedContentArray[i].shortDescription = shortDescription;
             console.log("this.roomModulesSplittedContentArray");
             console.log(this.roomModulesSplittedContentArray);
         }
@@ -1101,5 +1117,15 @@ export class NavigationMapComponent
                 roomContent: this.roomModulesSplittedContentArray[roomIndex]
             }
         );
+    }
+
+    /**
+     * Expand the description.
+     */
+    expandDescription(ev?: Event): void {
+        ev && ev.preventDefault();
+        ev && ev.stopPropagation();
+
+            this.textUtils.expandText('Title', 'description');
     }
 }
