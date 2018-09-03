@@ -92,6 +92,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     allowAddAttempt: boolean; // Allow adding a new attempt when grading.
     gradeUrl: string; // URL to grade in browser.
 
+    singleFileSubmission: boolean;
+    filteredSubmissionPlugins: any[]; // List of submission plugins we need to be displayed
+    allowOffline: boolean; // Whether offline is allowed.
+
     // Some constants.
     statusNew = AddonModAssignProvider.SUBMISSION_STATUS_NEW;
     statusReopened = AddonModAssignProvider.SUBMISSION_STATUS_REOPENED;
@@ -105,9 +109,13 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     protected originalGrades: any = {}; // Object with the original grade data, to check for changes.
     protected isDestroyed: boolean; // Whether the component has been destroyed.
 
+    protected forceLeave = false; // To allow leaving the page without checking for changes.
+    protected saveOffline = false; // Whether to save data in offline.
+
     constructor(protected navCtrl: NavController, protected appProvider: CoreAppProvider, protected domUtils: CoreDomUtilsProvider,
-            sitesProvider: CoreSitesProvider, protected syncProvider: CoreSyncProvider, protected timeUtils: CoreTimeUtilsProvider,
-            protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService, protected utils: CoreUtilsProvider,
+            protected sitesProvider: CoreSitesProvider, protected syncProvider: CoreSyncProvider,
+            protected timeUtils: CoreTimeUtilsProvider, protected textUtils: CoreTextUtilsProvider,
+            protected translate: TranslateService, protected utils: CoreUtilsProvider,
             protected eventsProvider: CoreEventsProvider, protected courseProvider: CoreCourseProvider,
             protected fileUploaderHelper: CoreFileUploaderHelperProvider, protected gradesHelper: CoreGradesHelperProvider,
             protected userProvider: CoreUserProvider, protected groupsProvider: CoreGroupsProvider,
@@ -174,6 +182,163 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             this.timeRemaining = '';
             this.timeRemainingClass = '';
         }
+    }
+
+//  Methods copied from addon/mod/assign/pages/edit/edit.ts
+
+    /**
+     * Get the input data.
+     *
+     * @return {any} Input data.
+     */
+    protected getInputData(): any {
+        return this.domUtils.getDataFromForm(document.forms['addon-mod_assign-edit-form']);
+    }
+
+    /**
+     * Check if data has changed.
+     *
+     * @return {Promise<boolean>} Promise resolved with boolean: whether data has changed.
+     */
+    protected hasDataChanged(): Promise<boolean> {
+        // Usually the hasSubmissionDataChanged call will be resolved inmediately, causing the modal to be shown just an instant.
+        // We'll wait a bit before showing it to prevent this "blink".
+        let modal,
+            showModal = true;
+
+        setTimeout(() => {
+            if (showModal) {
+                modal = this.domUtils.showModalLoading();
+            }
+        }, 100);
+
+        const data = this.getInputData();
+
+        return this.assignHelper.hasSubmissionDataChanged(this.assign, this.userSubmission, data).finally(() => {
+           if (modal) {
+                modal.dismiss();
+            } else {
+                showModal = false;
+            }
+        });
+    }
+
+    /**
+     * Leave the view without checking for changes.
+     */
+    protected leaveWithoutCheck(): void {
+        this.forceLeave = true;
+        this.navCtrl.pop();
+    }
+
+    /**
+     * Get data to submit based on the input data.
+     *
+     * @param {any} inputData The input data.
+     * @return {Promise<any>} Promise resolved with the data to submit.
+     */
+    protected prepareSubmissionData(inputData: any): Promise<any> {
+        // If there's offline data, always save it in offline.
+        this.saveOffline = this.hasOffline;
+
+        return this.assignHelper.prepareSubmissionPluginData(this.assign, this.userSubmission, inputData, this.hasOffline)
+                .catch((error) => {
+
+            if (this.allowOffline && !this.saveOffline) {
+                // Cannot submit in online, prepare for offline usage.
+                this.saveOffline = true;
+
+                return this.assignHelper.prepareSubmissionPluginData(this.assign, this.userSubmission, inputData, true);
+            }
+
+            return Promise.reject(error);
+        });
+    }
+
+    /**
+     * Save the submission.
+     */
+    save(): void {
+        // Check if data has changed.
+        this.hasDataChanged().then((changed) => {
+            if (changed) {
+                this.saveSubmission().then(() => {
+                    this.leaveWithoutCheck();
+                }).catch((error) => {
+                    this.domUtils.showErrorModalDefault(error, 'Error saving submission.');
+                });
+            } else {
+                // Nothing to save, just go back.
+                this.leaveWithoutCheck();
+            }
+        });
+    }
+
+    /**
+     * Save the submission.
+     *
+     * @return {Promise<any>} Promise resolved when done.
+     */
+    protected saveSubmission(): Promise<any> {
+        const inputData = this.getInputData();
+
+        if (this.submissionStatement && (!inputData.submissionstatement || inputData.submissionstatement === 'false')) {
+            return Promise.reject(this.translate.instant('addon.mod_assign.acceptsubmissionstatement'));
+        }
+
+        let modal = this.domUtils.showModalLoading();
+
+        // Get size to ask for confirmation.
+        return this.assignHelper.getSubmissionSizeForEdit(this.assign, this.userSubmission, inputData).catch(() => {
+            // Error calculating size, return -1.
+            return -1;
+        }).then((size) => {
+            modal.dismiss();
+
+            // Confirm action.
+            return this.fileUploaderHelper.confirmUploadFile(size, true, this.allowOffline);
+        }).then(() => {
+            modal = this.domUtils.showModalLoading('core.sending', true);
+
+            return this.prepareSubmissionData(inputData).then((pluginData) => {
+                if (!Object.keys(pluginData).length) {
+                    // Nothing to save.
+                    return;
+                }
+
+                let promise;
+
+                if (this.saveOffline) {
+                    // Save submission in offline.
+                    promise = this.assignOfflineProvider.saveSubmission(this.assign.id, this.courseId, pluginData,
+                            this.userSubmission.timemodified, !this.assign.submissiondrafts, this.currentUserId);
+                } else {
+                    // Try to send it to server.
+                    promise = this.assignProvider.saveSubmission(this.assign.id, this.courseId, pluginData, this.allowOffline,
+                            this.userSubmission.timemodified, this.assign.submissiondrafts, this.currentUserId);
+                }
+
+                return promise.then(() => {
+                    // Submission saved, trigger event.
+                    const params = {
+                        assignmentId: this.assign.id,
+                        submissionId: this.userSubmission.id,
+                        userId: this.currentUserId,
+                    };
+
+                    this.eventsProvider.trigger(AddonModAssignProvider.SUBMISSION_SAVED_EVENT, params,
+                            this.sitesProvider.getCurrentSiteId());
+
+                    if (!this.assign.submissiondrafts) {
+                        // No drafts allowed, so it was submitted. Trigger event.
+                        this.eventsProvider.trigger(AddonModAssignProvider.SUBMITTED_FOR_GRADING_EVENT, params,
+                                this.sitesProvider.getCurrentSiteId());
+                    }
+                });
+            });
+        }).finally(() => {
+            modal.dismiss();
+        });
     }
 
     /**
@@ -507,8 +672,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             }
         } else {
             // If no feedback, always show Submission.
-            this.selectedTab = 0;
-            this.tabs.selectTab(0);
+            if (this.tabs.tabs.length > 0) {
+                this.selectedTab = 0;
+                this.tabs.selectTab(0);
+            }
         }
 
         this.grade.gradingStatus = this.lastAttempt && this.lastAttempt.gradingstatus;
@@ -760,8 +927,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 this.domUtils.showErrorModalDefault(error, 'core.error', true);
             }).finally(() => {
                 // Select submission view.
-                this.tabs.selectTab(0);
-                modal.dismiss();
+                if (this.tabs.tabs.length > 0) {
+                    this.tabs.selectTab(0);
+                    modal.dismiss();
+                }
             });
         });
     }
@@ -928,6 +1097,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 } else {
                     this.submissionPlugins = this.userSubmission.plugins;
                 }
+                this.filteredSubmissionPlugins = this.filterSubmissionPlugins(this.submissionPlugins);
             }
         }
     }
@@ -938,8 +1108,19 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.isDestroyed = true;
 
-        if (this.assign && this.isGrading) {
-            this.syncProvider.unblockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
+        // Was: if (this.assign && this.isGrading) {
+        if (this.assign) {
+                this.syncProvider.unblockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
         }
+    }
+
+    private filterSubmissionPlugins(submissionPlugins: any[]): any[] {
+        let result: any[] = [];
+
+        result = submissionPlugins.filter(
+            (submissionPlugin) => submissionPlugin.type == 'file' || submissionPlugin.type == 'onlinetext'
+        );
+
+        return result;
     }
 }
