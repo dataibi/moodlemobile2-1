@@ -500,6 +500,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * Open a quiz to attempt it.
      */
     protected openQuiz(): void {
+    	console.log({quizId: this.quiz.id, moduleUrl: this.module.url});
         this.navCtrl.push('AddonModQuizPlayerPage', {courseId: this.courseId, quizId: this.quiz.id, moduleUrl: this.module.url});
     }
 

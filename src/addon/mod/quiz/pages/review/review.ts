@@ -85,6 +85,10 @@ export class AddonModQuizReviewPage implements OnInit {
             this.loaded = true;
             // Fabiano: pages stack simplyfied
 			this.navCtrl.remove(2,1);
+			
+			// Fabiano: in order to nav to another quiz
+			// this.navCtrl.push('AddonModQuizPlayerPage', {courseId: this.courseId, quizId: 6, moduleUrl: "https://moodle.mathetics.eu/mod/quiz/view.php?id=660"});
+
         });
     }
 
