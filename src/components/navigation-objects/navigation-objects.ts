@@ -23,6 +23,8 @@ export class NavigationObjectsPage {
 		private navigationMapProvider: NavigationMapProvider,
 		private viewCtrl: ViewController) {
 			this.roomTopicContent = navParams.get("roomTopicContent");
+			console.log('roomTopicContent in objects');
+			console.log(this.roomTopicContent);
 			this.roomContent = navParams.get("roomContent");
 
 			console.log('contentn in objects');

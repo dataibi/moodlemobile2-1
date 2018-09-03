@@ -16,8 +16,8 @@
 
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-<!-- <core-loading [hideUntil]="false" class="core-loading-center"> -->
-        
+    <!-- <core-loading [hideUntil]="false" class="core-loading-center"> -->
+
     <ng-container *ngTemplateOutlet="mapOrRoomTemplate; context: {sectionContent: modulesSplittedContentArray.length ? { map: modulesSplittedContentArray, index: mapIndexToShow, isMap: true} : { map: roomModulesSplittedContentArray, index: roomMapToShow, isMap: false}}"></ng-container>
 
     <!-- Template to render first section. -->
@@ -43,19 +43,31 @@
                 </div>
 
                 <!-- Info under Image if content is map -->
-                <div *ngIf="content.isMap === true" (click)="expandDescription()">
+                <div *ngIf="content.isMap === true">
                     <ion-item *ngIf="!showRoomDescription">
                         <h2>{{content.map[content.index].name}}</h2>
-                        <!-- <p [innerHTML]="content.map[content.index].description" text-wrap></p> -->
-                        <p *ngFor="let paragraph of content.map[content.index].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
+                        <p text-wrap [innerHTML]="content.map[content.index].shortDescription"></p>
+                        <div class="more-button">
+                            <button ion-fab mini (click)="newExpandDescription(content.map[content.index].name, content.map[content.index].description)">
+                                <core-icon color="black" name="ios-more-outline"></core-icon>
+                            </button>
+                        </div>
+
+
+                        <!-- <p *ngFor="let paragraph of content.map[content.index].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p> -->
                     </ion-item>
                     <ion-item *ngIf="showRoomDescription">
                         <ion-thumbnail item-start>
                             <img [src]="roomModulesSplittedContentArray[roomIndexToShow].image | safe_image">
                         </ion-thumbnail>
                         <h2>{{roomModulesSplittedContentArray[roomIndexToShow].name}}</h2>
-                        <p *ngFor="let paragraph of roomModulesSplittedContentArray[roomIndexToShow].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
-                        <button ion-button clear item-end (click)="goToRoom(roomIndexToShow)">View</button>
+                        <p text-wrap [innerHTML]="roomModulesSplittedContentArray[roomIndexToShow].shortDescription"></p>
+                        <button ion-button clear item-end (click)="goToRoom(roomIndexToShow, $event)">View</button>
+                        <div class="more-button">
+                            <button ion-fab mini (click)="newExpandDescription(roomModulesSplittedContentArray[roomIndexToShow].name, roomModulesSplittedContentArray[roomIndexToShow].description)">
+                                <core-icon color="black" name="ios-more-outline"></core-icon>
+                            </button>
+                        </div>
                     </ion-item>
                 </div>
 
@@ -83,7 +95,7 @@
                 <span *ngIf="content.isMap === false && visible">hide exponats</span>
                 <div class="arrowbutton-wrapper">
                     <button [ngClass]="{'navigation-list-button': true, 'navigation-list-button--invert': visible}" ion-fab mini>
-                        <core-icon name="arrow-down"></core-icon>
+                        <core-icon name="ios-arrow-down"></core-icon>
                     </button>
                 </div>
             </div>
@@ -105,7 +117,7 @@
                                 <img [src]="room.image | safe_image" [alt]="room.imageAlt" class="image" />
                             </ion-thumbnail>
                             <h2>{{room.name}}</h2>
-                            <p *ngFor="let paragraph of room.descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
+                            <p text-wrap [innerHTML]="room.shortDescription"></p>
                             <button ion-button clear item-end (click)="goToRoom(i)">View</button>
                         </ion-item>
                         <ion-item-options side="left">
@@ -150,7 +162,7 @@
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
                         <h2>{{map.name}}</h2>
-                        <p text-wrap>{{map.description}}</p>
+                        <p text-wrap>{{map.shortDescription}}</p>
                         <!-- <button ion-button clear item-end (click)="changeMap(i)">View</button> -->
                     </ion-item>
                 </ion-item-sliding>
@@ -164,7 +176,7 @@
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
                         <h2>{{map.name}}</h2>
-                        <p text-wrap>{{map.description}}</p>
+                        <p text-wrap>{{map.shortDescription}}</p>
                         <!-- <button ion-button clear item-end (click)="changeMap(i)">View</button> -->
                     </ion-item>
                 </ion-item-sliding>

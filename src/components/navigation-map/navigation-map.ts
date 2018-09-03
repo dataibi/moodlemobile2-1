@@ -276,7 +276,37 @@ export class NavigationMapComponent
         });
 
         for (i; i < sections.length; i++) {
-            promises.push(this.formatContents(sections[i].summary, sections[i].section, sections[i].name));
+            promises.push(this.formatContents(sections[i].summary, sections[i].section, sections[i].name)
+                .then((formatContentsReturnedObject) => {
+                    console.log('formatContentsReturnedObject in get topic');
+                    console.log(formatContentsReturnedObject);
+                    
+                    let shortDescription: string, shortDescriptionStart: number, description: string, descriptionStart: number;
+                    const { content } = formatContentsReturnedObject;
+                    
+                    shortDescriptionStart = content.indexOf("<h5>");
+                    if (shortDescriptionStart !== -1) {
+                        shortDescription = content.substring(shortDescriptionStart + 4, content.indexOf("</h5>"));
+                    } else {
+                        shortDescription = 'no short description found';
+                    }
+                    console.log("shortDescription");
+                    console.log(shortDescription);
+
+                    descriptionStart = content.indexOf("</h5>");
+                    if (descriptionStart !== -1) {
+                        description = content.substring(descriptionStart + 5, content.indexOf("<img"));
+                    } else {
+                        description = 'no long description found';
+                    }
+                    console.log("description");
+                    console.log(description);
+                    formatContentsReturnedObject.shortDescription = shortDescription;
+                    formatContentsReturnedObject.description = description;
+
+                    return formatContentsReturnedObject;
+                })
+            );
         }
         return Promise.all(promises);
     }
@@ -303,6 +333,8 @@ export class NavigationMapComponent
             if (this.isMapInThisProject === false) {
                 this.exponatModulesSplittedContentArray = (<any[]>await this.getTopicContentOfOneRoom(this.roomIndexToShow));
                 this.hotspotsLoaded = true;
+                console.log('exponatModulesSplittedContentArray');
+            console.log(this.exponatModulesSplittedContentArray);
             }
         }
     }
@@ -610,6 +642,7 @@ export class NavigationMapComponent
             this.roomModulesSplittedContentArray[i].childrenList = isHotspots !== -1 ? childList : '';
             this.roomModulesSplittedContentArray[i].hotspotsCoordinates = Object.keys(hotspotForAscendingRooms[0]).length ? hotspotForAscendingRooms : [];
             this.roomModulesSplittedContentArray[i].image = formattedContent.images[0].src;
+            this.roomModulesSplittedContentArray[i].description = description;
             this.roomModulesSplittedContentArray[i].descriptionInParagraphsArray = description.split("/<p>|</p>/");
             this.roomModulesSplittedContentArray[i].name = splittedName.slice(-1)[0];
             this.roomModulesSplittedContentArray[i].imageAlt = formattedContent.images[0].alt;
@@ -1085,7 +1118,9 @@ export class NavigationMapComponent
         }
     }
 
-    async goToRoom(roomIndexToShow) {
+    async goToRoom(roomIndexToShow, ev?): Promise<void> {
+        ev && ev.preventDefault();
+        ev && ev.stopPropagation();
         let roomTopicContent: any[] = [];
         this.roomIndexToShow = roomIndexToShow;
         roomTopicContent = (<any[]>await this.getTopicContentOfOneRoom(roomIndexToShow));
@@ -1122,10 +1157,10 @@ export class NavigationMapComponent
     /**
      * Expand the description.
      */
-    expandDescription(ev?: Event): void {
+    newExpandDescription(title, description, ev?): void {
         ev && ev.preventDefault();
         ev && ev.stopPropagation();
 
-            this.textUtils.expandText('Title', 'description');
+            this.textUtils.expandText(title, description);
     }
 }

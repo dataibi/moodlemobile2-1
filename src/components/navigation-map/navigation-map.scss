@@ -1,4 +1,11 @@
 core-navigation-map {
+
+    .item-md {
+        h2 {
+            margin-bottom: $spacing--small;
+        }
+    }
+
     .image-centerer{
         display: flex;
         justify-content: center;
@@ -79,12 +86,14 @@ core-navigation-map {
         transition: transform 0.3s ease-in-out;
 
         &.fab-md {
-            box-shadow: none;
+            box-shadow: inset 0 4px 6px 0 rgba(0, 0, 0, 0.1), inset 0 4px 5px rgba(0, 0, 0, 0.1), inset 0 -4px 6px 0 rgba(0, 0, 0, 0.1), inset 0 -4px 5px rgba(0, 0, 0, 0.1);
         }
     }
 
     .navigation-list-button--invert {
         transform: rotate(180deg);
     }
+
+    
 
 }
