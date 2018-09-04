@@ -42,7 +42,6 @@ import { CoreLoggerProvider } from "@providers/logger";
 import { CoreFilepoolProvider } from "@providers/filepool";
 import { trigger, transition, animate, style } from '@angular/animations'
 import { NavigationObjectsPage } from "@components/navigation-objects/navigation-objects";
-import { NavigationModalPage } from "@components/navigation-modal/navigation-modal";
 import { CoreTextUtilsProvider } from "@providers/utils/text";
 
 @Component({

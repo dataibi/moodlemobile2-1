@@ -45,7 +45,7 @@
                 <!-- Info under Image if content is map -->
                 <div *ngIf="content.isMap === true">
                     <ion-item *ngIf="!showRoomDescription">
-                        <h2>{{content.map[content.index].name}}</h2>
+                        <h2 text-wrap>{{content.map[content.index].name}}</h2>
                         <p text-wrap [innerHTML]="content.map[content.index].shortDescription"></p>
                         <div class="more-button">
                             <button ion-fab mini (click)="newExpandDescription(content.map[content.index].name, content.map[content.index].description)">
@@ -60,7 +60,7 @@
                         <ion-thumbnail item-start>
                             <img [src]="roomModulesSplittedContentArray[roomIndexToShow].image | safe_image">
                         </ion-thumbnail>
-                        <h2>{{roomModulesSplittedContentArray[roomIndexToShow].name}}</h2>
+                        <h2 text-wrap>{{roomModulesSplittedContentArray[roomIndexToShow].name}}</h2>
                         <p text-wrap [innerHTML]="roomModulesSplittedContentArray[roomIndexToShow].shortDescription"></p>
                         <button ion-button clear item-end (click)="goToRoom(roomIndexToShow, $event)">View</button>
                         <div class="more-button">
@@ -74,16 +74,20 @@
                 <!-- Info under Image if content is room -->
                 <div *ngIf="content.isMap === false">
                     <ion-item *ngIf="!showExponatDescription">
-                        <h2>{{content.map[content.index].name}}</h2>
-                        <p *ngFor="let paragraph of content.map[content.index].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p>
+                        <h2 text-wrap>{{content.map[content.index].name}}</h2>
+                        <p text-wrap [innerHTML]="content.map[content.index].shortDescription"></p>
+                        <div class="more-button">
+                            <button ion-fab mini (click)="newExpandDescription(roomModulesSplittedContentArray[roomIndexToShow].name, roomModulesSplittedContentArray[roomIndexToShow].description)">
+                                <core-icon color="black" name="ios-more-outline"></core-icon>
+                            </button>
+                        </div>
                     </ion-item>
                     <ion-item *ngIf="showExponatDescription">
                         <ion-thumbnail item-start>
                             <img [src]="exponatModulesSplittedContentArray[topicIndexToShow].formattedContent.images[0].src | safe_image">
                         </ion-thumbnail>
-                        <h2>{{exponatModulesSplittedContentArray[topicIndexToShow].sectionName}}</h2>
-
-                        <!-- <p *ngFor="let paragraph of roomModulesSplittedContentArray[roomIndexToShow].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p> -->
+                        <h2 text-wrap>{{exponatModulesSplittedContentArray[topicIndexToShow].sectionName}}</h2>
+                        <p text-wrap [innerHTML]="exponatModulesSplittedContentArray[topicIndexToShow].shortDescription"></p>
                         <button ion-button clear item-end (click)="showTopic(exponatModulesSplittedContentArray[topicIndexToShow].sectionId)">View</button>
                     </ion-item>
                 </div>
@@ -116,13 +120,13 @@
                             <ion-thumbnail item-start>
                                 <img [src]="room.image | safe_image" [alt]="room.imageAlt" class="image" />
                             </ion-thumbnail>
-                            <h2>{{room.name}}</h2>
+                            <h2 text-wrap>{{room.name}}</h2>
                             <p text-wrap [innerHTML]="room.shortDescription"></p>
                             <button ion-button clear item-end (click)="goToRoom(i)">View</button>
                         </ion-item>
                         <ion-item-options side="left">
                             <button ion-button color="primary" (click)="goStraightToTopic(i)">
-                                <ion-icon name="text"></ion-icon>
+                                <ion-icon name="eye"></ion-icon>
                                 Exponats
                             </button>
                         </ion-item-options>
@@ -142,7 +146,8 @@
                                 <img [src]="exponat.formattedContent.images[0].src | safe_image" [alt]="exponat.formattedContent.images[0].alt" class="image"
                                 />
                             </ion-thumbnail>
-                            <h2>{{exponat.sectionName}}</h2>
+                            <h2 text-wrap>{{exponat.sectionName}}</h2>
+                            <p text-wrap [innerHTML]="exponat.shortDescription"></p>
                             <!-- <p *ngFor="let paragraph of room.descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p> -->
                             <button ion-button clear item-end (click)="showTopic(exponat.sectionId)">View</button>
                         </ion-item>
@@ -161,8 +166,8 @@
                         <ion-thumbnail item-start>
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
-                        <h2>{{map.name}}</h2>
-                        <p text-wrap>{{map.shortDescription}}</p>
+                        <h2 text-wrap>{{map.name}}</h2>
+                        <p text-wrap [innerHTML]="map.shortDescription"></p>
                         <!-- <button ion-button clear item-end (click)="changeMap(i)">View</button> -->
                     </ion-item>
                 </ion-item-sliding>
@@ -175,8 +180,8 @@
                         <ion-thumbnail item-start>
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
-                        <h2>{{map.name}}</h2>
-                        <p text-wrap>{{map.shortDescription}}</p>
+                        <h2 text-wrap>{{map.name}}</h2>
+                        <p text-wrap [innerHTML]="map.shortDescription"></p>
                         <!-- <button ion-button clear item-end (click)="changeMap(i)">View</button> -->
                     </ion-item>
                 </ion-item-sliding>
