@@ -377,7 +377,6 @@ export class CoreCourseSectionPage implements OnDestroy {
     }
 
     navToProfile(): void {
-        console.log('navToProfile called');
         this.navCtrl.push('CoreMainMenuMorePage');
     }
 

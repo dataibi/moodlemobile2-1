@@ -73,13 +73,15 @@
                         <!-- If has offline data, show edit. -->
                         <!-- <a ion-button block color="primary" *ngIf="hasOffline" (click)="goToEdit()">{{ 'addon.mod_assign.editsubmission' | translate }}</a> -->
                         <ng-container *ngIf="hasOffline">
-                            <ng-container *ngTemplateOutlet="editSubmission"></ng-container>
+                            <!-- <ng-container *ngTemplateOutlet="editSubmission"></ng-container> -->
+                            <page-addon-mod-assign-edit-submission [moduleId]="moduleId" [courseId]="courseId" [blindId]="blindId"></page-addon-mod-assign-edit-submission>
                         </ng-container>
 
                         <!-- If no submission or is new, show add submission. -->
                         <!-- <a ion-button block color="primary" *ngIf="!hasOffline && (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)" (click)="goToEdit()">{{ 'addon.mod_assign.addsubmission' | translate }}</a> -->
                         <ng-container *ngIf="!hasOffline && (!userSubmission || !userSubmission.status || userSubmission.status == statusNew)">
-                            <ng-container *ngTemplateOutlet="editSubmission"></ng-container>
+                            <!-- <ng-container *ngTemplateOutlet="editSubmission"></ng-container> -->
+                            <page-addon-mod-assign-edit-submission [moduleId]="moduleId" [courseId]="courseId" [blindId]="blindId"></page-addon-mod-assign-edit-submission>
                         </ng-container>
 
                         <!-- If reopened, show addfromprevious and addnewattempt. -->
@@ -91,7 +93,8 @@
                         <!-- Else show editsubmission. -->
                         <!-- <a ion-button block color="primary" *ngIf="!hasOffline && userSubmission && userSubmission.status && userSubmission.status != statusNew && userSubmission.status != statusReopened" (click)="goToEdit()">{{ 'addon.mod_assign.editsubmission' | translate }}</a> -->
                         <ng-container *ngIf="!hasOffline && userSubmission && userSubmission.status && userSubmission.status != statusNew && userSubmission.status != statusReopened">
-                            <ng-container *ngTemplateOutlet="editSubmission"></ng-container>
+                            <!-- <ng-container *ngTemplateOutlet="editSubmission"></ng-container> -->
+                            <page-addon-mod-assign-edit-submission [moduleId]="moduleId" [courseId]="courseId" [blindId]="blindId"></page-addon-mod-assign-edit-submission>
                         </ng-container>
                     </div>
                     <div *ngIf="unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
