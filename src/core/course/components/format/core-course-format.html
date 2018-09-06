@@ -5,19 +5,9 @@
             (action)="showSectionSelector($event)" iconAction="menu"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
-
 <!-- Default course format. -->
 <core-dynamic-component [component]="courseFormatComponent" [data]="data" class="paddingTopComponent">
-    <ion-fab *ngIf="selectedSection?.section !== 0" bottom left edge>
-        <button ion-fab (click)="navToMapView()">
-            <core-icon name="compass"></core-icon>
-        </button>
-    </ion-fab>
-    <ion-fab bottom right edge>
-        <button ion-fab (click)="navToQrScanner()">
-            <core-icon name="md-barcode"></core-icon>
-        </button>
-    </ion-fab>
+    
 
     <!-- Course summary. By default we only display the course progress. -->
     <core-dynamic-component [component]="courseSummaryComponent" [data]="data" class="progressComponent">
@@ -76,13 +66,6 @@
 <!-- Template to render first section. -->
 <ng-template #firstSectionTemplate let-section="section">
     <section class="paddingBottomContent" ion-list *ngIf="section.hasContent && section.id != allSectionsId && section.section == 0">
-        <!-- <div class="navigation-button__wrapper">
-                    <div class="navigation-button__centerer">
-                        <button class="navigation-button" ion-fab (click)="navToQrScanner()">
-                            <core-icon name="md-barcode"></core-icon>
-                        </button>
-                    </div>
-                </div> -->
         <div>
             <!-- <P>{{section.modules[1].name}} {{course.id}}</P> -->
             <core-navigation-map [module]="section.modules[1]" [courseId]="course.id" [data]="data"></core-navigation-map>

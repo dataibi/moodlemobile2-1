@@ -73,6 +73,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     loaded: boolean;
     sectionFromNavParam: number;
     navigationSectionSubscription: Subscription;
+    sectionCallEventSubscription: Subscription;
 
     protected sectionStatusObserver;
 
@@ -149,6 +150,12 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                     );
                 });
                 this.sectionChanged(this.sections[index]);
+            }
+        );
+
+        this.sectionCallEventSubscription = this.navigationMapProvider.sectionCallEvent.subscribe(
+            () => {
+                this.navToMapView();
             }
         );
     }
@@ -378,6 +385,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         this.navigationSectionSubscription.unsubscribe();
+        this.sectionCallEventSubscription.unsubscribe();
     }
 
     /**

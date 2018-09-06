@@ -22,6 +22,8 @@ export class NavigationMapProvider {
 
     navigationSectionEvent = new EventEmitter<any>();
 
+    sectionCallEvent = new EventEmitter<any>();
+
 
     constructor() { }
 
@@ -37,6 +39,10 @@ export class NavigationMapProvider {
 
     public emitnavigationSectionEvent(SectionId): void {
         this.navigationSectionEvent.emit(SectionId);
+    }
+
+    public emitSectionCallEvent(): void {
+        this.sectionCallEvent.emit();
     }
 
   
