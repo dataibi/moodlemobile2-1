@@ -93,10 +93,10 @@
                 </div>
             </div>
             <div *ngIf="hotspotsLoaded" class="navigation-list-button__wrapper" (click)="goToList()">
-                <span *ngIf="content.isMap === true && !visible">show rooms</span>
-                <span *ngIf="content.isMap === true && visible">hide rooms</span>
-                <span *ngIf="content.isMap === false && !visible">show exponats</span>
-                <span *ngIf="content.isMap === false && visible">hide exponats</span>
+                <span *ngIf="content.isMap === true && !visible">{{ 'core.showrooms' | translate }}</span>
+                <span *ngIf="content.isMap === true && visible">{{ 'core.hiderooms' | translate }}</span>
+                <span *ngIf="content.isMap === false && !visible">{{ 'core.showexponats' | translate }}</span>
+                <span *ngIf="content.isMap === false && visible">{{ 'core.hideexponats' | translate }}</span>
                 <div class="arrowbutton-wrapper">
                     <button [ngClass]="{'navigation-list-button': true, 'navigation-list-button--invert': visible}" ion-fab mini>
                         <core-icon name="ios-arrow-down"></core-icon>
@@ -104,7 +104,7 @@
                 </div>
             </div>
             <div *ngIf="!hotspotsLoaded" class="navigation-list-button__wrapper">
-                <span>please wait</span>
+                <span>{{ 'core.loading' | translate }}</span>
                 <div class="arrowbutton-wrapper">
                     <ion-spinner></ion-spinner>
                 </div>
@@ -122,12 +122,12 @@
                             </ion-thumbnail>
                             <h2 text-wrap>{{room.name}}</h2>
                             <p text-wrap [innerHTML]="room.shortDescription"></p>
-                            <button ion-button clear item-end (click)="goToRoom(i)">View</button>
+                            <button ion-button clear item-end (click)="goToRoom(i)">{{ 'core.show' | translate }}</button>
                         </ion-item>
                         <ion-item-options side="left">
                             <button ion-button color="primary" (click)="goStraightToTopic(i)">
                                 <ion-icon name="eye"></ion-icon>
-                                Exponats
+                                {{ 'core.exponats' | translate }}
                             </button>
                         </ion-item-options>
                     </ion-item-sliding>
@@ -149,7 +149,7 @@
                             <h2 text-wrap>{{exponat.sectionName}}</h2>
                             <p text-wrap [innerHTML]="exponat.shortDescription"></p>
                             <!-- <p *ngFor="let paragraph of room.descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p> -->
-                            <button ion-button clear item-end (click)="showTopic(exponat.sectionId)">View</button>
+                            <button ion-button clear item-end (click)="showTopic(exponat.sectionId)">{{ 'core.show' | translate }}</button>
                         </ion-item>
                     </ion-item-sliding>
 

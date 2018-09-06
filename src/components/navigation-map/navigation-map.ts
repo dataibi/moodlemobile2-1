@@ -43,6 +43,7 @@ import { CoreFilepoolProvider } from "@providers/filepool";
 import { trigger, transition, animate, style } from '@angular/animations'
 import { NavigationObjectsPage } from "@components/navigation-objects/navigation-objects";
 import { CoreTextUtilsProvider } from "@providers/utils/text";
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: "core-navigation-map",
@@ -112,6 +113,7 @@ export class NavigationMapComponent
         private platform: Platform,
         public modalCtrl: ModalController,
         protected textUtils: CoreTextUtilsProvider,
+        protected translate: TranslateService,
         element: ElementRef,
         @Optional() private content: Content
     ) {

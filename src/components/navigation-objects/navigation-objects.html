@@ -1,6 +1,6 @@
 <ion-header>
 	<ion-navbar>
-		<ion-title>{{roomContent.name}} exponats</ion-title>
+		<ion-title>{{roomContent.name}} {{ 'core.exponats' | translate }}</ion-title>
 	</ion-navbar>
 </ion-header>
 
@@ -14,7 +14,7 @@
 		  </ion-thumbnail>
 		  <h2>{{topic.sectionName}}</h2>
 		  <p text-wrap [innerHTML]="topic.shortDescription"></p>
-		  <button ion-button clear item-end (click)="showRoomObjectPage(i)">View</button>
+		  <button ion-button clear item-end (click)="showRoomObjectPage(i)">{{ 'core.show' | translate }}</button>
 		</ion-item>
 		<!-- <ion-item-options side="left">
 		  <button ion-button color="primary">
