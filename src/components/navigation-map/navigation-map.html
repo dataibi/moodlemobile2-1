@@ -32,13 +32,11 @@
                         <div class="hotspot-wrapper" *ngIf="hotspotsLoaded">
                             <div *ngFor="let hotspot of content.map[content.index].hotspotsCoordinates; let i = index" [ngStyle]="{'left': hotspot.xValue + '%', 'top': hotspot.yValue + '%'}"
                                 (click)="showRoomDetails(i, content.isMap === true ? 'room' : 'topic')" class="hotspot">
-
                                 {{i+1}}
                             </div>
                         </div>
                         <img (click)="showMap(content.isMap === true ? 'map' : 'room')" [src]="content.map[content.index].image | safe_image" [alt]="content.map[content.index].imageAlt"
                             class="image" />
-
                     </div>
                 </div>
 
@@ -52,9 +50,6 @@
                                 <core-icon color="black" name="ios-more-outline"></core-icon>
                             </button>
                         </div>
-
-
-                        <!-- <p *ngFor="let paragraph of content.map[content.index].descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p> -->
                     </ion-item>
                     <ion-item *ngIf="showRoomDescription">
                         <ion-thumbnail item-start>
@@ -62,7 +57,7 @@
                         </ion-thumbnail>
                         <h2 text-wrap>{{roomModulesSplittedContentArray[roomIndexToShow].name}}</h2>
                         <p text-wrap [innerHTML]="roomModulesSplittedContentArray[roomIndexToShow].shortDescription"></p>
-                        <button ion-button clear item-end (click)="goToRoom(roomIndexToShow, $event)">View</button>
+                        <button ion-button clear item-end (click)="goToRoom(roomIndexToShow, $event)">{{ 'core.show' | translate }}</button>
                         <div class="more-button">
                             <button ion-fab mini (click)="newExpandDescription(roomModulesSplittedContentArray[roomIndexToShow].name, roomModulesSplittedContentArray[roomIndexToShow].description)">
                                 <core-icon color="black" name="ios-more-outline"></core-icon>
@@ -88,7 +83,7 @@
                         </ion-thumbnail>
                         <h2 text-wrap>{{exponatModulesSplittedContentArray[topicIndexToShow].sectionName}}</h2>
                         <p text-wrap [innerHTML]="exponatModulesSplittedContentArray[topicIndexToShow].shortDescription"></p>
-                        <button ion-button clear item-end (click)="showTopic(exponatModulesSplittedContentArray[topicIndexToShow].sectionId)">View</button>
+                        <button ion-button clear item-end (click)="showTopic(exponatModulesSplittedContentArray[topicIndexToShow].sectionId)">{{ 'core.show' | translate }}</button>
                     </ion-item>
                 </div>
             </div>
@@ -131,7 +126,6 @@
                             </button>
                         </ion-item-options>
                     </ion-item-sliding>
-
                 </ion-list>
             </ion-card>
         </div>
@@ -148,48 +142,37 @@
                             </ion-thumbnail>
                             <h2 text-wrap>{{exponat.sectionName}}</h2>
                             <p text-wrap [innerHTML]="exponat.shortDescription"></p>
-                            <!-- <p *ngFor="let paragraph of room.descriptionInParagraphsArray" text-wrap [innerHTML]="paragraph"></p> -->
                             <button ion-button clear item-end (click)="showTopic(exponat.sectionId)">{{ 'core.show' | translate }}</button>
                         </ion-item>
                     </ion-item-sliding>
-
                 </ion-list>
             </ion-card>
         </div>
 
-
         <ion-card *ngIf="content.map.length && content.map.length > 1">
             <ion-list *ngIf="content.isMap === true">
                 <ion-item-sliding *ngFor="let map of content.map; let i = index">
-
                     <ion-item (click)="hotspotsLoaded && changeMap(i, 'map')" *ngIf="mapIndexToShow !== i">
                         <ion-thumbnail item-start>
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
                         <h2 text-wrap>{{map.name}}</h2>
                         <p text-wrap [innerHTML]="map.shortDescription"></p>
-                        <!-- <button ion-button clear item-end (click)="changeMap(i)">View</button> -->
                     </ion-item>
                 </ion-item-sliding>
-
             </ion-list>
             <ion-list *ngIf="content.isMap === false">
                 <ion-item-sliding *ngFor="let map of content.map; let i = index">
-
                     <ion-item (click)="hotspotsLoaded && changeMap(i, 'room')" *ngIf="roomMapToShow !== i">
                         <ion-thumbnail item-start>
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
                         <h2 text-wrap>{{map.name}}</h2>
                         <p text-wrap [innerHTML]="map.shortDescription"></p>
-                        <!-- <button ion-button clear item-end (click)="changeMap(i)">View</button> -->
                     </ion-item>
                 </ion-item-sliding>
-
             </ion-list>
         </ion-card>
     </ng-template>
-
-
 
 </core-loading>
