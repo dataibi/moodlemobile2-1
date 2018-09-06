@@ -13,18 +13,16 @@
             [iconAction]="'trash'"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
-
+<div class="spinner-wrapper" *ngIf="!loaded">
+        <ion-spinner></ion-spinner>
+</div>
 <!-- Content. -->
 <core-loading [hideUntil]="loaded" class="core-loading-center">
-    <!-- <core-loading [hideUntil]="false" class="core-loading-center"> -->
 
     <ng-container *ngTemplateOutlet="mapOrRoomTemplate; context: {sectionContent: modulesSplittedContentArray.length ? { map: modulesSplittedContentArray, index: mapIndexToShow, isMap: true} : { map: roomModulesSplittedContentArray, index: roomMapToShow, isMap: false}}"></ng-container>
 
     <!-- Template to render first section. -->
     <ng-template #mapOrRoomTemplate let-content="sectionContent">
-        <div class="spinner-wrapper" *ngIf="!loaded">
-            <ion-spinner></ion-spinner>
-        </div>
         <div *ngIf="content.map[content.index]" class="card-outer-wrapper">
             <div class="card-inner-wrapper">
                 <div class="image-centerer">
