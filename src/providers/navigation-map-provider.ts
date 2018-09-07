@@ -24,6 +24,8 @@ export class NavigationMapProvider {
 
     sectionCallEvent = new EventEmitter<any>();
 
+    topicsToSectionIdArray: any[] = [];
+
 
     constructor() { }
 
@@ -43,6 +45,14 @@ export class NavigationMapProvider {
 
     public emitSectionCallEvent(): void {
         this.sectionCallEvent.emit();
+    }
+
+    public getTopicsToSectionIdArray(): any[] {
+        return this.topicsToSectionIdArray;
+    }
+
+    public setTopicsToSectionIdArray(topicsToSectionIdArray): void {
+        this.topicsToSectionIdArray = topicsToSectionIdArray;
     }
 
   

@@ -200,13 +200,32 @@ export class QrScannerPage {
      * @return {void}
      */
 	sendJson(): void {
-		let data: any, currentPageIndex: number;
+		let data: any, currentPageIndex: number, topicsToSectionIdArray: any[], foundTopicAndSectionId: any;
 		if (this.typeOfQrCode === 'login') {
 			this.qrReaderProvider.emitLoginData(this.scanned);
 		} else if (this.typeOfQrCode === 'section') {
 			data = safelyParseJSON(this.scanned);
+			topicsToSectionIdArray = this.navigationMapProvider.getTopicsToSectionIdArray();
+			console.log('topicsToSectionIdArray in sendJson');
+			console.log(topicsToSectionIdArray);
+			foundTopicAndSectionId = topicsToSectionIdArray.find((topic) => {
+				if (data.exhibit.map && typeof data.exhibit.map !== 'undefined') {
+						if (data.exhibit.map !== topic.jsonString.map) {
+								return false;
+						}
+				}
+				if (data.exhibit.room === topic.jsonString.room &&
+					data.exhibit.exponat === topic.jsonString.exponat) {
+						return true;
+				}
+			});
+			console.log('foundTopicAndSectionId');
+			console.log(foundTopicAndSectionId);
 			currentPageIndex = this.navCtrl.getActive().index;
-			this.navigationMapProvider.emitnavigationSectionEvent(data.sectionId);
+			if (foundTopicAndSectionId !== undefined) {
+				this.navigationMapProvider.emitnavigationSectionEvent(foundTopicAndSectionId.sectionId);
+			}
+			
 			this.navCtrl.remove(1,(currentPageIndex - 2));
 			this.navCtrl.pop();
 		}

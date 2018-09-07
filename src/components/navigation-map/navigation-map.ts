@@ -168,7 +168,7 @@ export class NavigationMapComponent
                 );
                 nameJsonObjectArray[i].index = i;
             } else {
-                nameJsonObjectArray[i].jsonObject = { room: "forFilter" }; // Delete this row?
+                nameJsonObjectArray[i].jsonObject = { room: "forFilter" }; // for the switch case bottom
             }
         }
 
@@ -228,10 +228,46 @@ export class NavigationMapComponent
         return mapAmountArray;
     }
 
+    /**
+     * Create an Array with the sectioId and jsonstring Name of the topic. We need it for the qr code. So you only have to put the json string in the qr code and the exponat can be found with the sectionId.
+     *
+     * @return {void} But uses the mapprovider for dependeny injection to the core course format component.
+     */
+    mapTopicsToSectionId() {
+        let topicsToSectionIdArray: any[] = [];
+
+        this.data.sections.forEach((oneSection, i) => {
+            let jsonString: string,
+                startForSubstring: number,
+                endForSubstring: number,
+                jsonStringObject: any;
+
+            if (oneSection.section &&
+                typeof oneSection.section !== 'undefined' &&
+                oneSection.section != 0) {
+
+                startForSubstring = oneSection.summary.indexOf("{");
+                endForSubstring = oneSection.summary.indexOf("}") + 1;
+
+                jsonString = oneSection.summary.substring(
+                    startForSubstring,
+                    endForSubstring
+                );
+                
+                topicsToSectionIdArray.push({jsonString: safelyParseJSON(jsonString), sectionId: oneSection.section});
+            
+            }
+
+        });
+        console.log("topicsToSectionIdArray");
+        console.log(topicsToSectionIdArray);
+        this.navigationMapProvider.setTopicsToSectionIdArray(topicsToSectionIdArray);
+    }
+
     getTopicContentOfOneRoom(roomIndexToShow): Promise<object> {
         let sections: any[] = [], i = 0, promises: Promise<object>[] = [];
 
-        //get the inizes of the topics of the room
+        //get the indizes of the topics of the room
 
         sections = this.data.sections.filter((oneSection, i) => {
             let jsonString: string,
@@ -320,6 +356,7 @@ export class NavigationMapComponent
             x = 0;
         if (changes.data.firstChange === true) {
             this.navigationMapProvider.setCourseData(this.data);
+            this.mapTopicsToSectionId();
             mapModulesArray = this.createMapsModulesArray("map", this.mapIndexToShow);
             if (mapModulesArray.length) {
                 await this.createTheSplittedContentInArray(mapModulesArray, 'map');
