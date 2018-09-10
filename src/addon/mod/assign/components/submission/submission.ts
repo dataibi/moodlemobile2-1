@@ -92,6 +92,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     allowAddAttempt: boolean; // Allow adding a new attempt when grading.
     gradeUrl: string; // URL to grade in browser.
 
+    filteredSubmissionPlugins: any[]; // List of submission plugins we need to be displayed
+
     // Some constants.
     statusNew = AddonModAssignProvider.SUBMISSION_STATUS_NEW;
     statusReopened = AddonModAssignProvider.SUBMISSION_STATUS_REOPENED;
@@ -106,8 +108,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     protected isDestroyed: boolean; // Whether the component has been destroyed.
 
     constructor(protected navCtrl: NavController, protected appProvider: CoreAppProvider, protected domUtils: CoreDomUtilsProvider,
-            sitesProvider: CoreSitesProvider, protected syncProvider: CoreSyncProvider, protected timeUtils: CoreTimeUtilsProvider,
-            protected textUtils: CoreTextUtilsProvider, protected translate: TranslateService, protected utils: CoreUtilsProvider,
+            protected sitesProvider: CoreSitesProvider, protected syncProvider: CoreSyncProvider,
+            protected timeUtils: CoreTimeUtilsProvider, protected textUtils: CoreTextUtilsProvider,
+            protected translate: TranslateService, protected utils: CoreUtilsProvider,
             protected eventsProvider: CoreEventsProvider, protected courseProvider: CoreCourseProvider,
             protected fileUploaderHelper: CoreFileUploaderHelperProvider, protected gradesHelper: CoreGradesHelperProvider,
             protected userProvider: CoreUserProvider, protected groupsProvider: CoreGroupsProvider,
@@ -507,8 +510,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             }
         } else {
             // If no feedback, always show Submission.
-            this.selectedTab = 0;
-            this.tabs.selectTab(0);
+            if (this.tabs.tabs.length > 0) {
+                this.selectedTab = 0;
+                this.tabs.selectTab(0);
+            }
         }
 
         this.grade.gradingStatus = this.lastAttempt && this.lastAttempt.gradingstatus;
@@ -760,8 +765,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 this.domUtils.showErrorModalDefault(error, 'core.error', true);
             }).finally(() => {
                 // Select submission view.
-                this.tabs.selectTab(0);
-                modal.dismiss();
+                if (this.tabs.tabs.length > 0) {
+                    this.tabs.selectTab(0);
+                    modal.dismiss();
+                }
             });
         });
     }
@@ -928,6 +935,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 } else {
                     this.submissionPlugins = this.userSubmission.plugins;
                 }
+                this.filteredSubmissionPlugins = this.filterSubmissionPlugins(this.submissionPlugins);
             }
         }
     }
@@ -941,5 +949,15 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         if (this.assign && this.isGrading) {
             this.syncProvider.unblockOperation(AddonModAssignProvider.COMPONENT, this.assign.id);
         }
+    }
+
+    private filterSubmissionPlugins(submissionPlugins: any[]): any[] {
+        let result: any[] = [];
+
+        result = submissionPlugins.filter(
+            (submissionPlugin) => submissionPlugin.type == 'file' || submissionPlugin.type == 'onlinetext'
+        );
+
+        return result;
     }
 }
