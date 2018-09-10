@@ -73,12 +73,6 @@ core-navigation-map {
         border-radius: $spacing--small $spacing--small 500px 500px;
         text-align: center;
         box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.14), 0 4px 5px rgba(0, 0, 0, 0.1);
-
-        
-
-        
-        
-
     }
 
     .navigation-list-button {
@@ -93,7 +87,4 @@ core-navigation-map {
     .navigation-list-button--invert {
         transform: rotate(180deg);
     }
-
-    
-
 }

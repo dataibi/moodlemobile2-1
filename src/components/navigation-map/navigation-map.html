@@ -115,10 +115,10 @@
                             </ion-thumbnail>
                             <h2 text-wrap>{{room.name}}</h2>
                             <p text-wrap [innerHTML]="room.shortDescription"></p>
-                            <button ion-button clear item-end (click)="goToRoom(i)">{{ 'core.show' | translate }}</button>
+                            <button ion-button clear item-end (click)="goToRoom(i, $event)">{{ 'core.show' | translate }}</button>
                         </ion-item>
                         <ion-item-options side="left">
-                            <button ion-button color="primary" (click)="goStraightToTopic(i)">
+                            <button ion-button color="primary" (click)="goStraightToTopic(i, $event)">
                                 <ion-icon name="eye"></ion-icon>
                                 {{ 'core.exponats' | translate }}
                             </button>

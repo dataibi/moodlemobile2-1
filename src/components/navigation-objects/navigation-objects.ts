@@ -1,11 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+// (C) Copyright 2018 David Pohl
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { NavigationMapProvider } from '@providers/navigation-map-provider';
-import { CoreCourseFormatComponent } from '@core/course/components/format/format';
-import { ViewController } from 'ionic-angular/navigation/view-controller';
-// import { HomeDetailPage } from '../homeDetail/home-detail';
-// import { Museum } from '../../models/museum.model';
-// import { FloorPage } from '../floor/floor';
+import { NavigationMapProvider } from './../../providers/navigation-map-provider';
 
 @Component({
 	selector: 'page-navigation-objects',
@@ -16,29 +24,17 @@ export class NavigationObjectsPage {
 	roomTopicContent: any;
 	roomContent: any;
 
-	
-
 	constructor(public navCtrl: NavController,
-		private navParams: NavParams,
-		private navigationMapProvider: NavigationMapProvider,
-		private viewCtrl: ViewController) {
-			this.roomTopicContent = navParams.get("roomTopicContent");
-			console.log('roomTopicContent in objects');
-			console.log(this.roomTopicContent);
-			this.roomContent = navParams.get("roomContent");
-
-			console.log('contentn in objects');
-			console.log(this.roomContent);
+		navParams: NavParams,
+		private navigationMapProvider: NavigationMapProvider) {
+			this.roomTopicContent = navParams.get('roomTopicContent');
+			this.roomContent = navParams.get('roomContent');
 		}
-	
-	showRoomObjectPage(index) {
-		let currentPageIndex: number = this.navCtrl.getActive().index;
-		this.navCtrl.remove(2,(currentPageIndex - 2));
+
+	showRoomObjectPage(index: number): void {
+		const currentPageIndex: number = this.navCtrl.getActive().index;
+		this.navCtrl.remove(2, (currentPageIndex - 2));
 		this.navigationMapProvider.emitnavigationSectionEvent(this.roomTopicContent[index].sectionId);
 		this.navCtrl.pop();
 	}
-
-
-
-
 }
