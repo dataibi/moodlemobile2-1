@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { NavigationMapProvider } from './../providers/navigation-map-provider';
 import { QrReaderProvider } from './../providers/qrReader';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -114,6 +115,7 @@ import { AddonNotificationsModule } from '@addon/notifications/notifications.mod
 import { AddonRemoteThemesModule } from '@addon/remotethemes/remotethemes.module';
 import { AddonQbehaviourModule } from '@addon/qbehaviour/qbehaviour.module';
 import { AddonQtypeModule } from '@addon/qtype/qtype.module';
+// import { CoreCourseFormatComponent } from '@core/course/components/format/format';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -263,7 +265,8 @@ export const CORE_PROVIDERS: any[] = [
         {provide: JitCompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
         {provide: LocationStrategy, useClass: MockLocationStrategy},
         QRScanner,
-        QrReaderProvider
+        QrReaderProvider,
+        NavigationMapProvider
     ]
 })
 export class AppModule {

@@ -1,0 +1,90 @@
+core-navigation-map {
+
+    .item-md {
+        h2 {
+            margin-bottom: $spacing--small;
+        }
+    }
+
+    .image-centerer{
+        display: flex;
+        justify-content: center;
+    }
+
+    .image-wrapper {
+        position: relative;
+        padding-top:1px;
+        margin-top:-1px;
+        font-size: 0px;
+        display: inline-block;
+    }
+
+    .hotspot {
+        position: absolute;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: $button-height * 0.8;
+        width: $button-height * 0.8;
+        border: 2px solid $primary-color;
+        border-radius: $button-height * 0.4;
+        background: $white;
+        font-size: $font-size--small;
+        font-weight: bold;
+        transform: translate3d(-50%, -50%, 0);
+    }
+
+    .hotspot-wrapper {
+        display: inline-block;
+    }
+
+    .list-md .item-block .item-inner {
+        border-bottom: 1px solid #dedede !important;
+    }
+
+    .card-outer-wrapper {
+        position: relative;
+        padding-bottom: $spacing--small;
+        background: $white;
+        margin-bottom: $spacing--huge * 2;
+        z-index: 1;
+
+        .item-md.item-block .item-inner {
+            border: 0;
+        }
+    }
+
+    .spinner-wrapper {
+        display: flex;
+        justify-content: center;
+        margin: $spacing--huge;
+    }
+
+    .navigation-list-button__wrapper {
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        display: inline-flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        transform: translate3d(-50%, 50%,0);
+        padding: $spacing--medium $spacing--medium 0 $spacing--medium;
+        background: $white;
+        border-radius: $spacing--small $spacing--small 500px 500px;
+        text-align: center;
+        box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.14), 0 4px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .navigation-list-button {
+        transform: rotate(0deg);
+        transition: transform 0.3s ease-in-out;
+
+        &.fab-md {
+            box-shadow: inset 0 4px 6px 0 rgba(0, 0, 0, 0.05), inset 0 4px 5px rgba(0, 0, 0, 0.05), inset 0 -4px 6px 0 rgba(0, 0, 0, 0.05), inset 0 -4px 5px rgba(0, 0, 0, 0.05);
+        }
+    }
+
+    .navigation-list-button--invert {
+        transform: rotate(180deg);
+    }
+}

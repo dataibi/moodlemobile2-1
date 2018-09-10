@@ -25,6 +25,11 @@ import { CoreCourseHelperProvider } from '@core/course/providers/helper';
 import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@core/course/providers/module-prefetch-delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
+import { NavController } from 'ionic-angular/navigation/nav-controller';
+import { NavParams } from 'ionic-angular/navigation/nav-params';
+import { NavigationMapProvider } from '@providers/navigation-map-provider';
+import { Subscription } from 'rxjs';
+import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -66,13 +71,20 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
     selectOptions: any = {};
     loaded: boolean;
+    sectionFromNavParam: number;
+    navigationSectionSubscription: Subscription;
+    sectionCallEventSubscription: Subscription;
 
     protected sectionStatusObserver;
 
     constructor(private cfDelegate: CoreCourseFormatDelegate, translate: TranslateService, private injector: Injector,
             private courseHelper: CoreCourseHelperProvider, private domUtils: CoreDomUtilsProvider,
             eventsProvider: CoreEventsProvider, private sitesProvider: CoreSitesProvider, private content: Content,
-            prefetchDelegate: CoreCourseModulePrefetchDelegate, private modalCtrl: ModalController) {
+            prefetchDelegate: CoreCourseModulePrefetchDelegate, private modalCtrl: ModalController,
+            public navCtrl: NavController, navParams: NavParams,
+            private navigationMapProvider: NavigationMapProvider) {
+
+        this.sectionFromNavParam = navParams.get("roomTopicContent");
 
         this.selectOptions.title = translate.instant('core.course.sections');
         this.completionChanged = new EventEmitter();
@@ -114,11 +126,38 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }, this.sitesProvider.getCurrentSiteId());
     }
 
+    // ionViewWillEnter() {
+	// 	if (this.sectionFromNavParam) {
+    //         this.sectionChanged(this.sections[this.sectionFromNavParam]);
+    //     }
+		
+
+		
+    // }
+
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
         this.displaySectionSelector = this.cfDelegate.displaySectionSelector(this.course);
+        this.navigationSectionSubscription = this.navigationMapProvider.navigationSectionEvent.subscribe(
+            (sectionId) => {
+                let index = this.sections.findIndex((oneSection) => {
+                    return (
+                        oneSection.section &&
+                        typeof oneSection.section !== 'undefined' &&
+                        oneSection.section === sectionId
+                    );
+                });
+                this.sectionChanged(this.sections[index]);
+            }
+        );
+
+        this.sectionCallEventSubscription = this.navigationMapProvider.sectionCallEvent.subscribe(
+            () => {
+                this.navToMapView();
+            }
+        );
     }
 
     /**
@@ -183,6 +222,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     protected setInputData(): void {
         this.data.course = this.course;
         this.data.sections = this.sections;
+        console.log('this.sections');
+        console.log(this.sections);
+        console.dir(this.sections);
         this.data.initialSectionId = this.initialSectionId;
         this.data.initialSectionNumber = this.initialSectionNumber;
         this.data.downloadEnabled = this.downloadEnabled;
@@ -229,6 +271,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             {sections: this.sections, selected: this.selectedSection});
         modal.onDidDismiss((newSection) => {
             if (newSection) {
+                console.log('new section');
+                console.log(newSection);
                 this.sectionChanged(newSection);
             }
         });
@@ -339,6 +383,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (this.sectionStatusObserver) {
             this.sectionStatusObserver.off();
         }
+
+        this.navigationSectionSubscription.unsubscribe();
+        this.sectionCallEventSubscription.unsubscribe();
     }
 
     /**
@@ -357,5 +404,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.dynamicComponents.forEach((component) => {
             component.callComponentFunction('ionViewDidLeave');
         });
+    }
+
+    navToQrScanner(): void {
+        this.navCtrl.push(QrScannerPage, {isLogin: false});
+    }
+
+    navToMapView() {
+        this.sectionChanged(this.sections[1]);
     }
 }

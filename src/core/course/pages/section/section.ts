@@ -28,6 +28,7 @@ import { CoreCourseFormatComponent } from '../../components/format/format';
 import { CoreCoursesProvider } from '@core/courses/providers/courses';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
+import { NavigationMapProvider } from '@providers/navigation-map-provider';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -70,7 +71,7 @@ export class CoreCourseSectionPage implements OnDestroy {
             private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
             private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
             sitesProvider: CoreSitesProvider, private navCtrl: NavController, private injector: Injector,
-            private prefetchDelegate: CoreCourseModulePrefetchDelegate) {
+            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private navigationMapProvider: NavigationMapProvider) {
         this.course = navParams.get('course');
         this.sectionId = navParams.get('sectionId');
         this.sectionNumber = navParams.get('sectionNumber');
@@ -408,5 +409,9 @@ export class CoreCourseSectionPage implements OnDestroy {
     ionViewDidLeave(): void {
         this.formatComponent && this.formatComponent.ionViewDidLeave();
         this.tabsComponent && this.tabsComponent.ionViewDidLeave();
+    }
+
+    navToMapView() {
+        this.navigationMapProvider.emitSectionCallEvent();
     }
 }

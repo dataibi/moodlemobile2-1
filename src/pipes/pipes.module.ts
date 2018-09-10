@@ -1,3 +1,4 @@
+import { SafeImagePipe } from './safe-image';
 // (C) Copyright 2015 Martin Dougiamas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +34,8 @@ import { CoreToLocaleStringPipe } from './to-locale-string';
         CoreNoTagsPipe,
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
-        CoreToLocaleStringPipe
+        CoreToLocaleStringPipe,
+        SafeImagePipe
     ],
     imports: [],
     exports: [
@@ -45,7 +47,8 @@ import { CoreToLocaleStringPipe } from './to-locale-string';
         CoreNoTagsPipe,
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
-        CoreToLocaleStringPipe
+        CoreToLocaleStringPipe,
+        SafeImagePipe
     ]
 })
 export class CorePipesModule {}

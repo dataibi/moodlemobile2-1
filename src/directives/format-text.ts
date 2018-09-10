@@ -255,6 +255,9 @@ export class CoreFormatTextDirective implements OnChanges {
         this.text = this.text ? this.text.trim() : '';
 
         this.formatContents().then((div: HTMLElement) => {
+
+            console.log('div in formatAndRenderContents');
+            console.log(div);
             // Disable media adapt to correctly calculate the height.
             this.element.classList.add('core-disable-media-adapt');
 
@@ -283,6 +286,8 @@ export class CoreFormatTextDirective implements OnChanges {
             }
 
             this.element.classList.remove('core-disable-media-adapt');
+            console.log('this.element');
+            console.log(this.element);
             this.finishRender();
         });
     }
@@ -295,7 +300,6 @@ export class CoreFormatTextDirective implements OnChanges {
     protected formatContents(): Promise<HTMLElement> {
 
         let site: CoreSite;
-
         // Retrieve the site since it might be needed later.
         return this.sitesProvider.getSite(this.siteId).catch(() => {
             // Error getting the site. This probably means that there is no current site and no siteId was supplied.

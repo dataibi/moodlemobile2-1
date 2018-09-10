@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { NavigationFloorsPage } from './navigation-floors/navigation-floors';
 import { NgModule } from '@angular/core';
 import { IonicModule } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
@@ -49,6 +50,8 @@ import { CoreAttachmentsComponent } from './attachments/attachments';
 import { CoreIonTabsComponent } from './ion-tabs/ion-tabs';
 import { CoreIonTabComponent } from './ion-tabs/ion-tab';
 import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
+import { NavigationMapComponent } from './navigation-map/navigation-map';
+import { NavigationObjectsPage } from '@components/navigation-objects/navigation-objects';
 import { CoreSimplifiedAttachmentsComponent } from '@components/attachments/simpliefiedAttachments';
 
 @NgModule({
@@ -85,13 +88,18 @@ import { CoreSimplifiedAttachmentsComponent } from '@components/attachments/simp
         CoreIonTabsComponent,
         CoreIonTabComponent,
         QrScannerPage,
+        NavigationMapComponent,
+        NavigationFloorsPage,
+        NavigationObjectsPage,
         CoreSimplifiedAttachmentsComponent
     ],
     entryComponents: [
         CoreContextMenuPopoverComponent,
         CoreCoursePickerMenuPopoverComponent,
         CoreRecaptchaModalComponent,
-        QrScannerPage
+        QrScannerPage,
+        NavigationFloorsPage,
+        NavigationObjectsPage
     ],
     imports: [
         IonicModule,
@@ -128,6 +136,7 @@ import { CoreSimplifiedAttachmentsComponent } from '@components/attachments/simp
         CoreAttachmentsComponent,
         CoreIonTabsComponent,
         CoreIonTabComponent,
+        NavigationMapComponent,
         CoreSimplifiedAttachmentsComponent
     ]
 })

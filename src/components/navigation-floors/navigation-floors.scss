@@ -1,0 +1,17 @@
+page-navigation-floors {
+  ion-card {
+    position: relative;
+    text-align: center;
+  }
+
+
+  .button__wrapper {
+    position: relative;
+    height: $spacing--huge * 2;
+  }
+
+  .scroll-content ion-fab {
+    position: absolute;
+    margin-bottom: 0;
+  }
+}

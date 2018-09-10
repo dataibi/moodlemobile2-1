@@ -238,5 +238,12 @@
     "wsfunctionnotavailable": "Die Webservice-Funktion ist nicht verfügbar.",
     "year": "Jahr",
     "years": "Jahre",
-    "yes": "Ja"
+    "yes": "Ja",
+    "showexponats": "Exponate anzeigen",
+    "hideexponats": "Exponate verbergen",
+    "showrooms": "Räume anzeigen",
+    "hiderooms": "Räume verbergen",
+    "exponats": "Exponate",
+    "scanner": "Scanner",
+    "scannertext": "Bitte scannen Sie einen Qr Code"
 }

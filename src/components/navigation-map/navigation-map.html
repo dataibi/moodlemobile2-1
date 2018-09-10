@@ -1,0 +1,176 @@
+<!-- Buttons to add to the header. -->
+<core-navbar-buttons end>
+    <core-context-menu>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()"
+            [iconAction]="'arrow-forward'"></core-context-menu-item>
+        <core-context-menu-item [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon"
+            [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="600" [content]="prefetchText" (action)="prefetch()" [iconAction]="prefetchStatusIcon"
+            [closeOnClick]="false"></core-context-menu-item>
+        <core-context-menu-item *ngIf="size" [priority]="500" [content]="size" [iconDescription]="'cube'" (action)="removeFiles()"
+            [iconAction]="'trash'"></core-context-menu-item>
+    </core-context-menu>
+</core-navbar-buttons>
+<div class="spinner-wrapper" *ngIf="!loaded">
+        <ion-spinner></ion-spinner>
+</div>
+<!-- Content. -->
+<core-loading [hideUntil]="loaded" class="core-loading-center">
+
+    <ng-container *ngTemplateOutlet="mapOrRoomTemplate; context: {sectionContent: modulesSplittedContentArray.length ? { map: modulesSplittedContentArray, index: mapIndexToShow, isMap: true} : { map: roomModulesSplittedContentArray, index: roomMapToShow, isMap: false}}"></ng-container>
+
+    <!-- Template to render first section. -->
+    <ng-template #mapOrRoomTemplate let-content="sectionContent">
+        <div *ngIf="content.map[content.index]" class="card-outer-wrapper">
+            <div class="card-inner-wrapper">
+                <div class="image-centerer">
+                    <div class="image-wrapper">
+                        <div class="hotspot-wrapper" *ngIf="hotspotsLoaded">
+                            <div *ngFor="let hotspot of content.map[content.index].hotspotsCoordinates; let i = index" [ngStyle]="{'left': hotspot.xValue + '%', 'top': hotspot.yValue + '%'}"
+                                (click)="showRoomDetails(i, content.isMap === true ? 'room' : 'topic')" class="hotspot">
+                                {{i+1}}
+                            </div>
+                        </div>
+                        <img (click)="showMap(content.isMap === true ? 'map' : 'room')" [src]="content.map[content.index].image | safe_image" [alt]="content.map[content.index].imageAlt"
+                            class="image" />
+                    </div>
+                </div>
+
+                <!-- Info under Image if content is map -->
+                <div *ngIf="content.isMap === true">
+                    <ion-item *ngIf="!showRoomDescription">
+                        <h2 text-wrap>{{content.map[content.index].name}}</h2>
+                        <p text-wrap [innerHTML]="content.map[content.index].shortDescription"></p>
+                        <div class="more-button">
+                            <button ion-fab mini (click)="newExpandDescription(content.map[content.index].name, content.map[content.index].description)">
+                                <core-icon color="black" name="ios-more-outline"></core-icon>
+                            </button>
+                        </div>
+                    </ion-item>
+                    <ion-item *ngIf="showRoomDescription">
+                        <ion-thumbnail item-start>
+                            <img [src]="roomModulesSplittedContentArray[roomIndexToShow].image | safe_image">
+                        </ion-thumbnail>
+                        <h2 text-wrap>{{roomModulesSplittedContentArray[roomIndexToShow].name}}</h2>
+                        <p text-wrap [innerHTML]="roomModulesSplittedContentArray[roomIndexToShow].shortDescription"></p>
+                        <button ion-button clear item-end (click)="goToRoom(roomIndexToShow, $event)">{{ 'core.show' | translate }}</button>
+                        <div class="more-button">
+                            <button ion-fab mini (click)="newExpandDescription(roomModulesSplittedContentArray[roomIndexToShow].name, roomModulesSplittedContentArray[roomIndexToShow].description)">
+                                <core-icon color="black" name="ios-more-outline"></core-icon>
+                            </button>
+                        </div>
+                    </ion-item>
+                </div>
+
+                <!-- Info under Image if content is room -->
+                <div *ngIf="content.isMap === false">
+                    <ion-item *ngIf="!showExponatDescription">
+                        <h2 text-wrap>{{content.map[content.index].name}}</h2>
+                        <p text-wrap [innerHTML]="content.map[content.index].shortDescription"></p>
+                        <div class="more-button">
+                            <button ion-fab mini (click)="newExpandDescription(roomModulesSplittedContentArray[roomIndexToShow].name, roomModulesSplittedContentArray[roomIndexToShow].description)">
+                                <core-icon color="black" name="ios-more-outline"></core-icon>
+                            </button>
+                        </div>
+                    </ion-item>
+                    <ion-item *ngIf="showExponatDescription">
+                        <ion-thumbnail item-start>
+                            <img [src]="exponatModulesSplittedContentArray[topicIndexToShow].formattedContent.images[0].src | safe_image">
+                        </ion-thumbnail>
+                        <h2 text-wrap>{{exponatModulesSplittedContentArray[topicIndexToShow].sectionName}}</h2>
+                        <p text-wrap [innerHTML]="exponatModulesSplittedContentArray[topicIndexToShow].shortDescription"></p>
+                        <button ion-button clear item-end (click)="showTopic(exponatModulesSplittedContentArray[topicIndexToShow].sectionId)">{{ 'core.show' | translate }}</button>
+                    </ion-item>
+                </div>
+            </div>
+            <div *ngIf="hotspotsLoaded" class="navigation-list-button__wrapper" (click)="goToList()">
+                <span *ngIf="content.isMap === true && !visible">{{ 'core.showrooms' | translate }}</span>
+                <span *ngIf="content.isMap === true && visible">{{ 'core.hiderooms' | translate }}</span>
+                <span *ngIf="content.isMap === false && !visible">{{ 'core.showexponats' | translate }}</span>
+                <span *ngIf="content.isMap === false && visible">{{ 'core.hideexponats' | translate }}</span>
+                <div class="arrowbutton-wrapper">
+                    <button [ngClass]="{'navigation-list-button': true, 'navigation-list-button--invert': visible}" ion-fab mini>
+                        <core-icon name="ios-arrow-down"></core-icon>
+                    </button>
+                </div>
+            </div>
+            <div *ngIf="!hotspotsLoaded" class="navigation-list-button__wrapper">
+                <span>{{ 'core.loading' | translate }}</span>
+                <div class="arrowbutton-wrapper">
+                    <ion-spinner></ion-spinner>
+                </div>
+            </div>
+        </div>
+
+        <!-- all rooms slide in under image if content is map -->
+        <div *ngIf="content.isMap === true && visible" [@slideInOut]>
+            <ion-card>
+                <ion-list>
+                    <ion-item-sliding *ngFor="let room of roomModulesSplittedContentArray; let i = index">
+                        <ion-item>
+                            <ion-thumbnail item-start>
+                                <img [src]="room.image | safe_image" [alt]="room.imageAlt" class="image" />
+                            </ion-thumbnail>
+                            <h2 text-wrap>{{room.name}}</h2>
+                            <p text-wrap [innerHTML]="room.shortDescription"></p>
+                            <button ion-button clear item-end (click)="goToRoom(i, $event)">{{ 'core.show' | translate }}</button>
+                        </ion-item>
+                        <ion-item-options side="left">
+                            <button ion-button color="primary" (click)="goStraightToTopic(i, $event)">
+                                <ion-icon name="eye"></ion-icon>
+                                {{ 'core.exponats' | translate }}
+                            </button>
+                        </ion-item-options>
+                    </ion-item-sliding>
+                </ion-list>
+            </ion-card>
+        </div>
+
+        <!-- all exponats slide in under image if content is room -->
+        <div *ngIf="content.isMap === false && visible" [@slideInOut]>
+            <ion-card>
+                <ion-list>
+                    <ion-item-sliding *ngFor="let exponat of exponatModulesSplittedContentArray; let i = index">
+                        <ion-item>
+                            <ion-thumbnail item-start>
+                                <img [src]="exponat.formattedContent.images[0].src | safe_image" [alt]="exponat.formattedContent.images[0].alt" class="image"
+                                />
+                            </ion-thumbnail>
+                            <h2 text-wrap>{{exponat.sectionName}}</h2>
+                            <p text-wrap [innerHTML]="exponat.shortDescription"></p>
+                            <button ion-button clear item-end (click)="showTopic(exponat.sectionId)">{{ 'core.show' | translate }}</button>
+                        </ion-item>
+                    </ion-item-sliding>
+                </ion-list>
+            </ion-card>
+        </div>
+
+        <ion-card *ngIf="content.map.length && content.map.length > 1">
+            <ion-list *ngIf="content.isMap === true">
+                <ion-item-sliding *ngFor="let map of content.map; let i = index">
+                    <ion-item (click)="hotspotsLoaded && changeMap(i, 'map')" *ngIf="mapIndexToShow !== i">
+                        <ion-thumbnail item-start>
+                            <img [src]="map.image | safe_image">
+                        </ion-thumbnail>
+                        <h2 text-wrap>{{map.name}}</h2>
+                        <p text-wrap [innerHTML]="map.shortDescription"></p>
+                    </ion-item>
+                </ion-item-sliding>
+            </ion-list>
+            <ion-list *ngIf="content.isMap === false">
+                <ion-item-sliding *ngFor="let map of content.map; let i = index">
+                    <ion-item (click)="hotspotsLoaded && changeMap(i, 'room')" *ngIf="roomMapToShow !== i">
+                        <ion-thumbnail item-start>
+                            <img [src]="map.image | safe_image">
+                        </ion-thumbnail>
+                        <h2 text-wrap>{{map.name}}</h2>
+                        <p text-wrap [innerHTML]="map.shortDescription"></p>
+                    </ion-item>
+                </ion-item-sliding>
+            </ion-list>
+        </ion-card>
+    </ng-template>
+
+</core-loading>

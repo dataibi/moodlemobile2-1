@@ -6,4 +6,8 @@ export PATH="/usr/local/bin/develop/jdk1.8.0_172:/home/david/bin/android-studio/
 #ionic cordova platform add android@6.3.0
 #ionic cordova prepare android
 #cordova plugin add cordova-android-support-gradle-release --variable ANDROID_SUPPORT_VERSION=27.+
-ionic cordova emulate android -lc
+#produces cors issues https://blog.ionicframework.com/handling-cors-issues-in-ionic/
+#ionic cordova emulate android -lc
+
+#to resolve cors issues
+ionic cordova run android

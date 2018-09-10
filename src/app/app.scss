@@ -873,3 +873,20 @@ $spacing--small: $base-size;
 $spacing--medium: $base-size * 2;
 $spacing--large: $base-size * 3;
 $spacing--huge: $base-size * 5;
+
+$font-size: $base-size * 2;
+$font-size--small: $base-size * 1.5;
+
+.more-button {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+
+  > button {
+      background: $white;
+
+      &.fab-md {
+          color: $black;
+      }
+  }
+}    
