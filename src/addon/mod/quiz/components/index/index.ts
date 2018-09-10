@@ -84,7 +84,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             if (!this.quizData) {
                 return;
             }
-
+			this.attemptQuiz();
             this.quizProvider.logViewQuiz(this.quizData.id).then(() => {
                 this.courseProvider.checkModuleCompletion(this.courseId, this.module.completionstatus);
             }).catch((error) => {
@@ -500,6 +500,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * Open a quiz to attempt it.
      */
     protected openQuiz(): void {
+    	console.log({quizId: this.quiz.id, moduleUrl: this.module.url});
         this.navCtrl.push('AddonModQuizPlayerPage', {courseId: this.courseId, quizId: this.quiz.id, moduleUrl: this.module.url});
     }
 

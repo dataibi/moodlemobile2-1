@@ -13,5 +13,6 @@
 <!-- Edit -->
 <div *ngIf="edit">
     <ion-item-divider text-wrap color="light">{{plugin.name}}</ion-item-divider>
-    <core-attachments [files]="files" [maxSize]="configs.maxsubmissionsizebytes" [maxSubmissions]="configs.maxfilesubmissions" [component]="component" [componentId]="assign.cmid" [acceptedTypes]="configs.filetypeslist" [allowOffline]="allowOffline"></core-attachments>
+    <!-- <core-attachments [files]="files" [maxSize]="configs.maxsubmissionsizebytes" [maxSubmissions]="configs.maxfilesubmissions" [component]="component" [componentId]="assign.cmid" [acceptedTypes]="configs.filetypeslist" [allowOffline]="allowOffline"></core-attachments> -->
+    <core-simplified-attachments [files]="files" [maxSize]="configs.maxsubmissionsizebytes" [maxSubmissions]="configs.maxfilesubmissions" [component]="component" [componentId]="assign.cmid" [acceptedTypes]="configs.filetypeslist" [allowOffline]="allowOffline"></core-simplified-attachments>
 </div>

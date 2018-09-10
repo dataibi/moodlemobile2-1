@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonicPage, NavParams, Content, ModalController, Modal } from 'ionic-angular';
+import { IonicPage, NavParams, NavController, Content, ModalController, Modal } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
@@ -57,7 +57,8 @@ export class AddonModQuizReviewPage implements OnInit {
     constructor(navParams: NavParams, modalCtrl: ModalController, protected translate: TranslateService,
             protected domUtils: CoreDomUtilsProvider, protected timeUtils: CoreTimeUtilsProvider,
             protected quizProvider: AddonModQuizProvider, protected quizHelper: AddonModQuizHelperProvider,
-            protected questionHelper: CoreQuestionHelperProvider, protected textUtils: CoreTextUtilsProvider) {
+            protected questionHelper: CoreQuestionHelperProvider, protected textUtils: CoreTextUtilsProvider,
+            protected navCtrl: NavController) {
 
         this.quizId = navParams.get('quizId');
         this.courseId = navParams.get('courseId');
@@ -82,6 +83,12 @@ export class AddonModQuizReviewPage implements OnInit {
             });
         }).finally(() => {
             this.loaded = true;
+            // Fabiano: pages stack simplyfied
+			this.navCtrl.remove(2,1);
+			
+			// Fabiano: in order to nav to another quiz
+			// this.navCtrl.push('AddonModQuizPlayerPage', {courseId: this.courseId, quizId: 6, moduleUrl: "https://moodle.mathetics.eu/mod/quiz/view.php?id=660"});
+
         });
     }
 
