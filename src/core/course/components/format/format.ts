@@ -84,7 +84,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             public navCtrl: NavController, navParams: NavParams,
             private navigationMapProvider: NavigationMapProvider) {
 
-        this.sectionFromNavParam = navParams.get("roomTopicContent");
+        this.sectionFromNavParam = navParams.get('roomTopicContent');
 
         this.selectOptions.title = translate.instant('core.course.sections');
         this.completionChanged = new EventEmitter();
@@ -126,15 +126,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }, this.sitesProvider.getCurrentSiteId());
     }
 
-    // ionViewWillEnter() {
-	// 	if (this.sectionFromNavParam) {
-    //         this.sectionChanged(this.sections[this.sectionFromNavParam]);
-    //     }
-		
-
-		
-    // }
-
     /**
      * Component being initialized.
      */
@@ -142,7 +133,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.displaySectionSelector = this.cfDelegate.displaySectionSelector(this.course);
         this.navigationSectionSubscription = this.navigationMapProvider.navigationSectionEvent.subscribe(
             (sectionId) => {
-                let index = this.sections.findIndex((oneSection) => {
+                const index = this.sections.findIndex((oneSection) => {
                     return (
                         oneSection.section &&
                         typeof oneSection.section !== 'undefined' &&
@@ -222,9 +213,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     protected setInputData(): void {
         this.data.course = this.course;
         this.data.sections = this.sections;
-        console.log('this.sections');
-        console.log(this.sections);
-        console.dir(this.sections);
         this.data.initialSectionId = this.initialSectionId;
         this.data.initialSectionNumber = this.initialSectionNumber;
         this.data.downloadEnabled = this.downloadEnabled;
@@ -271,8 +259,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             {sections: this.sections, selected: this.selectedSection});
         modal.onDidDismiss((newSection) => {
             if (newSection) {
-                console.log('new section');
-                console.log(newSection);
                 this.sectionChanged(newSection);
             }
         });
@@ -410,7 +396,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.navCtrl.push(QrScannerPage, {isLogin: false});
     }
 
-    navToMapView() {
+    navToMapView(): void {
         this.sectionChanged(this.sections[1]);
     }
 }

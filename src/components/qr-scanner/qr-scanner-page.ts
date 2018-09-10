@@ -33,7 +33,7 @@ export class QrScannerPage {
 	isLoginScan: boolean = false;
 	callingComponent: any;
 	typeOfQrCode: string;
-	courseData: any
+	courseData: any;
 
 	constructor(
 		public navCtrl: NavController,
@@ -72,7 +72,7 @@ export class QrScannerPage {
 		}
 	}
 
-	closeAndGoToComponent(component, paramsObject = {}): void {
+	closeAndGoToComponent(component: any, paramsObject: any = {}): void {
 		this.navCtrl.push(component, paramsObject);
 	}
 
@@ -97,9 +97,8 @@ export class QrScannerPage {
 		return this.typeOfQrCode;
 	}
 
-	/**
+    /**
      * Returns whether the qr code is valid.
-     *
      * @return {boolean} whether the qr code is valid
      */
 	doesQrCodeAndCalledComponentMatch(): boolean {
@@ -171,11 +170,7 @@ export class QrScannerPage {
 				});
 
 				this.showCamera();
-				this.qrScanner.show()
-					.then((data: QRScannerStatus) => {
-					}, (err) => {
-
-					});
+				this.qrScanner.show();
 
 				// Wait for user to scan something, then the observable callback will be called
 
@@ -194,7 +189,7 @@ export class QrScannerPage {
     	});
 	}
 
-	/**
+    /**
      * Sends the qr reader readed data to the components or emits the event to emit data.
      *
      * @return {void}
@@ -206,8 +201,6 @@ export class QrScannerPage {
 		} else if (this.typeOfQrCode === 'section') {
 			data = safelyParseJSON(this.scanned);
 			topicsToSectionIdArray = this.navigationMapProvider.getTopicsToSectionIdArray();
-			console.log('topicsToSectionIdArray in sendJson');
-			console.log(topicsToSectionIdArray);
 			foundTopicAndSectionId = topicsToSectionIdArray.find((topic) => {
 				if (data.exhibit.map && typeof data.exhibit.map !== 'undefined') {
 						if (data.exhibit.map !== topic.jsonString.map) {
@@ -219,14 +212,12 @@ export class QrScannerPage {
 						return true;
 				}
 			});
-			console.log('foundTopicAndSectionId');
-			console.log(foundTopicAndSectionId);
 			currentPageIndex = this.navCtrl.getActive().index;
 			if (foundTopicAndSectionId !== undefined) {
 				this.navigationMapProvider.emitnavigationSectionEvent(foundTopicAndSectionId.sectionId);
 			}
-			
-			this.navCtrl.remove(1,(currentPageIndex - 2));
+
+			this.navCtrl.remove(1, (currentPageIndex - 2));
 			this.navCtrl.pop();
 		}
 	}

@@ -411,7 +411,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.tabsComponent && this.tabsComponent.ionViewDidLeave();
     }
 
-    navToMapView() {
+    navToMapView(): void {
         this.navigationMapProvider.emitSectionCallEvent();
     }
 }
