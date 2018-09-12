@@ -81,7 +81,5 @@
     "usernameoremail": "Enter either username or email address",
     "usernamerequired": "Username required",
     "usernotaddederror": "User not added - error",
-    "visitchangepassword": "Do you want to visit the site to change the password?",
-    "scantologin": "Please press the button an scan a QR Code to login"
-
+    "visitchangepassword": "Do you want to visit the site to change the password?"
 }

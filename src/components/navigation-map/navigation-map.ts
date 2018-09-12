@@ -576,6 +576,10 @@ export class NavigationMapComponent
                 );
                 hotspotXYcoordinates.yValue = segment.substring(
                     segment.indexOf('y-value:') + 8,
+                    segment.indexOf(', number')
+                );
+                hotspotXYcoordinates.number = segment.substring(
+                    segment.indexOf('number:') + 7,
                     segment.indexOf(')')
                 );
 

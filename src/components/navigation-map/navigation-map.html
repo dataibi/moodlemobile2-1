@@ -30,7 +30,7 @@
                         <div class="hotspot-wrapper" *ngIf="hotspotsLoaded">
                             <div *ngFor="let hotspot of content.map[content.index].hotspotsCoordinates; let i = index" [ngStyle]="{'left': hotspot.xValue + '%', 'top': hotspot.yValue + '%'}"
                                 (click)="showRoomDetails(i, content.isMap === true ? 'room' : 'topic')" class="hotspot">
-                                {{i+1}}
+                                {{hotspot.number}}
                             </div>
                         </div>
                         <img (click)="showMap(content.isMap === true ? 'map' : 'room')" [src]="content.map[content.index].image | safe_image" [alt]="content.map[content.index].imageAlt"
@@ -41,7 +41,7 @@
                 <!-- Info under Image if content is map -->
                 <div *ngIf="content.isMap === true">
                     <ion-item *ngIf="!showRoomDescription">
-                        <h2 text-wrap>{{content.map[content.index].name}}</h2>
+                        <h2 text-wrap [innerHTML]="content.map[content.index].name"></h2>
                         <p text-wrap [innerHTML]="content.map[content.index].shortDescription"></p>
                         <div class="more-button">
                             <button ion-fab mini (click)="newExpandDescription(content.map[content.index].name, content.map[content.index].description)">
@@ -53,7 +53,7 @@
                         <ion-thumbnail item-start>
                             <img [src]="roomModulesSplittedContentArray[roomIndexToShow].image | safe_image">
                         </ion-thumbnail>
-                        <h2 text-wrap>{{roomModulesSplittedContentArray[roomIndexToShow].name}}</h2>
+                        <h2 text-wrap [innerHTML]="roomModulesSplittedContentArray[roomIndexToShow].name"></h2>
                         <p text-wrap [innerHTML]="roomModulesSplittedContentArray[roomIndexToShow].shortDescription"></p>
                         <button ion-button clear item-end (click)="goToRoom(roomIndexToShow, $event)">{{ 'core.show' | translate }}</button>
                         <div class="more-button">
@@ -67,7 +67,7 @@
                 <!-- Info under Image if content is room -->
                 <div *ngIf="content.isMap === false">
                     <ion-item *ngIf="!showExponatDescription">
-                        <h2 text-wrap>{{content.map[content.index].name}}</h2>
+                        <h2 text-wrap [innerHTML]="content.map[content.index].name"></h2>
                         <p text-wrap [innerHTML]="content.map[content.index].shortDescription"></p>
                         <div class="more-button">
                             <button ion-fab mini (click)="newExpandDescription(roomModulesSplittedContentArray[roomIndexToShow].name, roomModulesSplittedContentArray[roomIndexToShow].description)">
@@ -79,7 +79,7 @@
                         <ion-thumbnail item-start>
                             <img [src]="exponatModulesSplittedContentArray[topicIndexToShow].formattedContent.images[0].src | safe_image">
                         </ion-thumbnail>
-                        <h2 text-wrap>{{exponatModulesSplittedContentArray[topicIndexToShow].sectionName}}</h2>
+                        <h2 text-wrap [innerHTML]="exponatModulesSplittedContentArray[topicIndexToShow].sectionName"></h2>
                         <p text-wrap [innerHTML]="exponatModulesSplittedContentArray[topicIndexToShow].shortDescription"></p>
                         <button ion-button clear item-end (click)="showTopic(exponatModulesSplittedContentArray[topicIndexToShow].sectionId)">{{ 'core.show' | translate }}</button>
                     </ion-item>
@@ -113,7 +113,7 @@
                             <ion-thumbnail item-start>
                                 <img [src]="room.image | safe_image" [alt]="room.imageAlt" class="image" />
                             </ion-thumbnail>
-                            <h2 text-wrap>{{room.name}}</h2>
+                            <h2 text-wrap [innerHTML]="room.name"></h2>
                             <p text-wrap [innerHTML]="room.shortDescription"></p>
                             <button ion-button clear item-end (click)="goToRoom(i, $event)">{{ 'core.show' | translate }}</button>
                         </ion-item>
@@ -138,7 +138,7 @@
                                 <img [src]="exponat.formattedContent.images[0].src | safe_image" [alt]="exponat.formattedContent.images[0].alt" class="image"
                                 />
                             </ion-thumbnail>
-                            <h2 text-wrap>{{exponat.sectionName}}</h2>
+                            <h2 text-wrap [innerHTML]="exponat.sectionName"></h2>
                             <p text-wrap [innerHTML]="exponat.shortDescription"></p>
                             <button ion-button clear item-end (click)="showTopic(exponat.sectionId)">{{ 'core.show' | translate }}</button>
                         </ion-item>
@@ -154,7 +154,7 @@
                         <ion-thumbnail item-start>
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
-                        <h2 text-wrap>{{map.name}}</h2>
+                        <h2 text-wrap [innerHTML]="map.name"></h2>
                         <p text-wrap [innerHTML]="map.shortDescription"></p>
                     </ion-item>
                 </ion-item-sliding>
@@ -165,7 +165,7 @@
                         <ion-thumbnail item-start>
                             <img [src]="map.image | safe_image">
                         </ion-thumbnail>
-                        <h2 text-wrap>{{map.name}}</h2>
+                        <h2 text-wrap [innerHTML]="map.name"></h2>
                         <p text-wrap [innerHTML]="map.shortDescription"></p>
                     </ion-item>
                 </ion-item-sliding>
