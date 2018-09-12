@@ -245,5 +245,6 @@
     "hiderooms": "Räume verbergen",
     "exponats": "Exponate",
     "scanner": "Scanner",
-    "scannertext": "Bitte scannen Sie einen Qr Code"
+    "scannertext": "Bitte scannen Sie einen Qr Code",
+    "scantologin": "Für den Login bitte den Button klicken und einen QR Code scannen"
 }
