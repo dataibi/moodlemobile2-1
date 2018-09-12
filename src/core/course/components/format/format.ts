@@ -399,4 +399,16 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     navToMapView(): void {
         this.sectionChanged(this.sections[1]);
     }
+
+    sectionSummaryFilter(): any {
+        let startIndex: number, newString: string;
+        const summary: any = this.selectedSection.summary;
+
+        startIndex = summary.indexOf('</h5>');
+        newString = summary.substring(startIndex + 5);
+        newString = '<h2>' + this.selectedSection.name + '</h2>' + newString;
+
+        return newString;
+
+    }
 }
