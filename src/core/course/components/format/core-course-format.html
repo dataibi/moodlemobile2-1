@@ -99,7 +99,8 @@
         </ion-item-divider>
 
         <ion-item text-wrap *ngIf="section.summary">
-            <core-format-text [text]="section.summary"></core-format-text>
+            <!-- <core-format-text [text]="section.summary"></core-format-text> -->
+            <core-format-text [text]="sectionSummaryFilter()"></core-format-text>
         </ion-item>
 
         <ng-container *ngFor="let module of section.modules">

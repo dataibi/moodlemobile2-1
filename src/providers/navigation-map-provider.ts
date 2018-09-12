@@ -21,39 +21,32 @@ import { Injectable, EventEmitter } from '@angular/core';
 export class NavigationMapProvider {
 
     navigationSectionEvent = new EventEmitter<any>();
-
     sectionCallEvent = new EventEmitter<any>();
-
     topicsToSectionIdArray: any[] = [];
-
-
-    constructor() { }
 
     private courseData: any;
 
-    public getCourseData(): any {
+    getCourseData(): any {
         return this.courseData;
     }
 
-    public setCourseData(courseData): void {
+    setCourseData(courseData: any): void {
         this.courseData = courseData;
     }
 
-    public emitnavigationSectionEvent(SectionId): void {
-        this.navigationSectionEvent.emit(SectionId);
+    emitnavigationSectionEvent(sectionId: number): void {
+        this.navigationSectionEvent.emit(sectionId);
     }
 
-    public emitSectionCallEvent(): void {
+    emitSectionCallEvent(): void {
         this.sectionCallEvent.emit();
     }
 
-    public getTopicsToSectionIdArray(): any[] {
+    getTopicsToSectionIdArray(): any[] {
         return this.topicsToSectionIdArray;
     }
 
-    public setTopicsToSectionIdArray(topicsToSectionIdArray): void {
+    setTopicsToSectionIdArray(topicsToSectionIdArray: any[]): void {
         this.topicsToSectionIdArray = topicsToSectionIdArray;
     }
-
-  
 }
