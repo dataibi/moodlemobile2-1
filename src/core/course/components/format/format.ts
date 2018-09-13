@@ -53,6 +53,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
     @Output() completionChanged?: EventEmitter<void>; // Will emit an event when any module completion changes.
+    @Output() currentSection?: EventEmitter<number>; // Will emit an event section changed and send the sectionindex.
 
     @ViewChildren(CoreDynamicComponent) dynamicComponents: QueryList<CoreDynamicComponent>;
 
@@ -88,6 +89,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         this.selectOptions.title = translate.instant('core.course.sections');
         this.completionChanged = new EventEmitter();
+        this.currentSection = new EventEmitter();
 
         // Listen for section status changes.
         this.sectionStatusObserver = eventsProvider.on(CoreEventsProvider.SECTION_STATUS_CHANGED, (data) => {
@@ -272,6 +274,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     sectionChanged(newSection: any): void {
         const previousValue = this.selectedSection;
+        if (newSection.section || newSection.section === 0) {
+            this.currentSection.emit(newSection.section);
+        }
         this.selectedSection = newSection;
         this.data.section = this.selectedSection;
 
