@@ -60,6 +60,8 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     protected statusCalculated = false;
     protected isDestroyed = false;
 
+    protected filteredModuleHandlerButtons: any[];
+
     constructor(@Optional() protected navCtrl: NavController, protected prefetchDelegate: CoreCourseModulePrefetchDelegate,
             protected domUtils: CoreDomUtilsProvider, protected courseHelper: CoreCourseHelperProvider,
             protected eventsProvider: CoreEventsProvider, protected sitesProvider: CoreSitesProvider) {
@@ -93,6 +95,14 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
                 }
             }, this.sitesProvider.getCurrentSiteId());
         }
+
+        if (this.module.handlerData.buttons) {
+            for (const button of this.module.handlerData.buttons) {
+                if (button.label != 'core.openinbrowser') {
+                    this.filteredModuleHandlerButtons.push(button);
+                }
+            }
+        }
     }
 
     /**
@@ -113,11 +123,17 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * @param {CoreCourseModuleHandlerButton} button The clicked button.
      */
     buttonClicked(event: Event, button: CoreCourseModuleHandlerButton): void {
-        if (button && button.action) {
+        if (button && button.action && button.label != 'core.openinbrowser') {
             event.preventDefault();
             event.stopPropagation();
 
             button.action(event, this.navCtrl, this.module, this.courseId);
+        } else if (button && button.action && button.label == 'core.openinbrowser') {
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Do nothing, there shouldn't be any OpenInBrowser buttons anyway
+            // But if they are they should not do anything
         }
     }
 
