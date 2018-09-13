@@ -60,6 +60,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     moduleId: number;
     displayEnableDownload: boolean;
     displayRefresher: boolean;
+    showMapButton: boolean = false;
 
     protected module: any;
     protected completionObserver;
@@ -413,5 +414,9 @@ export class CoreCourseSectionPage implements OnDestroy {
 
     navToMapView(): void {
         this.navigationMapProvider.emitSectionCallEvent();
+    }
+
+    onSectionChange(index: number): void {
+        this.showMapButton = index === 0 ? false : true;
     }
 }

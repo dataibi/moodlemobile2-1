@@ -16,7 +16,7 @@
         </ion-fab>
     </ion-navbar>        
 </ion-header>
-<ion-fab bottom left>
+<ion-fab *ngIf="showMapButton === true" bottom left>
     <button ion-fab (click)="navToMapView()">
         <core-icon name="compass"></core-icon>
     </button>
@@ -46,7 +46,7 @@
                     </ion-refresher>
 
                     <core-loading [hideUntil]="dataLoaded">
-                        <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [initialSectionNumber]="sectionNumber" [downloadEnabled]="downloadEnabled" [moduleId]="moduleId" (completionChanged)="onCompletionChange()"></core-course-format>
+                        <core-course-format [course]="course" [sections]="sections" [initialSectionId]="sectionId" [initialSectionNumber]="sectionNumber" [downloadEnabled]="downloadEnabled" [moduleId]="moduleId" (completionChanged)="onCompletionChange()" (currentSection)="onSectionChange($event)"></core-course-format>
                     </core-loading>
                 </ion-content>
             </ng-template>
