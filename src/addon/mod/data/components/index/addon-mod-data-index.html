@@ -4,7 +4,7 @@
         <ion-icon name="search"></ion-icon>
     </button>
     <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'"></core-context-menu-item>
+        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" [iconAction]="'open'" [hidden]="true"></core-context-menu-item>
         <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate" (action)="expandDescription()" [iconAction]="'arrow-forward'"></core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate" (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false"></core-context-menu-item>
         <core-context-menu-item *ngIf="loaded && hasOffline && isOnline"  [priority]="600" [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(null, $event, true)" [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
