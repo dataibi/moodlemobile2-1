@@ -20,6 +20,14 @@
             <!-- Arrows to go to next/previous. -->
             <ng-container *ngTemplateOutlet="navArrows"></ng-container>
     </core-loading>
+    <ion-row align-items-center>
+        <ion-col>
+			<button ion-button block icon-start (click)="navCtrl.pop()">
+				<ion-icon name="arrow-back" md="ios-arrow-back"></ion-icon>
+				{{ 'core.previous' | translate }}
+			</button>
+        </ion-col>
+    </ion-row>
 </ion-content>
 
 <!-- Arrows to go to next/previous. -->
