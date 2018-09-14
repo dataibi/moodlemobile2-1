@@ -1,3 +1,6 @@
+Site for creation:
+http://goqr.me/de/
+
 QrCode has to have a qrType property like this:
 
 {"username": "nicename", "password": "nicepassword", "qrType": "login"}

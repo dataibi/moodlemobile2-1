@@ -1,4 +1,4 @@
-// (C) Copyright 2015 Martin Dougiamas
+// (C) Copyright 2015 David Pohl
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseModuleDelegate } from '../../providers/module-delegate';
-import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
-
 import { CoreSitesProvider } from '@providers/sites';
-import { CoreSite } from '@classes/site';
 
 /**
  * Component that displays info about an unsupported module.
@@ -35,12 +31,15 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
     isDisabledInSite: boolean;
     isSupportedByTheApp: boolean;
     moduleName: string;
+    url;
+    loaded: boolean = false;
+    iframeDivWrapperWidth: number = 100;
 
 	protected AB_TABLE = 'abuser';
-	protected uname='';
-	protected pname='';
 
-    constructor(private courseProvider: CoreCourseProvider, private moduleDelegate: CoreCourseModuleDelegate, private sanitizer: DomSanitizer, private sitesProvider: CoreSitesProvider) {
+    constructor(private courseProvider: CoreCourseProvider,
+        private moduleDelegate: CoreCourseModuleDelegate,
+        private sitesProvider: CoreSitesProvider) {
      }
 
     /**
@@ -50,19 +49,31 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
         this.isDisabledInSite = this.moduleDelegate.isModuleDisabledInSite(this.module.modname);
         this.isSupportedByTheApp = this.moduleDelegate.hasHandler(this.module.modname);
         this.moduleName = this.courseProvider.translateModuleName(this.module.modname);
-        
-        var siteId = this.sitesProvider.getCurrentSiteId();
-		var usersab = this.sitesProvider.getSite(siteId).then((site) => {
-            return site.getDb().getRecords(this.AB_TABLE);
-        });
-	
-		Promise.resolve(usersab).then((value) => {
-			this.uname = value[0].username;
-			this.pname = value[0].password;
-		});
+
+        const siteId = this.sitesProvider.getCurrentSiteId();
+        this.sitesProvider.getSite(siteId)
+            .then((site) => {
+
+                return site.getDb().getRecords(this.AB_TABLE);
+            })
+            .then((value) => {
+                this.url = 'http://150.145.114.110/moodleproxy/p6.php?username='
+                + value[0].username + '&password=' + value[0].password + '&redir='
+                + this.module.url;
+                this.loaded = true;
+            }
+        );
     }
 
-   redirectURL(): SafeResourceUrl { // bypassSecurityTrustResourceUrl
-    return this.sanitizer.bypassSecurityTrustResourceUrl('http://150.145.114.110/moodleproxy/p6.php?username='+this.uname+'&password='+this.pname+'&redir=' + this.module.url);
-  }
+    iframeResizer(mode: string): void {
+        if (mode === 'smaller') {
+            if (this.iframeDivWrapperWidth > 100) {
+                this.iframeDivWrapperWidth -= 30;
+            }
+        } else if (mode === 'bigger') {
+            if (this.iframeDivWrapperWidth < 250) {
+                this.iframeDivWrapperWidth += 30;
+            }
+        }
+    }
 }
