@@ -11,9 +11,9 @@ The content order for maps and rooms is like this:
 2. The ordered list of all rooms (if it`s a map) or exhibits (if it`s a room) with the coordinates (if you want hotspots)
 
     with hotspots:
-        1. statue one (x-value:25, y-value:15): https://moodle.mathetics.eu/course/view.php?id=29#section-1
-        2. statue two (x-value:20, y-value:50): https://moodle.mathetics.eu/course/view.php?id=29#section-2
-        3. statue three (x-value:100, y-value:100): https://moodle.mathetics.eu/course/view.php?id=29#section-3
+        1. statue one (x-value:25, y-value:15, number: 1): https://moodle.mathetics.eu/course/view.php?id=29#section-1
+        2. statue two (x-value:20, y-value:50, number: 2): https://moodle.mathetics.eu/course/view.php?id=29#section-2
+        3. statue three (x-value:100, y-value:100: number: 3): https://moodle.mathetics.eu/course/view.php?id=29#section-3
 
     without hotspots:
         1. Room one: https://moodle.mathetics.eu/mod/page/view.php?id=703

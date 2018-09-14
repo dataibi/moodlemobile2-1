@@ -22,7 +22,6 @@ import { CoreNoTagsPipe } from './no-tags';
 import { CoreSecondsToHMSPipe } from './seconds-to-hms';
 import { CoreTimeAgoPipe } from './time-ago';
 import { CoreToLocaleStringPipe } from './to-locale-string';
-import { SafeIframePipe } from './safe-iframe';
 import { SafeImagePipe } from './safe-image';
 
 @NgModule({
@@ -36,8 +35,7 @@ import { SafeImagePipe } from './safe-image';
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
         CoreToLocaleStringPipe,
-        SafeImagePipe,
-        SafeIframePipe
+        SafeImagePipe
     ],
     imports: [],
     exports: [
@@ -50,8 +48,7 @@ import { SafeImagePipe } from './safe-image';
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
         CoreToLocaleStringPipe,
-        SafeImagePipe,
-        SafeIframePipe
+        SafeImagePipe
     ]
 })
 export class CorePipesModule {}

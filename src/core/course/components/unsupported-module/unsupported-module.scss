@@ -1,0 +1,38 @@
+core-course-unsupported-module {
+    
+    .spinner-wrapper {
+        display: flex;
+        justify-content: center;
+        margin: $spacing--huge;
+    }
+
+    .iframe-div-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+
+    .iframe-div {
+        // display: flex;
+        // flex-flow: column nowrap;
+        // align-items: center;
+        // justify-content: space-between;
+        height: 100%;
+    }
+
+    .h5p-iframe {
+        height: 100%;
+        width: 100%;
+    }
+
+    .button-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .resize-button {
+        display: inline-block;
+    }
+}
