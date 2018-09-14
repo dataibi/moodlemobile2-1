@@ -17,6 +17,10 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseModuleDelegate } from '../../providers/module-delegate';
 import { DomSanitizer, SafeResourceUrl, SafeUrl} from '@angular/platform-browser';
+
+import { CoreSitesProvider } from '@providers/sites';
+import { CoreSite } from '@classes/site';
+
 /**
  * Component that displays info about an unsupported module.
  */
@@ -32,7 +36,11 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
     isSupportedByTheApp: boolean;
     moduleName: string;
 
-    constructor(private courseProvider: CoreCourseProvider, private moduleDelegate: CoreCourseModuleDelegate, private sanitizer: DomSanitizer) {
+	protected AB_TABLE = 'abuser';
+	protected uname='';
+	protected pname='';
+
+    constructor(private courseProvider: CoreCourseProvider, private moduleDelegate: CoreCourseModuleDelegate, private sanitizer: DomSanitizer, private sitesProvider: CoreSitesProvider) {
      }
 
     /**
@@ -42,9 +50,19 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
         this.isDisabledInSite = this.moduleDelegate.isModuleDisabledInSite(this.module.modname);
         this.isSupportedByTheApp = this.moduleDelegate.hasHandler(this.module.modname);
         this.moduleName = this.courseProvider.translateModuleName(this.module.modname);
+        
+        var siteId = this.sitesProvider.getCurrentSiteId();
+		var usersab = this.sitesProvider.getSite(siteId).then((site) => {
+            return site.getDb().getRecords(this.AB_TABLE);
+        });
+	
+		Promise.resolve(usersab).then((value) => {
+			this.uname = value[0].username;
+			this.pname = value[0].password;
+		});
     }
 
-   redirectURL(): SafeResourceUrl { // S bypassSecurityTrustResourceUrl
-    return this.sanitizer.bypassSecurityTrustResourceUrl('http://150.145.114.110/moodleproxy/p5.php?redir=' + this.module.url);
+   redirectURL(): SafeResourceUrl { // bypassSecurityTrustResourceUrl
+    return this.sanitizer.bypassSecurityTrustResourceUrl('http://150.145.114.110/moodleproxy/p6.php?username='+this.uname+'&password='+this.pname+'&redir=' + this.module.url);
   }
 }
