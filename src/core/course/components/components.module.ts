@@ -23,6 +23,7 @@ import { CoreCourseModuleComponent } from './module/module';
 import { CoreCourseModuleCompletionComponent } from './module-completion/module-completion';
 import { CoreCourseModuleDescriptionComponent } from './module-description/module-description';
 import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsupported-module';
+import { CorePipesModule } from './../../../pipes/pipes.module';
 
 @NgModule({
     declarations: [
@@ -37,7 +38,8 @@ import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsup
         IonicModule,
         TranslateModule.forChild(),
         CoreComponentsModule,
-        CoreDirectivesModule
+        CoreDirectivesModule,
+        CorePipesModule
     ],
     providers: [
     ],

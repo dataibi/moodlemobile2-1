@@ -1,4 +1,3 @@
-import { SafeImagePipe } from './safe-image';
 // (C) Copyright 2015 Martin Dougiamas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +22,8 @@ import { CoreNoTagsPipe } from './no-tags';
 import { CoreSecondsToHMSPipe } from './seconds-to-hms';
 import { CoreTimeAgoPipe } from './time-ago';
 import { CoreToLocaleStringPipe } from './to-locale-string';
+import { SafeIframePipe } from './safe-iframe';
+import { SafeImagePipe } from './safe-image';
 
 @NgModule({
     declarations: [
@@ -35,7 +36,8 @@ import { CoreToLocaleStringPipe } from './to-locale-string';
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
         CoreToLocaleStringPipe,
-        SafeImagePipe
+        SafeImagePipe,
+        SafeIframePipe
     ],
     imports: [],
     exports: [
@@ -48,7 +50,8 @@ import { CoreToLocaleStringPipe } from './to-locale-string';
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
         CoreToLocaleStringPipe,
-        SafeImagePipe
+        SafeImagePipe,
+        SafeIframePipe
     ]
 })
 export class CorePipesModule {}
