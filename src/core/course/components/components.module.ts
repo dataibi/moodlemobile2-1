@@ -24,6 +24,9 @@ import { CoreCourseModuleCompletionComponent } from './module-completion/module-
 import { CoreCourseModuleDescriptionComponent } from './module-description/module-description';
 import { CoreCourseUnsupportedModuleComponent } from './unsupported-module/unsupported-module';
 import { CorePipesModule } from './../../../pipes/pipes.module';
+import { NavigationFloorsPage } from './navigation-floors/navigation-floors';
+import { NavigationObjectsPage } from './navigation-objects/navigation-objects';
+import { NavigationMapComponent } from './navigation-map/navigation-map';
 
 @NgModule({
     declarations: [
@@ -31,7 +34,10 @@ import { CorePipesModule } from './../../../pipes/pipes.module';
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleDescriptionComponent,
-        CoreCourseUnsupportedModuleComponent
+        CoreCourseUnsupportedModuleComponent,
+        NavigationMapComponent,
+        NavigationObjectsPage,
+        NavigationFloorsPage
     ],
     imports: [
         CommonModule,
@@ -51,7 +57,10 @@ import { CorePipesModule } from './../../../pipes/pipes.module';
         CoreCourseUnsupportedModuleComponent
     ],
     entryComponents: [
-        CoreCourseUnsupportedModuleComponent
+        CoreCourseUnsupportedModuleComponent,
+        NavigationMapComponent,
+        NavigationObjectsPage,
+        NavigationFloorsPage
     ]
 })
 export class CoreCourseComponentsModule {}

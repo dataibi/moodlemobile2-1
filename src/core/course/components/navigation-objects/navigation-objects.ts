@@ -1,4 +1,4 @@
-// (C) Copyright 2018 Jens-Michael Lohse
+// (C) Copyright 2018 David Pohl
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,23 +13,28 @@
 // limitations under the License.
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { NavigationObjectsPage } from '@components/navigation-objects/navigation-objects';
+import { NavigationMapProvider } from './../../../../providers/navigation-map-provider';
 
 @Component({
-	selector: 'page-navigation-floors',
-	templateUrl: 'navigation-floors.html'
+	selector: 'page-navigation-objects',
+	templateUrl: 'navigation-objects.html'
 })
-export class NavigationFloorsPage {
+export class NavigationObjectsPage {
 
-	roomTopicContent: any[];
+	roomTopicContent: any;
 	roomContent: any;
 
-	constructor(public navCtrl: NavController, navParams: NavParams) {
+	constructor(public navCtrl: NavController,
+		navParams: NavParams,
+		private navigationMapProvider: NavigationMapProvider) {
 			this.roomTopicContent = navParams.get('roomTopicContent');
 			this.roomContent = navParams.get('roomContent');
 		}
 
-	showRoomObjects(): void {
-		this.navCtrl.push(NavigationObjectsPage, { roomTopicContent: this.roomTopicContent, roomContent: this.roomContent });
+	showRoomObjectPage(index: number): void {
+		const currentPageIndex: number = this.navCtrl.getActive().index;
+		this.navCtrl.remove(2, (currentPageIndex - 2));
+		this.navigationMapProvider.emitnavigationSectionEvent(this.roomTopicContent[index].sectionId);
+		this.navCtrl.pop();
 	}
 }

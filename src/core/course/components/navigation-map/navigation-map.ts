@@ -11,9 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { NavigationMapProvider } from './../../providers/navigation-map-provider';
 import { NavigationFloorsPage } from './../navigation-floors/navigation-floors';
-
+import { NavigationMapProvider } from './../../../../providers/navigation-map-provider';
+import { NavigationObjectsPage } from './../navigation-objects/navigation-objects';
 import {
     Component,
     Injector,
@@ -30,7 +30,6 @@ import { CoreAppProvider } from '@providers/app';
 import { AddonModPageHelperProvider } from '@addon/mod/page/providers/helper';
 import { AddonModPagePrefetchHandler } from '@addon/mod/page/providers/prefetch-handler';
 import { NavController, Content, Platform, ModalController } from 'ionic-angular';
-import { safelyParseJSON } from '../../helpers/navigation_helpers';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSite } from '@classes/site';
@@ -41,9 +40,9 @@ import { CoreExternalContentDirective } from '@directives/external-content';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { trigger, transition, animate, style } from '@angular/animations';
-import { NavigationObjectsPage } from '@components/navigation-objects/navigation-objects';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { TranslateService } from '@ngx-translate/core';
+import { safelyParseJSON } from './../../../../helpers/navigation_helpers';
 
 @Component({
     selector: 'core-navigation-map',
