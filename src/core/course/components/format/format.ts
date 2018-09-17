@@ -30,6 +30,7 @@ import { NavParams } from 'ionic-angular/navigation/nav-params';
 import { NavigationMapProvider } from '@providers/navigation-map-provider';
 import { Subscription } from 'rxjs';
 import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
+import { NavigationMapWrapperPage } from './../nav-map-wrapper/nav-map-wrapper';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -133,6 +134,15 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnInit(): void {
         this.displaySectionSelector = this.cfDelegate.displaySectionSelector(this.course);
+        // console.log('this.selectedSection.section');
+        // console.log(this.selectedSection.section);
+        // if (this.selectedSection.section == 0) {
+        //     this.navCtrl.push(
+        //         NavigationMapWrapperPage,
+        //         {module: this.selectedSection.modules[1], courseId: this.course.id, data: this.data}
+        //     );
+        // }
+
         this.navigationSectionSubscription = this.navigationMapProvider.navigationSectionEvent.subscribe(
             (sectionId) => {
                 const index = this.sections.findIndex((oneSection) => {
@@ -284,6 +294,15 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             setTimeout(() => {
                 this.domUtils.scrollToElementBySelector(this.content, '#core-course-module-' + this.moduleId);
             }, 200);
+        }
+
+        if (newSection.section == 0) {
+            console.log('this.selectedSection.section in if');
+            console.log(newSection.section);
+            this.navCtrl.push(
+                NavigationMapWrapperPage,
+                {module: this.selectedSection.modules[1], courseId: this.course.id, data: this.data}
+            );
         }
     }
 
