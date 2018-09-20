@@ -1,7 +1,14 @@
 <ion-header>
 	<ion-navbar>
-		<ion-title>{{roomContent.name}}</ion-title>
+		<ion-title>wrapper</ion-title>
 	</ion-navbar>
 </ion-header>
-<span>wrapperpage</span>
-<core-navigation-map [module]="module" [courseId]="courseId" [data]="data"></core-navigation-map>
+<ion-list no-lines *ngIf="course.imageThumb || (course.progress != null && course.progress >= 0)" class="core-format-progress-list">
+	<div *ngIf="course.imageThumb" class="core-course-thumb">
+		<img [src]="course.imageThumb" core-external-content alt="" />
+	</div>
+	<ion-item *ngIf="course.progress != null && course.progress >= 0">
+		<core-progress-bar [progress]="course.progress"></core-progress-bar>
+	</ion-item>
+</ion-list>
+<core-navigation-map [module]="module" [courseId]="course.id" [data]="data"></core-navigation-map>

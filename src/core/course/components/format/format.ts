@@ -301,7 +301,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             console.log(newSection.section);
             this.navCtrl.push(
                 NavigationMapWrapperPage,
-                {module: this.selectedSection.modules[1], courseId: this.course.id, data: this.data}
+                {module: this.selectedSection.modules[1], course: this.course, data: this.data}
             );
         }
     }

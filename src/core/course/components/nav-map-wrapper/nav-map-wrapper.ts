@@ -21,12 +21,12 @@ import { NavigationObjectsPage } from '@core/course/components/navigation-object
 })
 export class NavigationMapWrapperPage {
 	module;
-	courseId;
+	course;
 	data;
 
 	constructor(public navCtrl: NavController, navParams: NavParams) {
 			this.module = navParams.get('module');
-			this.courseId = navParams.get('courseId');
+			this.course = navParams.get('course');
 			this.data = navParams.get('data');
 		}
 

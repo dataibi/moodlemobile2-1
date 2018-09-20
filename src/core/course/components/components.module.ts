@@ -1,3 +1,4 @@
+import { NavigationMapWrapperPage } from './nav-map-wrapper/nav-map-wrapper';
 // (C) Copyright 2015 Martin Dougiamas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +38,8 @@ import { NavigationMapComponent } from './navigation-map/navigation-map';
         CoreCourseUnsupportedModuleComponent,
         NavigationMapComponent,
         NavigationObjectsPage,
-        NavigationFloorsPage
+        NavigationFloorsPage,
+        NavigationMapWrapperPage
     ],
     imports: [
         CommonModule,
@@ -60,7 +62,8 @@ import { NavigationMapComponent } from './navigation-map/navigation-map';
         CoreCourseUnsupportedModuleComponent,
         NavigationMapComponent,
         NavigationObjectsPage,
-        NavigationFloorsPage
+        NavigationFloorsPage,
+        NavigationMapWrapperPage
     ]
 })
 export class CoreCourseComponentsModule {}
