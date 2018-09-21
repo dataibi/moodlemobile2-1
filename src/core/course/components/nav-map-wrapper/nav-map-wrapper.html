@@ -1,7 +1,17 @@
-<ion-header>
+<!-- <ion-header>
 	<ion-navbar>
 		<ion-title>wrapper</ion-title>
 	</ion-navbar>
+</ion-header> -->
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title ><core-format-text [text]="course.fullname"></core-format-text></ion-title>
+        <ion-fab id="user" top right>
+            <button ion-fab mini (click)="navToProfile()">
+                <core-icon name="contact"></core-icon>
+            </button>
+        </ion-fab>
+    </ion-navbar>        
 </ion-header>
 <ion-content>
 <ion-list no-lines *ngIf="course.imageThumb || (course.progress != null && course.progress >= 0)" class="core-format-progress-list wrapper-list">

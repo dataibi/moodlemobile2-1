@@ -1,29 +1,34 @@
 <ion-header>
 	<ion-navbar>
 		<ion-title>{{roomContent.name}} {{ 'core.exponats' | translate }}</ion-title>
+		<ion-fab id="user" top right>
+			<button ion-fab mini (click)="navToProfile()">
+				<core-icon name="contact"></core-icon>
+			</button>
+		</ion-fab>
 	</ion-navbar>
 </ion-header>
 
 <ion-content class="card-background-page">
 
 	<ion-list>
-	  <ion-item-sliding *ngFor="let topic of roomTopicContent; let i = index">
-		<ion-item>
-		  <ion-thumbnail item-start>
-			<img [src]="topic.formattedContent.images[0].src | safe_image" [alt]="topic.name" class="image"/>
-		  </ion-thumbnail>
-		  <h2>{{topic.sectionName}}</h2>
-		  <p text-wrap [innerHTML]="topic.shortDescription"></p>
-		  <button ion-button clear item-end (click)="showRoomObjectPage(i)">{{ 'core.show' | translate }}</button>
-		</ion-item>
-		<!-- <ion-item-options side="left">
+		<ion-item-sliding *ngFor="let topic of roomTopicContent; let i = index">
+			<ion-item>
+				<ion-thumbnail item-start>
+					<img [src]="topic.formattedContent.images[0].src | safe_image" [alt]="topic.name" class="image" />
+				</ion-thumbnail>
+				<h2>{{topic.sectionName}}</h2>
+				<p text-wrap [innerHTML]="topic.shortDescription"></p>
+				<button ion-button clear item-end (click)="showRoomObjectPage(i)">{{ 'core.show' | translate }}</button>
+			</ion-item>
+			<!-- <ion-item-options side="left">
 		  <button ion-button color="primary">
 			<ion-icon name="text"></ion-icon>
 			activity
 		  </button>
 		</ion-item-options> -->
-	  </ion-item-sliding>
-	  
+		</ion-item-sliding>
+
 	</ion-list>
-  
-  </ion-content>
+
+</ion-content>

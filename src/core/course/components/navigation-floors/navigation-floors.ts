@@ -40,4 +40,8 @@ export class NavigationFloorsPage {
 				course: this.course
 			});
 	}
+
+	navToProfile(): void {
+		this.navCtrl.push('CoreMainMenuMorePage');
+	}
 }

@@ -35,4 +35,8 @@ export class NavigationObjectsPage {
 	showRoomObjectPage(index: number): void {
 		this.navCtrl.push(CoreCourseSectionPage, {course: this.course, newSectionId: this.roomTopicContent[index].sectionId});
 	}
+
+	navToProfile(): void {
+		this.navCtrl.push('CoreMainMenuMorePage');
+	}
 }

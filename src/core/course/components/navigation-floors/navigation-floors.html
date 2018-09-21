@@ -1,6 +1,11 @@
 <ion-header>
 	<ion-navbar>
 		<ion-title>{{roomContent.name}}</ion-title>
+		<ion-fab id="user" top right>
+			<button ion-fab mini (click)="navToProfile()">
+					<core-icon name="contact"></core-icon>
+			</button>
+		</ion-fab>
 	</ion-navbar>
 </ion-header>
 

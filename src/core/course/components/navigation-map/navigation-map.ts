@@ -1,3 +1,4 @@
+import { CoreCourseSectionPage } from './../../pages/section/section';
 // (C) Copyright 2018 Jens-Michael Lohse
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1095,9 +1096,13 @@ export class NavigationMapComponent
         this.visible = !this.visible;
     }
 
-    showTopic(sectionId: number): void {
-        this.navigationMapProvider.emitnavigationSectionEvent(sectionId);
-    }
+    // showTopic(sectionId: number): void {
+    //     this.navigationMapProvider.emitnavigationSectionEvent(sectionId);
+    // }
+
+    showTopic(index: number): void {
+		this.navCtrl.push(CoreCourseSectionPage, {course: this.course, newSectionId: index});
+	}
 
     /**
      * In the room list under the map image we can slide to the "direct to exhibit" option.

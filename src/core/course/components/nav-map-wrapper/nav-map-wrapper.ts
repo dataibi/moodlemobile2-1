@@ -13,7 +13,6 @@
 // limitations under the License.
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { NavigationObjectsPage } from '@core/course/components/navigation-objects/navigation-objects';
 
 @Component({
 	selector: 'nav-map-wrapper',
@@ -25,12 +24,12 @@ export class NavigationMapWrapperPage {
 	data;
 
 	constructor(public navCtrl: NavController, navParams: NavParams) {
-			this.module = navParams.get('module');
-			this.course = navParams.get('course');
-			this.data = navParams.get('data');
-		}
+		this.module = navParams.get('module');
+		this.course = navParams.get('course');
+		this.data = navParams.get('data');
+	}
 
-	showRoomObjects(): void {
-		// this.navCtrl.push(NavigationObjectsPage, { roomTopicContent: this.roomTopicContent, roomContent: this.roomContent });
+	navToProfile(): void {
+		this.navCtrl.push('CoreMainMenuMorePage');
 	}
 }
