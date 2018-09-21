@@ -23,13 +23,21 @@ export class NavigationFloorsPage {
 
 	roomTopicContent: any[];
 	roomContent: any;
+	course: any;
 
 	constructor(public navCtrl: NavController, navParams: NavParams) {
 			this.roomTopicContent = navParams.get('roomTopicContent');
 			this.roomContent = navParams.get('roomContent');
+			this.course = navParams.get('course');
+
 		}
 
 	showRoomObjects(): void {
-		this.navCtrl.push(NavigationObjectsPage, { roomTopicContent: this.roomTopicContent, roomContent: this.roomContent });
+		this.navCtrl.push(NavigationObjectsPage,
+			{
+				roomTopicContent: this.roomTopicContent,
+				roomContent: this.roomContent,
+				course: this.course
+			});
 	}
 }

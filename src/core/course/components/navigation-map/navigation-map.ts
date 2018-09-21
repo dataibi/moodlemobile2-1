@@ -63,6 +63,7 @@ export class NavigationMapComponent
     extends CoreCourseModuleMainResourceComponent
     implements OnChanges {
     @Input() data: any; // All data for the courses
+    @Input() course: any; // All data for the courses
     mapIndexToShow: number = 0;
     roomIndexToShow: number = 0; // The room under the image
     topicIndexToShow: number = 0;
@@ -325,6 +326,8 @@ export class NavigationMapComponent
         if (changes.data && changes.data.firstChange === true) {
             this.navigationMapProvider.setCourseData(this.data);
             this.mapTopicsToSectionId();
+            console.log('this.data');
+            console.log(this.data);
             mapModulesArray = this.createMapsModulesArray('map', this.mapIndexToShow);
             if (mapModulesArray.length) {
                 await this.createTheSplittedContentInArray(mapModulesArray, 'map');
@@ -1083,7 +1086,8 @@ export class NavigationMapComponent
         // RoomContent fot all the content infos
         this.navCtrl.push(NavigationFloorsPage, {
             roomTopicContent: roomTopicContent,
-            roomContent: this.roomModulesSplittedContentArray[roomIndexToShow]
+            roomContent: this.roomModulesSplittedContentArray[roomIndexToShow],
+            course: this.course
         });
     }
 
@@ -1114,7 +1118,8 @@ export class NavigationMapComponent
         this.navCtrl.push(NavigationObjectsPage,
             {
                 roomTopicContent: roomTopicContent,
-                roomContent: this.roomModulesSplittedContentArray[roomIndex]
+                roomContent: this.roomModulesSplittedContentArray[roomIndex],
+                course: this.course
             }
         );
     }

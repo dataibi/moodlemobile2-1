@@ -49,6 +49,7 @@ import { NavigationMapWrapperPage } from './../nav-map-wrapper/nav-map-wrapper';
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() course: any; // The course to render.
     @Input() sections: any[]; // List of course sections.
+    @Input() newSectionId?: number; // If we navigate to section.ts we want see the new topic by sectionId.
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
@@ -74,7 +75,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     selectOptions: any = {};
     loaded: boolean;
     sectionFromNavParam: number;
-    navigationSectionSubscription: Subscription;
     sectionCallEventSubscription: Subscription;
 
     protected sectionStatusObserver;
@@ -134,27 +134,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnInit(): void {
         this.displaySectionSelector = this.cfDelegate.displaySectionSelector(this.course);
-        // console.log('this.selectedSection.section');
-        // console.log(this.selectedSection.section);
-        // if (this.selectedSection.section == 0) {
-        //     this.navCtrl.push(
-        //         NavigationMapWrapperPage,
-        //         {module: this.selectedSection.modules[1], courseId: this.course.id, data: this.data}
-        //     );
-        // }
-
-        this.navigationSectionSubscription = this.navigationMapProvider.navigationSectionEvent.subscribe(
-            (sectionId) => {
-                const index = this.sections.findIndex((oneSection) => {
-                    return (
-                        oneSection.section &&
-                        typeof oneSection.section !== 'undefined' &&
-                        oneSection.section === sectionId
-                    );
-                });
-                this.sectionChanged(this.sections[index]);
-            }
-        );
 
         this.sectionCallEventSubscription = this.navigationMapProvider.sectionCallEvent.subscribe(
             () => {
@@ -168,6 +147,22 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         this.setInputData();
+
+        if (this.sections
+            && (typeof this.sections !== 'undefined')
+            && this.newSectionId
+            && (typeof this.newSectionId !== 'undefined')) {
+
+            const index = this.sections.findIndex((oneSection) => {
+                return (
+                    oneSection.section &&
+                    typeof oneSection.section !== 'undefined' &&
+                    oneSection.section === this.newSectionId
+                );
+            });
+            this.sectionChanged(this.sections[index]);
+            this.loaded = true;
+        }
 
         if (changes.course) {
             // Course has changed, try to get the components.
@@ -299,9 +294,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (newSection.section == 0) {
             console.log('this.selectedSection.section in if');
             console.log(newSection.section);
-            this.navCtrl.push(
+            const options = {
+                animate: false
+            };
+            this.navCtrl.setRoot(
                 NavigationMapWrapperPage,
-                {module: this.selectedSection.modules[1], course: this.course, data: this.data}
+                {module: this.selectedSection.modules[1], course: this.course, data: this.data},
+                options
             );
         }
     }
@@ -394,7 +393,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.sectionStatusObserver.off();
         }
 
-        this.navigationSectionSubscription.unsubscribe();
         this.sectionCallEventSubscription.unsubscribe();
     }
 

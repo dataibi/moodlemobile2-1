@@ -1,3 +1,4 @@
+import { CoreCourseSectionPage } from './../../pages/section/section';
 // (C) Copyright 2018 David Pohl
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +14,6 @@
 // limitations under the License.
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { NavigationMapProvider } from './../../../../providers/navigation-map-provider';
 
 @Component({
 	selector: 'page-navigation-objects',
@@ -23,18 +23,16 @@ export class NavigationObjectsPage {
 
 	roomTopicContent: any;
 	roomContent: any;
+	course: any;
 
 	constructor(public navCtrl: NavController,
-		navParams: NavParams,
-		private navigationMapProvider: NavigationMapProvider) {
+		navParams: NavParams) {
 			this.roomTopicContent = navParams.get('roomTopicContent');
 			this.roomContent = navParams.get('roomContent');
+			this.course = navParams.get('course');
 		}
 
 	showRoomObjectPage(index: number): void {
-		const currentPageIndex: number = this.navCtrl.getActive().index;
-		this.navCtrl.remove(2, (currentPageIndex - 2));
-		this.navigationMapProvider.emitnavigationSectionEvent(this.roomTopicContent[index].sectionId);
-		this.navCtrl.pop();
+		this.navCtrl.push(CoreCourseSectionPage, {course: this.course, newSectionId: this.roomTopicContent[index].sectionId});
 	}
 }

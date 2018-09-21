@@ -3,7 +3,8 @@
 		<ion-title>wrapper</ion-title>
 	</ion-navbar>
 </ion-header>
-<ion-list no-lines *ngIf="course.imageThumb || (course.progress != null && course.progress >= 0)" class="core-format-progress-list">
+<ion-content>
+<ion-list no-lines *ngIf="course.imageThumb || (course.progress != null && course.progress >= 0)" class="core-format-progress-list wrapper-list">
 	<div *ngIf="course.imageThumb" class="core-course-thumb">
 		<img [src]="course.imageThumb" core-external-content alt="" />
 	</div>
@@ -11,4 +12,5 @@
 		<core-progress-bar [progress]="course.progress"></core-progress-bar>
 	</ion-item>
 </ion-list>
-<core-navigation-map [module]="module" [courseId]="course.id" [data]="data"></core-navigation-map>
+<core-navigation-map [module]="module" [course]="course" [courseId]="course.id" [data]="data"></core-navigation-map>
+</ion-content>
