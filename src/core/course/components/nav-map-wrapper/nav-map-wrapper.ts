@@ -1,14 +1,3 @@
-import { NavigationMapProvider } from './../../../../providers/navigation-map-provider';
-import { CoreCourseModulePrefetchDelegate } from './../../providers/module-prefetch-delegate';
-import { CoreSitesProvider } from './../../../../providers/sites';
-import { CoreTextUtilsProvider } from './../../../../providers/utils/text';
-import { CoreCoursesProvider } from './../../../courses/providers/courses';
-import { CoreEventsProvider } from './../../../../providers/events';
-import { CoreCourseHelperProvider } from './../../providers/helper';
-import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './../../providers/options-delegate';
-import { CoreCourseFormatDelegate } from './../../providers/format-delegate';
-import { CoreDomUtilsProvider } from './../../../../providers/utils/dom';
-import { CoreCourseProvider } from './../../providers/course';
 // (C) Copyright 2018 Jens-Michael Lohse
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +14,14 @@ import { CoreCourseProvider } from './../../providers/course';
 import { Component, Injector } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
+import { CoreCourseModulePrefetchDelegate } from './../../providers/module-prefetch-delegate';
+import { CoreTextUtilsProvider } from './../../../../providers/utils/text';
+import { CoreCoursesProvider } from './../../../courses/providers/courses';
+import { CoreCourseHelperProvider } from './../../providers/helper';
+import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './../../providers/options-delegate';
+import { CoreCourseFormatDelegate } from './../../providers/format-delegate';
+import { CoreDomUtilsProvider } from './../../../../providers/utils/dom';
+import { CoreCourseProvider } from './../../providers/course';
 
 @Component({
 	selector: 'nav-map-wrapper',
@@ -42,10 +39,10 @@ export class NavigationMapWrapperPage {
 	constructor(public navCtrl: NavController, navParams: NavParams,
 			private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
             private courseFormatDelegate: CoreCourseFormatDelegate, private courseOptionsDelegate: CoreCourseOptionsDelegate,
-            private translate: TranslateService, private courseHelper: CoreCourseHelperProvider, eventsProvider: CoreEventsProvider,
+            private translate: TranslateService, private courseHelper: CoreCourseHelperProvider,
             private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
-            sitesProvider: CoreSitesProvider, private injector: Injector,
-            private prefetchDelegate: CoreCourseModulePrefetchDelegate, private navigationMapProvider: NavigationMapProvider) {
+            private injector: Injector,
+            private prefetchDelegate: CoreCourseModulePrefetchDelegate) {
 		this.module = navParams.get('module');
 		this.course = navParams.get('course');
 		this.data = navParams.get('data');
@@ -64,18 +61,7 @@ export class NavigationMapWrapperPage {
     doRefresh(refresher?: any): Promise<any> {
         return this.invalidateData().finally(() => {
             return this.loadData(true).finally(() => {
-                /* Do not call doRefresh on the format component if the refresher is defined in the format component
-                   to prevent an inifinite loop. */
-                //  let promise;
-                //  if (this.displayRefresher) {
-                //      promise = this.formatComponent.doRefresh(refresher);
-                //  } else {
-                //      promise = Promise.resolve();
-                //  }
-
-                // return promise.finally(() => {
                     refresher && refresher.complete();
-                // });
             });
         });
 	}
@@ -207,11 +193,4 @@ export class NavigationMapWrapperPage {
             this.loadData(true);
         });
 	}
-
-    /**
-     * User entered the page.
-     */
-    ionViewDidEnter(): void {
-        console.log('Didenter geht');
-    }
 }

@@ -15,7 +15,7 @@
 		</ion-fab>
 	</ion-navbar>
 </ion-header>
-<ion-content>
+<ion-content class="paddingBottomContent">
 	<ion-refresher [enabled]="displayRefresher" (ionRefresh)="doRefresh($event)">
 		<ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
 	</ion-refresher>

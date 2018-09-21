@@ -421,4 +421,11 @@ export class CoreCourseSectionPage implements OnDestroy {
     onSectionChange(index: number): void {
         this.showMapButton = index === 0 ? false : true;
     }
+
+    backToMapView(ev?: Event): void {
+		ev && ev.preventDefault();
+		ev && ev.stopPropagation();
+
+		this.navCtrl.popToRoot();
+	}
 }

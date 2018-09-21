@@ -36,7 +36,17 @@ export class NavigationObjectsPage {
 		this.navCtrl.push(CoreCourseSectionPage, {course: this.course, newSectionId: this.roomTopicContent[index].sectionId});
 	}
 
-	navToProfile(): void {
+	navToProfile(ev?: Event): void {
+		ev && ev.preventDefault();
+		ev && ev.stopPropagation();
+
 		this.navCtrl.push('CoreMainMenuMorePage');
+	}
+
+	backToMapView(ev?: Event): void {
+		ev && ev.preventDefault();
+		ev && ev.stopPropagation();
+
+		this.navCtrl.popToRoot();
 	}
 }

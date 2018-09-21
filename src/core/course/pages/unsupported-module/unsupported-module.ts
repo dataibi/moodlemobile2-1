@@ -16,6 +16,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
+import { NavController } from 'ionic-angular/navigation/nav-controller';
 
 /**
  * Page that displays info about an unsupported module.
@@ -28,7 +29,8 @@ import { CoreTextUtilsProvider } from '@providers/utils/text';
 export class CoreCourseUnsupportedModulePage {
     module: any;
 
-    constructor(navParams: NavParams, private translate: TranslateService, private textUtils: CoreTextUtilsProvider) {
+    constructor(navParams: NavParams, private translate: TranslateService, private textUtils: CoreTextUtilsProvider,
+        public navCtrl: NavController) {
         this.module = navParams.get('module') || {};
     }
 
@@ -38,4 +40,11 @@ export class CoreCourseUnsupportedModulePage {
     expandDescription(): void {
         this.textUtils.expandText(this.translate.instant('core.description'), this.module.description);
     }
+
+    backToMapView(ev?: Event): void {
+		ev && ev.preventDefault();
+		ev && ev.stopPropagation();
+
+		this.navCtrl.popToRoot();
+	}
 }

@@ -41,7 +41,17 @@ export class NavigationFloorsPage {
 			});
 	}
 
-	navToProfile(): void {
+	navToProfile(ev?: Event): void {
+		ev && ev.preventDefault();
+		ev && ev.stopPropagation();
+
 		this.navCtrl.push('CoreMainMenuMorePage');
+	}
+
+	backToMapView(ev?: Event): void {
+		ev && ev.preventDefault();
+		ev && ev.stopPropagation();
+
+		this.navCtrl.popToRoot();
 	}
 }

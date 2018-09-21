@@ -3,7 +3,8 @@
     <img item-start *ngIf="module.handlerData.icon" [src]="module.handlerData.icon" alt="" role="presentation" class="core-module-icon">
     <div class="core-module-title">
         <core-format-text [text]="module.handlerData.title"></core-format-text>
-
+        <!-- <div item-end>{{ 'core.start' | translate }}</div> -->
+        <button ion-button clear item-end>{{ 'core.start' | translate }}</button>
         <!-- Buttons. -->
         <div item-end *ngIf="module.uservisible !== false" class="buttons core-module-buttons" [ngClass]="{'core-button-completion': module.completionstatus}">
             <!-- Module completion. -->
