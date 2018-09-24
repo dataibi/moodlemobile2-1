@@ -13,7 +13,8 @@
 // limitations under the License.
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { NavigationObjectsPage } from '@components/navigation-objects/navigation-objects';
+import { NavigationObjectsPage } from './../navigation-objects/navigation-objects';
+import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-page';
 
 @Component({
 	selector: 'page-navigation-floors',
@@ -23,13 +24,39 @@ export class NavigationFloorsPage {
 
 	roomTopicContent: any[];
 	roomContent: any;
+	course: any;
 
 	constructor(public navCtrl: NavController, navParams: NavParams) {
 			this.roomTopicContent = navParams.get('roomTopicContent');
 			this.roomContent = navParams.get('roomContent');
+			this.course = navParams.get('course');
+
 		}
 
 	showRoomObjects(): void {
-		this.navCtrl.push(NavigationObjectsPage, { roomTopicContent: this.roomTopicContent, roomContent: this.roomContent });
+		this.navCtrl.push(NavigationObjectsPage,
+			{
+				roomTopicContent: this.roomTopicContent,
+				roomContent: this.roomContent,
+				course: this.course
+			});
 	}
+
+	navToProfile(ev?: Event): void {
+		ev && ev.preventDefault();
+		ev && ev.stopPropagation();
+
+		this.navCtrl.push('CoreMainMenuMorePage');
+	}
+
+	backToMapView(ev?: Event): void {
+		ev && ev.preventDefault();
+		ev && ev.stopPropagation();
+
+		this.navCtrl.popToRoot();
+	}
+
+	navToQrScanner(): void {
+        this.navCtrl.push(QrScannerPage, {course: this.course, isLogin: false});
+    }
 }

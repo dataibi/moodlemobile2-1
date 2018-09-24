@@ -30,6 +30,7 @@ import { NavParams } from 'ionic-angular/navigation/nav-params';
 import { NavigationMapProvider } from '@providers/navigation-map-provider';
 import { Subscription } from 'rxjs';
 import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
+import { NavigationMapWrapperPage } from './../nav-map-wrapper/nav-map-wrapper';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -48,6 +49,7 @@ import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() course: any; // The course to render.
     @Input() sections: any[]; // List of course sections.
+    @Input() newSectionId?: number; // If we navigate to section.ts we want see the new topic by sectionId.
     @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
@@ -73,7 +75,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     selectOptions: any = {};
     loaded: boolean;
     sectionFromNavParam: number;
-    navigationSectionSubscription: Subscription;
     sectionCallEventSubscription: Subscription;
 
     protected sectionStatusObserver;
@@ -133,18 +134,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnInit(): void {
         this.displaySectionSelector = this.cfDelegate.displaySectionSelector(this.course);
-        this.navigationSectionSubscription = this.navigationMapProvider.navigationSectionEvent.subscribe(
-            (sectionId) => {
-                const index = this.sections.findIndex((oneSection) => {
-                    return (
-                        oneSection.section &&
-                        typeof oneSection.section !== 'undefined' &&
-                        oneSection.section === sectionId
-                    );
-                });
-                this.sectionChanged(this.sections[index]);
-            }
-        );
 
         this.sectionCallEventSubscription = this.navigationMapProvider.sectionCallEvent.subscribe(
             () => {
@@ -158,6 +147,22 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         this.setInputData();
+
+        if (this.sections
+            && (typeof this.sections !== 'undefined')
+            && this.newSectionId
+            && (typeof this.newSectionId !== 'undefined')) {
+
+            const index = this.sections.findIndex((oneSection) => {
+                return (
+                    oneSection.section &&
+                    typeof oneSection.section !== 'undefined' &&
+                    oneSection.section === this.newSectionId
+                );
+            });
+            this.sectionChanged(this.sections[index]);
+            this.loaded = true;
+        }
 
         if (changes.course) {
             // Course has changed, try to get the components.
@@ -285,6 +290,17 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 this.domUtils.scrollToElementBySelector(this.content, '#core-course-module-' + this.moduleId);
             }, 200);
         }
+
+        if (newSection.section == 0) {
+            const options = {
+                animate: false
+            };
+            this.navCtrl.setRoot(
+                NavigationMapWrapperPage,
+                {module: this.selectedSection.modules[1], course: this.course, data: this.data},
+                options
+            );
+        }
     }
 
     /**
@@ -375,7 +391,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.sectionStatusObserver.off();
         }
 
-        this.navigationSectionSubscription.unsubscribe();
         this.sectionCallEventSubscription.unsubscribe();
     }
 
@@ -395,10 +410,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.dynamicComponents.forEach((component) => {
             component.callComponentFunction('ionViewDidLeave');
         });
-    }
-
-    navToQrScanner(): void {
-        this.navCtrl.push(QrScannerPage, {isLogin: false});
     }
 
     navToMapView(): void {

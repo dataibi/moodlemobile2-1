@@ -50,6 +50,8 @@ Every exhibit has to have in the summary part at first this: "{"map":1,"room":1,
 If you don`t have one or more maps:
 Every exhibit has to have in the summary part at first this: "{"room":1,"exponat":1}" without the outer ".
 
+!!! The first exhibit in a room is always "exponat: 1". The secons one is "exponat: 2" etc. It is not the same number as in "numbers" for the Hotspots in the Room or Map description. !!!
+
 The content order is (use a new line for every part):
 
 Section name: title of the exhibit

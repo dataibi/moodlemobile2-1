@@ -17,22 +17,24 @@
     </div>
 </div -->
 <!-- DAVIDE -->
-
-<div class="iframe-div-wrapper">
+<div class="iframe-buttons-wrapper">
     <div class="button-wrapper">
         <button (click)="iframeResizer('smaller')" class="resize-button" ion-fab mini>
-            <core-icon name="ios-move-outline"></core-icon>
+            <span>-</span>
         </button>
         <button (click)="iframeResizer('bigger')" class="resize-button" ion-fab mini>
             <core-icon name="ios-add-outline"></core-icon>
         </button>
     </div>
-    <div padding class="iframe-div" [ngStyle]="{'width': iframeDivWrapperWidth + '%'}">
-        <core-course-module-description [description]="module.description"></core-course-module-description>
-        <h2 *ngIf="!isDisabledInSite && isSupportedByTheApp">{{ 'core.whoops' | translate }}</h2>
-        <div class="spinner-wrapper" *ngIf="!loaded">
-            <ion-spinner></ion-spinner>
+    <div class="iframe-div-wrapper">
+
+        <div padding class="iframe-div" [ngStyle]="{'width': iframeDivWrapperWidth + '%'}">
+            <core-course-module-description [description]="module.description"></core-course-module-description>
+            <h2 *ngIf="!isDisabledInSite && isSupportedByTheApp">{{ 'core.whoops' | translate }}</h2>
+            <div class="spinner-wrapper" *ngIf="!loaded">
+                <ion-spinner></ion-spinner>
+            </div>
+            <iframe frameborder="0" class="h5p-iframe" scrolling="yes" *ngIf="loaded" [src]="url | safe_image"></iframe>
         </div>
-        <iframe frameborder="0" class="h5p-iframe" scrolling="yes" *ngIf="loaded" [src]="url | safe_image"></iframe>
     </div>
 </div>

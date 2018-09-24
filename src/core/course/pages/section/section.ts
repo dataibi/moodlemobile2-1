@@ -48,6 +48,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     sections: any[];
     sectionId: number;
     sectionNumber: number;
+    newSectionId: number;
     courseHandlers: CoreCourseOptionsHandlerToDisplay[];
     dataLoaded: boolean;
     downloadEnabled: boolean;
@@ -77,6 +78,7 @@ export class CoreCourseSectionPage implements OnDestroy {
         this.sectionId = navParams.get('sectionId');
         this.sectionNumber = navParams.get('sectionNumber');
         this.module = navParams.get('module');
+        this.newSectionId = navParams.get('newSectionId');
 
         // Get the title to display. We dont't have sections yet.
         this.title = courseFormatDelegate.getCourseTitle(this.course);
@@ -419,4 +421,11 @@ export class CoreCourseSectionPage implements OnDestroy {
     onSectionChange(index: number): void {
         this.showMapButton = index === 0 ? false : true;
     }
+
+    backToMapView(ev?: Event): void {
+		ev && ev.preventDefault();
+		ev && ev.stopPropagation();
+
+		this.navCtrl.popToRoot();
+	}
 }

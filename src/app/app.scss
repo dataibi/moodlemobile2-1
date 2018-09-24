@@ -877,6 +877,8 @@ $spacing--huge: $base-size * 5;
 $font-size: $base-size * 2;
 $font-size--small: $base-size * 1.5;
 
+$paddingBottomForButtons: 65px;
+
 .more-button {
   display: flex;
   flex-flow: row nowrap;
@@ -889,4 +891,8 @@ $font-size--small: $base-size * 1.5;
           color: $black;
       }
   }
-}    
+}
+
+.paddingBottomContent {
+  padding-bottom: $paddingBottomForButtons;
+}

@@ -1,0 +1,39 @@
+<!-- <ion-header>
+	<ion-navbar>
+		<ion-title>wrapper</ion-title>
+	</ion-navbar>
+</ion-header> -->
+<ion-header>
+	<ion-navbar core-back-button>
+		<ion-title>
+			<core-format-text [text]="course.fullname"></core-format-text>
+		</ion-title>
+		<ion-fab id="user" top right>
+			<button ion-fab mini (click)="navToProfile()">
+				<core-icon name="contact"></core-icon>
+			</button>
+		</ion-fab>
+	</ion-navbar>
+</ion-header>
+<ion-fab bottom right>
+	<button ion-fab (click)="navToQrScanner()">
+		<core-icon name="md-barcode"></core-icon>
+	</button>
+</ion-fab>
+<ion-content>
+	<div class="paddingBottomContent">
+		<!-- <ion-refresher [enabled]="displayRefresher" (ionRefresh)="doRefresh($event)"> -->
+		<ion-refresher [enabled]="displayRefresher" (ionRefresh)="refreshWholeCourse()" pullMin="120" pullMax="200">
+			<ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+		</ion-refresher>
+		<ion-list no-lines *ngIf="course.imageThumb || (course.progress != null && course.progress >= 0)" class="core-format-progress-list wrapper-list">
+			<div *ngIf="course.imageThumb" class="core-course-thumb">
+				<img [src]="course.imageThumb" core-external-content alt="" />
+			</div>
+			<ion-item *ngIf="course.progress != null && course.progress >= 0">
+				<core-progress-bar [progress]="course.progress"></core-progress-bar>
+			</ion-item>
+		</ion-list>
+		<core-navigation-map [module]="module" [course]="course" [courseId]="course.id" [data]="data"></core-navigation-map>
+	</div>
+</ion-content>

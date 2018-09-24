@@ -76,4 +76,6 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
             }
         }
     }
+
+    // TODO: missing nav to Barcodesanner button here but need course for it
 }

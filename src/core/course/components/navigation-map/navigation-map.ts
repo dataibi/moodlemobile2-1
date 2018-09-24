@@ -11,9 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { NavigationMapProvider } from './../../providers/navigation-map-provider';
 import { NavigationFloorsPage } from './../navigation-floors/navigation-floors';
-
+import { NavigationMapProvider } from './../../../../providers/navigation-map-provider';
+import { NavigationObjectsPage } from './../navigation-objects/navigation-objects';
 import {
     Component,
     Injector,
@@ -30,7 +30,6 @@ import { CoreAppProvider } from '@providers/app';
 import { AddonModPageHelperProvider } from '@addon/mod/page/providers/helper';
 import { AddonModPagePrefetchHandler } from '@addon/mod/page/providers/prefetch-handler';
 import { NavController, Content, Platform, ModalController } from 'ionic-angular';
-import { safelyParseJSON } from '../../helpers/navigation_helpers';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import { CoreSite } from '@classes/site';
@@ -41,9 +40,10 @@ import { CoreExternalContentDirective } from '@directives/external-content';
 import { CoreLoggerProvider } from '@providers/logger';
 import { CoreFilepoolProvider } from '@providers/filepool';
 import { trigger, transition, animate, style } from '@angular/animations';
-import { NavigationObjectsPage } from '@components/navigation-objects/navigation-objects';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { TranslateService } from '@ngx-translate/core';
+import { safelyParseJSON } from './../../../../helpers/navigation_helpers';
+import { CoreCourseSectionPage } from './../../pages/section/section';
 
 @Component({
     selector: 'core-navigation-map',
@@ -64,6 +64,7 @@ export class NavigationMapComponent
     extends CoreCourseModuleMainResourceComponent
     implements OnChanges {
     @Input() data: any; // All data for the courses
+    @Input() course: any; // All data for the courses
     mapIndexToShow: number = 0;
     roomIndexToShow: number = 0; // The room under the image
     topicIndexToShow: number = 0;
@@ -1084,7 +1085,8 @@ export class NavigationMapComponent
         // RoomContent fot all the content infos
         this.navCtrl.push(NavigationFloorsPage, {
             roomTopicContent: roomTopicContent,
-            roomContent: this.roomModulesSplittedContentArray[roomIndexToShow]
+            roomContent: this.roomModulesSplittedContentArray[roomIndexToShow],
+            course: this.course
         });
     }
 
@@ -1092,9 +1094,9 @@ export class NavigationMapComponent
         this.visible = !this.visible;
     }
 
-    showTopic(sectionId: number): void {
-        this.navigationMapProvider.emitnavigationSectionEvent(sectionId);
-    }
+    showTopic(index: number): void {
+		this.navCtrl.push(CoreCourseSectionPage, {course: this.course, newSectionId: index});
+	}
 
     /**
      * In the room list under the map image we can slide to the "direct to exhibit" option.
@@ -1115,7 +1117,8 @@ export class NavigationMapComponent
         this.navCtrl.push(NavigationObjectsPage,
             {
                 roomTopicContent: roomTopicContent,
-                roomContent: this.roomModulesSplittedContentArray[roomIndex]
+                roomContent: this.roomModulesSplittedContentArray[roomIndex],
+                course: this.course
             }
         );
     }
