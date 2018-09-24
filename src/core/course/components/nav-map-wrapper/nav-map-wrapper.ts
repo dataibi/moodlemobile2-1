@@ -22,15 +22,16 @@ import { CoreCourseOptionsDelegate, CoreCourseOptionsHandlerToDisplay } from './
 import { CoreCourseFormatDelegate } from './../../providers/format-delegate';
 import { CoreDomUtilsProvider } from './../../../../providers/utils/dom';
 import { CoreCourseProvider } from './../../providers/course';
+import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-page';
 
 @Component({
 	selector: 'nav-map-wrapper',
 	templateUrl: 'nav-map-wrapper.html'
 })
 export class NavigationMapWrapperPage {
-	module;
-	course;
-	data;
+	module: any;
+	course: any;
+	data: any;
 	sections: any[];
 	courseHandlers: CoreCourseOptionsHandlerToDisplay[];
 	displayRefresher: boolean = true;
@@ -50,20 +51,6 @@ export class NavigationMapWrapperPage {
 
 	navToProfile(): void {
 		this.navCtrl.push('CoreMainMenuMorePage');
-	}
-
-    /**
-     * Refresh the data.
-     *
-     * @param  {any} [refresher] Refresher.
-     * @return {Promise<any>} Promise resolved when done.
-     */
-    doRefresh(refresher?: any): Promise<any> {
-        return this.invalidateData().finally(() => {
-            return this.loadData(true).finally(() => {
-                    refresher && refresher.complete();
-            });
-        });
 	}
 
     /**
@@ -192,5 +179,17 @@ export class NavigationMapWrapperPage {
         this.invalidateData().finally(() => {
             this.loadData(true);
         });
-	}
+    }
+
+    navToQrScanner(): void {
+        this.navCtrl.push(QrScannerPage, {course: this.course, isLogin: false});
+    }
+
+    /**
+     * Refresh th whole course
+     */
+    refreshWholeCourse(): void {
+        this.courseFormatDelegate.openCourse(this.navCtrl, this.course);
+        // TODO: use local methods to load data, don`t go to courses list
+    }
 }

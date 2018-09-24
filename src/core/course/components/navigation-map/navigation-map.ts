@@ -1,4 +1,3 @@
-import { CoreCourseSectionPage } from './../../pages/section/section';
 // (C) Copyright 2018 Jens-Michael Lohse
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +43,7 @@ import { trigger, transition, animate, style } from '@angular/animations';
 import { CoreTextUtilsProvider } from '@providers/utils/text';
 import { TranslateService } from '@ngx-translate/core';
 import { safelyParseJSON } from './../../../../helpers/navigation_helpers';
+import { CoreCourseSectionPage } from './../../pages/section/section';
 
 @Component({
     selector: 'core-navigation-map',
@@ -327,8 +327,6 @@ export class NavigationMapComponent
         if (changes.data && changes.data.firstChange === true) {
             this.navigationMapProvider.setCourseData(this.data);
             this.mapTopicsToSectionId();
-            console.log('this.data');
-            console.log(this.data);
             mapModulesArray = this.createMapsModulesArray('map', this.mapIndexToShow);
             if (mapModulesArray.length) {
                 await this.createTheSplittedContentInArray(mapModulesArray, 'map');
@@ -1095,10 +1093,6 @@ export class NavigationMapComponent
     goToList(): void {
         this.visible = !this.visible;
     }
-
-    // showTopic(sectionId: number): void {
-    //     this.navigationMapProvider.emitnavigationSectionEvent(sectionId);
-    // }
 
     showTopic(index: number): void {
 		this.navCtrl.push(CoreCourseSectionPage, {course: this.course, newSectionId: index});

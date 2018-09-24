@@ -292,8 +292,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (newSection.section == 0) {
-            console.log('this.selectedSection.section in if');
-            console.log(newSection.section);
             const options = {
                 animate: false
             };
@@ -412,10 +410,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.dynamicComponents.forEach((component) => {
             component.callComponentFunction('ionViewDidLeave');
         });
-    }
-
-    navToQrScanner(): void {
-        this.navCtrl.push(QrScannerPage, {isLogin: false});
     }
 
     navToMapView(): void {

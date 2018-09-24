@@ -15,17 +15,25 @@
 		</ion-fab>
 	</ion-navbar>
 </ion-header>
-<ion-content class="paddingBottomContent">
-	<ion-refresher [enabled]="displayRefresher" (ionRefresh)="doRefresh($event)">
-		<ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-	</ion-refresher>
-	<ion-list no-lines *ngIf="course.imageThumb || (course.progress != null && course.progress >= 0)" class="core-format-progress-list wrapper-list">
-		<div *ngIf="course.imageThumb" class="core-course-thumb">
-			<img [src]="course.imageThumb" core-external-content alt="" />
-		</div>
-		<ion-item *ngIf="course.progress != null && course.progress >= 0">
-			<core-progress-bar [progress]="course.progress"></core-progress-bar>
-		</ion-item>
-	</ion-list>
-	<core-navigation-map [module]="module" [course]="course" [courseId]="course.id" [data]="data"></core-navigation-map>
+<ion-fab bottom right>
+	<button ion-fab (click)="navToQrScanner()">
+		<core-icon name="md-barcode"></core-icon>
+	</button>
+</ion-fab>
+<ion-content>
+	<div class="paddingBottomContent">
+		<!-- <ion-refresher [enabled]="displayRefresher" (ionRefresh)="doRefresh($event)"> -->
+		<ion-refresher [enabled]="displayRefresher" (ionRefresh)="refreshWholeCourse()" pullMin="120" pullMax="200">
+			<ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+		</ion-refresher>
+		<ion-list no-lines *ngIf="course.imageThumb || (course.progress != null && course.progress >= 0)" class="core-format-progress-list wrapper-list">
+			<div *ngIf="course.imageThumb" class="core-course-thumb">
+				<img [src]="course.imageThumb" core-external-content alt="" />
+			</div>
+			<ion-item *ngIf="course.progress != null && course.progress >= 0">
+				<core-progress-bar [progress]="course.progress"></core-progress-bar>
+			</ion-item>
+		</ion-list>
+		<core-navigation-map [module]="module" [course]="course" [courseId]="course.id" [data]="data"></core-navigation-map>
+	</div>
 </ion-content>

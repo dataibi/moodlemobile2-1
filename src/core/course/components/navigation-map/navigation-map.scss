@@ -24,11 +24,11 @@ core-navigation-map {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        height: $button-height * 0.8;
-        width: $button-height * 0.8;
+        height: $button-height;
+        width: $button-height;
         border: 2px solid $primary-color;
-        border-radius: $button-height * 0.4;
-        background: $white;
+        border-radius: $button-height * 0.5;
+        background: rgba(255,255,255,.7);
         font-size: $font-size--small;
         font-weight: bold;
         transform: translate3d(-50%, -50%, 0);

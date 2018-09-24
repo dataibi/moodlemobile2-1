@@ -19,6 +19,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { safelyParseJSON } from '../../helpers/navigation_helpers';
 import { NavigationMapProvider } from '@providers/navigation-map-provider';
+import { CoreCourseSectionPage } from './../../core/course/pages/section/section';
 
 @Component({
 	selector: 'qr-scanner-page',
@@ -33,7 +34,7 @@ export class QrScannerPage {
 	isLoginScan: boolean = false;
 	callingComponent: any;
 	typeOfQrCode: string;
-	courseData: any;
+	course: any;
 
 	constructor(
 		public navCtrl: NavController,
@@ -46,6 +47,7 @@ export class QrScannerPage {
 	) {
 		this.isLoginScan = navParams.get('isLogin');
 		this.callingComponent = navParams.get('callingComponent');
+		this.course = navParams.get('course');
 	}
 
 	ionViewDidEnter(): void {
@@ -195,10 +197,10 @@ export class QrScannerPage {
      * @return {void}
      */
 	sendJson(): void {
-		let data: any, currentPageIndex: number, topicsToSectionIdArray: any[], foundTopicAndSectionId: any;
+		let data: any, topicsToSectionIdArray: any[], foundTopicAndSectionId: any;
 		if (this.typeOfQrCode === 'login') {
 			this.qrReaderProvider.emitLoginData(this.scanned);
-		} else if (this.typeOfQrCode === 'section') {
+		} else if (this.typeOfQrCode === 'section') { // TODO: check if qr code is valid and show alert when not and reset
 			data = safelyParseJSON(this.scanned);
 			topicsToSectionIdArray = this.navigationMapProvider.getTopicsToSectionIdArray();
 			foundTopicAndSectionId = topicsToSectionIdArray.find((topic) => {
@@ -212,13 +214,9 @@ export class QrScannerPage {
 						return true;
 				}
 			});
-			currentPageIndex = this.navCtrl.getActive().index;
 			if (foundTopicAndSectionId !== undefined) {
-				this.navigationMapProvider.emitnavigationSectionEvent(foundTopicAndSectionId.sectionId);
+				this.navCtrl.push(CoreCourseSectionPage, {course: this.course, newSectionId: foundTopicAndSectionId.sectionId});
 			}
-
-			this.navCtrl.remove(1, (currentPageIndex - 2));
-			this.navCtrl.pop();
 		}
 	}
 }

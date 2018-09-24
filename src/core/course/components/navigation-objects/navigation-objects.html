@@ -13,6 +13,11 @@
 		<core-icon name="compass"></core-icon>
 	</button>
 </ion-fab>
+<ion-fab bottom right>
+    <button ion-fab (click)="navToQrScanner()">
+        <core-icon name="md-barcode"></core-icon>
+    </button>
+</ion-fab>
 <ion-content class="card-background-page paddingBottomContent">
 	<div class="paddingBottomContent">
 		<ion-list>
@@ -23,7 +28,7 @@
 					</ion-thumbnail>
 					<h2>{{topic.sectionName}}</h2>
 					<p text-wrap [innerHTML]="topic.shortDescription"></p>
-					<button ion-button clear item-end (click)="showRoomObjectPage(i)">{{ 'core.show' | translate }}</button>
+					<button ion-button clear item-end (click)="showTopicPage(i)">{{ 'core.show' | translate }}</button>
 				</ion-item>
 			</ion-item-sliding>
 		</ion-list>

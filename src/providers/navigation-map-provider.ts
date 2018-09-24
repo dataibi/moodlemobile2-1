@@ -20,7 +20,6 @@ import { Injectable, EventEmitter } from '@angular/core';
 @Injectable()
 export class NavigationMapProvider {
 
-    navigationSectionEvent = new EventEmitter<any>();
     sectionCallEvent = new EventEmitter<any>();
     topicsToSectionIdArray: any[] = [];
 
@@ -32,10 +31,6 @@ export class NavigationMapProvider {
 
     setCourseData(courseData: any): void {
         this.courseData = courseData;
-    }
-
-    emitnavigationSectionEvent(sectionId: number): void {
-        this.navigationSectionEvent.emit(sectionId);
     }
 
     emitSectionCallEvent(): void {

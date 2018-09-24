@@ -1,4 +1,3 @@
-import { CoreCourseSectionPage } from './../../pages/section/section';
 // (C) Copyright 2018 David Pohl
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +13,8 @@ import { CoreCourseSectionPage } from './../../pages/section/section';
 // limitations under the License.
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
+import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-page';
+import { CoreCourseSectionPage } from './../../pages/section/section';
 
 @Component({
 	selector: 'page-navigation-objects',
@@ -32,7 +33,7 @@ export class NavigationObjectsPage {
 			this.course = navParams.get('course');
 		}
 
-	showRoomObjectPage(index: number): void {
+	showTopicPage(index: number): void {
 		this.navCtrl.push(CoreCourseSectionPage, {course: this.course, newSectionId: this.roomTopicContent[index].sectionId});
 	}
 
@@ -49,4 +50,8 @@ export class NavigationObjectsPage {
 
 		this.navCtrl.popToRoot();
 	}
+
+	navToQrScanner(): void {
+        this.navCtrl.push(QrScannerPage, {course: this.course, isLogin: false});
+    }
 }

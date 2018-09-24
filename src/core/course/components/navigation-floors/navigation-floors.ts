@@ -14,6 +14,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { NavigationObjectsPage } from './../navigation-objects/navigation-objects';
+import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-page';
 
 @Component({
 	selector: 'page-navigation-floors',
@@ -54,4 +55,8 @@ export class NavigationFloorsPage {
 
 		this.navCtrl.popToRoot();
 	}
+
+	navToQrScanner(): void {
+        this.navCtrl.push(QrScannerPage, {course: this.course, isLogin: false});
+    }
 }
