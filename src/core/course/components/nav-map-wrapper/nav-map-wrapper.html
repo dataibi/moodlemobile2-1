@@ -11,9 +11,9 @@
 	</ion-navbar>
 </ion-header>
 <ion-fab bottom right>
-	<button ion-fab (click)="navToQrScanner()">
-		<core-icon name="md-barcode"></core-icon>
-	</button>
+    <button class="own-image-button--mini" mini ion-fab (click)="navToQrScanner()">
+        <img src="assets/img/qrcode_big.png">
+    </button>
 </ion-fab>
 <ion-content>
 	<ion-refresher [enabled]="displayRefresher" (ionRefresh)="refreshWholeCourse()" pullMin="120" pullMax="200">

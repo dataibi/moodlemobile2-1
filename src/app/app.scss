@@ -896,3 +896,11 @@ $paddingBottomForButtons: 65px;
 .paddingBottomContent {
   padding-bottom: $paddingBottomForButtons;
 }
+
+.own-image-button {
+  padding: $spacing--medium;
+}
+
+.own-image-button--mini {
+  padding: $spacing--small;
+}
