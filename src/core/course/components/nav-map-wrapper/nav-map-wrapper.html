@@ -1,8 +1,3 @@
-<!-- <ion-header>
-	<ion-navbar>
-		<ion-title>wrapper</ion-title>
-	</ion-navbar>
-</ion-header> -->
 <ion-header>
 	<ion-navbar core-back-button>
 		<ion-title>
@@ -21,11 +16,10 @@
 	</button>
 </ion-fab>
 <ion-content>
+	<ion-refresher [enabled]="displayRefresher" (ionRefresh)="refreshWholeCourse()" pullMin="120" pullMax="200">
+		<ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+	</ion-refresher>
 	<div class="paddingBottomContent">
-		<!-- <ion-refresher [enabled]="displayRefresher" (ionRefresh)="doRefresh($event)"> -->
-		<ion-refresher [enabled]="displayRefresher" (ionRefresh)="refreshWholeCourse()" pullMin="120" pullMax="200">
-			<ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-		</ion-refresher>
 		<ion-list no-lines *ngIf="course.imageThumb || (course.progress != null && course.progress >= 0)" class="core-format-progress-list wrapper-list">
 			<div *ngIf="course.imageThumb" class="core-course-thumb">
 				<img [src]="course.imageThumb" core-external-content alt="" />
