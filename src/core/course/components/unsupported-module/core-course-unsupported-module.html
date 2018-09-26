@@ -34,7 +34,8 @@
             <div class="spinner-wrapper" *ngIf="!loaded">
                 <ion-spinner></ion-spinner>
             </div>
-            <iframe frameborder="0" class="h5p-iframe" scrolling="yes" *ngIf="loaded" [src]="url | safe_image"></iframe>
+            <core-iframe *ngIf="loaded" [src]="url" [iframeWidth]="'100%'" [iframeHeight]="'100%'"></core-iframe>
+            <!-- <iframe frameborder="0" class="h5p-iframe" scrolling="yes" *ngIf="loaded" [src]="url | safe_image"></iframe> -->
         </div>
     </div>
 </div>
