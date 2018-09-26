@@ -1,4 +1,8 @@
 <?php
+// We have to delete older cookies from the server. 
+// Use the badgesproxy script (in this docs folder) in cron.daily to delete ervery cookie 
+// older then 24 hours.
+
 function getElementsByClass(&$parentNode, $tagName, $className)
 {
     $nodes = array();
