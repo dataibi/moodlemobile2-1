@@ -18,6 +18,7 @@ import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../providers/delegate';
 import { CoreMainMenuProvider, CoreMainMenuCustomItem } from '../../providers/mainmenu';
+import { CoreLoginHelperProvider } from '@core/login/providers/helper';
 
 /**
  * Page that displays the list of main menu options that aren't in the tabs.
@@ -42,7 +43,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
     protected updateSiteObserver;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider,
-            private navCtrl: NavController, private mainMenuProvider: CoreMainMenuProvider,
+            private navCtrl: NavController, private loginHelper: CoreLoginHelperProvider, private mainMenuProvider: CoreMainMenuProvider,
             eventsProvider: CoreEventsProvider) {
 
         this.langObserver = eventsProvider.on(CoreEventsProvider.LANGUAGE_CHANGED, this.loadSiteInfo.bind(this));
@@ -128,6 +129,9 @@ export class CoreMainMenuMorePage implements OnDestroy {
      * Logout the user.
      */
     logout(): void {
-        this.sitesProvider.logout();
+    	var id = this.sitesProvider.getCurrentSiteId();
+        this.sitesProvider.deleteSite(id).then(() => {
+        	this.loginHelper.goToAddSite(true, true);
+        });
     }
 }
