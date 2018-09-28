@@ -1,6 +1,12 @@
 Site for creation:
 http://goqr.me/de/
 
+Or for many codes:
+Please use the ./qr_loop.php file and the following generator:
+https://qrexplore.com/generate/
+Options are in the ./qr_settings.png
+
+
 QrCode has to have a qrType property like this:
 
 {"username": "nicename", "password": "nicepassword", "qrType": "login"}

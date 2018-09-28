@@ -61,3 +61,4 @@ In Summary:
 2. Short description for the content (mark the text and use the "Heading (small)" format for it)
 3. Long description (mark the text and use the paragraph format for it)
 4. the image (no hotspots allowed)
+

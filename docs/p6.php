@@ -1,8 +1,4 @@
 <?php
-// We have to delete older cookies from the server. 
-// Use the badgesproxy script (in this docs folder) in cron.daily to delete ervery cookie 
-// older then 24 hours.
-
 function getElementsByClass(&$parentNode, $tagName, $className)
 {
     $nodes = array();
@@ -25,11 +21,20 @@ $postdata = "username=" . $username . "&password=" . $password;
 $usernamePasswordString = $username.$password;
 $cookieHashName = hash('sha256', $usernamePasswordString);
 $path = realpath(dirname(__FILE__)).'/';
-if (!file_exists($path. 'tmp/'. $cookieHashName)) {
+$file = $path. 'tmp/'. $cookieHashName;
 
-    $cookieHandle = fopen($path. 'tmp/'. $cookieHashName, 'w');
+
+if (file_exists($file)) {
+    $filetime = time() - filemtime($file);
+    if ($filetime > 3 * 3600) {
+        unlink($file);
+    }
+}
+
+if (!file_exists($file)) {
+    $cookieHandle = fopen($file, 'w');
     fclose($cookieHandle);
-    $cookie = $path. 'tmp/'. $cookieHashName;
+    $cookie = $file;
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -45,7 +50,7 @@ if (!file_exists($path. 'tmp/'. $cookieHashName)) {
     curl_close($ch);
     
 } else {
-    $cookie = $path. 'tmp/'. $cookieHashName;
+    $cookie = $file;
 }
 
 $url = $_REQUEST['redir'];

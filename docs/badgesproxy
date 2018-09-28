@@ -1,2 +1,3 @@
 #!/bin/sh
 /usr/bin/find /var/www/hosts/mathetics/htdocs/moodle.mathetics.eu/proxy/tmp/* -mtime +1  -exec rm {} \;
+
