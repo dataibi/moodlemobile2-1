@@ -500,10 +500,6 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         this.siteName = this.sitesProvider.getCurrentSite().getInfo().sitename;
     }
 
-    navToQrScanner(): void {
-        this.navCtrl.push(QrScannerPage, {isLogin: false});
-    }
-
     /**
      * Component being destroyed.
      */

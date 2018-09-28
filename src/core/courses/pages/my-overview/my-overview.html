@@ -50,12 +50,6 @@
                                 <ion-spinner *ngIf="!prefetchCoursesData[courses.selected].icon || prefetchCoursesData[courses.selected].icon == 'spinner'"></ion-spinner>
                                 <span float-end *ngIf="prefetchCoursesData[courses.selected].badge">{{prefetchCoursesData[courses.selected].badge}}</span>
                             </div>
-                            <!-- new qr button -->
-                            <div float-end>
-                                <button ion-button icon-only clear color="dark" (click)="navToQrScanner()">
-                                    <core-icon name="md-barcode"></core-icon>
-                                </button>
-                            </div>
                         </div>
                         <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'inprogress'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesinprogress' | translate"></core-empty-box>
                         <core-empty-box *ngIf="courses[courses.selected].length == 0 && courses.selected == 'future'" image="assets/img/icons/courses.svg" [message]="'core.courses.nocoursesfuture' | translate"></core-empty-box>
