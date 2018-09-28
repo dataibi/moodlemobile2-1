@@ -215,7 +215,11 @@ export class QrScannerPage {
 				}
 			});
 			if (foundTopicAndSectionId !== undefined) {
-				this.navCtrl.push(CoreCourseSectionPage, {course: this.course, newSectionId: foundTopicAndSectionId.sectionId});
+				const currentIndex = this.navCtrl.getActive().index;
+				this.navCtrl.push(CoreCourseSectionPage, {course: this.course, newSectionId: foundTopicAndSectionId.sectionId})
+				.then(() => {
+					this.navCtrl.remove(currentIndex);
+				});
 			}
 		}
 	}

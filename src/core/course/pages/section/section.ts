@@ -385,7 +385,7 @@ export class CoreCourseSectionPage implements OnDestroy {
     }
 
     navToQrScanner(): void {
-        this.navCtrl.push(QrScannerPage, {isLogin: false});
+        this.navCtrl.push(QrScannerPage, {course: this.course, isLogin: false});
     }
 
     /**
