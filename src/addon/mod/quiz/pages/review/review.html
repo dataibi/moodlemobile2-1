@@ -15,10 +15,31 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
 
-	<!-- deleted useless html content -->
+		<!-- deleted useless html content -->
 	
+        <div *ngIf="attempt && questions.length">
             <!-- Arrows to go to next/previous. -->
             <ng-container *ngTemplateOutlet="navArrows"></ng-container>
+             <!-- Questions. -->
+            <div *ngFor="let question of questions">
+                <ion-card id="addon-mod_quiz-question-{{question.slot}}">
+                    <!-- "Header" of the question. -->
+                    <ion-item-divider color="light">
+                        <h2 *ngIf="question.number" class="inline">{{ 'core.question.questionno' | translate:{$a: question.number} }}</h2>
+                        <h2 *ngIf="!question.number" class="inline">{{ 'core.question.information' | translate }}</h2>
+                        <ion-note text-wrap item-end *ngIf="question.status || question.readableMark">
+                            <p *ngIf="question.status" class="block">{{question.status}}</p>
+                            <p *ngIf="question.readableMark"><core-format-text [text]="question.readableMark"></core-format-text></p>
+                        </ion-note>
+                    </ion-item-divider>
+                    <!-- Body of the question. -->
+                    <core-question text-wrap [question]="question" [component]="component" [componentId]="componentId" [attemptId]="attempt.id" [offlineEnabled]="false"></core-question>
+                </ion-card>
+            </div>
+        </div>
+	
+        <!-- Arrows to go to next/previous. -->
+        <ng-container *ngTemplateOutlet="navArrows"></ng-container>
     </core-loading>
     <ion-row align-items-center>
         <ion-col>
