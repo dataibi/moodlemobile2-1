@@ -40,3 +40,7 @@ e2e/build
 !/desktop/electron.js
 src/configconstants.ts
 src/assets/lang
+
+#config.xml
+#package-lock.json
+#package.json
