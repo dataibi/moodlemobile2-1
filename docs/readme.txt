@@ -27,6 +27,7 @@ It`s very important to do it exactly like the example. Please use ordered list a
 
 
 It is possible to use hotspots in maps and rooms. You can decide for every map or room whether you want it or not.
+!!! But it`s not possible to use hotspots for rooms, if you use maps in the project. This is a future feature !!!
 If you want to use hotspots, you must fill in the word "hotspotimage" under "Describe this image for someone who cannot see it" in the Image-mask. And then use the coordinates in the list described above.
 x-value is percent from the left in the image and y-value is percent from the top of the image.
 

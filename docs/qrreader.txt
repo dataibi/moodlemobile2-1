@@ -2,7 +2,10 @@ Site for creation:
 http://goqr.me/de/
 
 Or for many codes:
-Please use the ./qr_loop.php file and the following generator:
+Please use the ./qr_form file:
+http://www.moodle.mathetics.eu/theme/badges/qr_loop_form.php
+
+and the following generator:
 https://qrexplore.com/generate/
 Options are in the ./qr_settings.png
 

@@ -1,0 +1,4 @@
+Please use the ./qr_form file:
+http://www.moodle.mathetics.eu/theme/badges/qr_loop_form.php
+
+and use the upload users function in moodle backend
