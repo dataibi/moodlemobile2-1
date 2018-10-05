@@ -1,0 +1,29 @@
+<ion-header>
+    <ion-navbar core-back-button>
+        <ion-title><core-format-text [text]="title"></core-format-text></ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher [enabled]="userLoaded" (ionRefresh)="refreshUser($event)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="userLoaded">
+        <div *ngIf="user">
+            <form ion-list [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+                <ion-item text-wrap >
+                    <ion-label>{{ 'core.user.firstname' | translate}}</ion-label>
+                    <ion-input type="text" name="firstname" placeholder="{{ 'core.user.firstname' | translate }}" formControlName="firstname" autocapitalize="none" autocorrect="off"></ion-input>
+                </ion-item>
+                <ion-item text-wrap >
+                    <ion-label>{{ 'core.user.lastname' | translate}}</ion-label>
+                    <ion-input type="text" name="lastname" placeholder="{{ 'core.user.lastname' | translate }}" formControlName="lastname" autocapitalize="none" autocorrect="off"></ion-input>
+                </ion-item>
+                <ion-item text-wrap *ngIf="user.email">
+                    <ion-label>{{ 'core.user.email' | translate }}</ion-label>
+                    <ion-input type="email" name="email" placeholder="{{ 'core.user.email' | translate }}" formControlName="email" autocapitalize="none" autocorrect="off"></ion-input>
+                </ion-item>
+                <button ion-button block [disabled]="!profileForm.valid">{{ 'core.user.save' | translate }}</button>
+            </form>
+        </div>
+        <core-empty-box *ngIf="!user || (!hasContact && !hasDetails && !user.description)" icon="person" [message]=" 'core.user.detailsnotavailable' | translate"></core-empty-box>
+    </core-loading>

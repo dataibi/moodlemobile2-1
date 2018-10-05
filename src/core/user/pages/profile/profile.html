@@ -23,17 +23,17 @@
                 </p>-->
             </ion-item>
 
-			<ion-item text-wrap *ngIf="user.email">
-				<h2>{{ 'core.user.email' | translate }}</h2>
-				<p><core-format-text [text]="user.email"></core-format-text></p>
-				<ion-icon name="create" *ngIf="canChangeProfile" (click)="changeProfileEmail()"></ion-icon>
-			</ion-item>
+            <ion-item text-wrap *ngIf="user.email">
+                <h2>{{ 'core.user.email' | translate }}</h2>
+                <p><core-format-text [text]="user.email"></core-format-text></p>
+                <!-- <ion-icon name="create" *ngIf="canChangeProfile" (click)="changeProfileEmail()"></ion-icon> -->
+            </ion-item>
 
-			<ion-item text-wrap *ngIf="user.fullname">
-				<h2>{{ 'core.user.fullname' | translate }}</h2>
-				<p><core-format-text [text]="user.fullname"></core-format-text></p>
-				<ion-icon name="create" *ngIf="canChangeProfile" (click)="changeProfileName()"></ion-icon>
-			</ion-item>
+            <ion-item text-wrap *ngIf="user.fullname">
+                <h2>{{ 'core.user.fullname' | translate }}</h2>
+                <p><core-format-text [text]="user.fullname"></core-format-text></p>
+                <!-- <ion-icon name="create" *ngIf="canChangeProfile" (click)="changeProfileName()"></ion-icon> -->
+            </ion-item>
             
 			<!--
             <ion-grid class="core-user-communication-handlers" *ngIf="(communicationHandlers && communicationHandlers.length) || isLoadingHandlers">
@@ -50,13 +50,19 @@
                         <ion-spinner></ion-spinner>
                     </ion-col>
                 </ion-row>
-            </ion-grid>
+            </ion-grid> -->
 			
-            <a ion-item text-wrap class="core-user-profile-handler" (click)="openUserDetails()" title="{{ 'core.user.details' | translate }}">
+            <!-- <a ion-item text-wrap class="core-user-profile-handler" (click)="openUserDetails()" title="{{ 'core.user.details' | translate }}">
                 <ion-icon name="person" item-start></ion-icon>
-                <h2>{{ 'core.user.details' | translate }}</h2>
+                <h2>{{ 'core.edit' | translate }}</h2>
+            </a> -->
+
+            <a ion-item text-wrap class="core-user-profile-handler" (click)="changeProfileName()" title="{{ 'core.user.fullname' | translate }}">
+                <ion-icon name="person" item-start></ion-icon>
+                <h2>{{ 'core.user.editprofile' | translate }}</h2>
             </a>
-            
+
+            <!--
             <ion-item text-center class="core-loading-handlers" *ngIf="isLoadingHandlers">
                 <ion-spinner></ion-spinner>
             </ion-item>

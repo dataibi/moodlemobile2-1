@@ -25,6 +25,7 @@ import { CoreMimetypeUtilsProvider } from '@providers/utils/mimetype';
 import { CoreFileUploaderHelperProvider } from '@core/fileuploader/providers/helper';
 import { CoreUserDelegate, CoreUserProfileHandlerData } from '../../providers/user-delegate';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 /**
  * Page that displays an user profile page.
@@ -50,12 +51,13 @@ export class CoreUserProfilePage {
     actionHandlers: CoreUserProfileHandlerData[] = [];
     newPageHandlers: CoreUserProfileHandlerData[] = [];
     communicationHandlers: CoreUserProfileHandlerData[] = [];
+    profileForm: FormGroup;
 
     constructor(navParams: NavParams, private userProvider: CoreUserProvider, private userHelper: CoreUserHelperProvider,
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private eventsProvider: CoreEventsProvider,
             private coursesProvider: CoreCoursesProvider, private sitesProvider: CoreSitesProvider,
             private mimetypeUtils: CoreMimetypeUtilsProvider, private fileUploaderHelper: CoreFileUploaderHelperProvider,
-            private userDelegate: CoreUserDelegate, private navCtrl: NavController,
+            private userDelegate: CoreUserDelegate, private navCtrl: NavController, private fb: FormBuilder,
             @Optional() private svComponent: CoreSplitViewComponent) {
         this.userId = navParams.get('userId');
         this.courseId = navParams.get('courseId');
@@ -76,6 +78,11 @@ export class CoreUserProfilePage {
                 this.user.address = this.userHelper.formatAddress('', data.user.city, data.user.country);
             }
         }, sitesProvider.getCurrentSiteId());
+
+        this.profileForm = fb.group({
+            email: ['', Validators.required],
+            fullname: ['', Validators.required]
+        });
     }
 
     /**
@@ -166,14 +173,20 @@ export class CoreUserProfilePage {
      * Opens dialog to change profile email.
      */
     changeProfileEmail(): void {
-
+        // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
+        const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+        navCtrl.push('CoreEditProfilePage', {courseId: this.courseId, userId: this.userId,
+            fullname: this.user.fullname, firstname: this.user.firstname, lastname: this.user.lastname, email: this.user.email});
     }
 
     /**
      * Opens dialog to change profile name.
      */
     changeProfileName(): void {
-
+        // Decide which navCtrl to use. If this page is inside a split view, use the split view's master nav.
+        const navCtrl = this.svComponent ? this.svComponent.getMasterNav() : this.navCtrl;
+        navCtrl.push('CoreEditProfilePage', {courseId: this.courseId, userId: this.userId,
+            fullname: this.user.fullname, firstname: this.user.firstname, lastname: this.user.lastname, email: this.user.email});
     }
 
     /**
