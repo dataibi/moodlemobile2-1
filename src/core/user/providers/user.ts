@@ -47,6 +47,18 @@ export class CoreUserProvider {
                 {
                     name: 'profileimageurl',
                     type: 'TEXT'
+                },
+                {
+                    name: 'email',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'firstname',
+                    type: 'TEXT'
+                },
+                {
+                    name: 'lastname',
+                    type: 'TEXT'
                 }
             ]
         }
@@ -81,6 +93,24 @@ export class CoreUserProvider {
 
             return result.profileimageurl;
         });
+    }
+
+    changeUserProfile(userId: number, firstname: string, lastname: string, email: string): Promise<any> {
+        if (isNaN(userId)) {
+            return Promise.reject(null);
+        }
+
+        const data = {
+            userid: userId,
+            firstname: firstname,
+            lastname: lastname,
+            email: email
+        },
+        preSets = {
+            responseExpected: false
+        };
+
+        return this.sitesProvider.getCurrentSite().write('local_wsbadges_update_own_profile', data, preSets);
     }
 
     /**
@@ -253,7 +283,7 @@ export class CoreUserProvider {
                 if (user.country) {
                     user.country = this.utils.getCountryName(user.country);
                 }
-                this.storeUser(user.id, user.fullname, user.profileimageurl);
+                this.storeUser(user.id, user.fullname, user.profileimageurl, user.email, user.firstname, user.lastname);
 
                 return user;
             });
@@ -413,12 +443,16 @@ export class CoreUserProvider {
      * @param  {string} [siteId] ID of the site. If not defined, use current site.
      * @return {Promise<any>}         Promise resolve when the user is stored.
      */
-    protected storeUser(userId: number, fullname: string, avatar: string, siteId?: string): Promise<any> {
+    protected storeUser(userId: number, fullname: string, avatar: string, email: string,
+            firstname: string, lastname: string, siteId?: string): Promise<any> {
         return this.sitesProvider.getSite(siteId).then((site) => {
             const userRecord = {
                 id: userId,
                 fullname: fullname,
-                profileimageurl: avatar
+                profileimageurl: avatar,
+                email: email,
+                firstname: firstname,
+                lastname: lastname
             };
 
             return site.getDb().insertRecord(this.USERS_TABLE, userRecord);
@@ -437,7 +471,8 @@ export class CoreUserProvider {
 
         users.forEach((user) => {
             if (typeof user.id != 'undefined' && !isNaN(parseInt(user.id, 10))) {
-                promises.push(this.storeUser(parseInt(user.id, 10), user.fullname, user.profileimageurl, siteId));
+                promises.push(this.storeUser(parseInt(user.id, 10), user.fullname, user.profileimageurl, user.email,
+                    user.firstname, user.lastname, siteId));
             }
         });
 
