@@ -1,4 +1,5 @@
-// (C) Copyright 2015 David Pohl
+// (C) Copyright 2015 Martin Dougiamas
+// Modifications copyright (C) 2018 REVEAL
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

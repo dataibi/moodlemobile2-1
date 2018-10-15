@@ -1,4 +1,4 @@
-// (C) Copyright 2015 David Pohl
+// (C) Copyright 2015 REVEAL
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
