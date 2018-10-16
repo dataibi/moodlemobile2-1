@@ -50,7 +50,6 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
                 return !item.hidden;
             });
 
-            console.log(this.items);
             // Sort the items by priority.
             this.items.sort((a, b) => {
                 return a.priority <= b.priority ? 1 : -1;
