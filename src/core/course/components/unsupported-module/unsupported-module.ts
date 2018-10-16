@@ -17,6 +17,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CoreCourseProvider } from '../../providers/course';
 import { CoreCourseModuleDelegate } from '../../providers/module-delegate';
 import { CoreSitesProvider } from '@providers/sites';
+import { CoreConfigConstants } from '../../../../configconstants';
 
 /**
  * Component that displays info about an unsupported module.
@@ -58,9 +59,7 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
                 return site.getDb().getRecords(this.AB_TABLE);
             })
             .then((value) => {
-                // this.url = 'http://150.145.114.110/moodleproxy/p6.php?username='
-                this.url = 'https://moodle.mathetics.eu/proxy/p6.php?username='
-                // this.url = 'http://moodle.mathetics.local/proxy/p6.php?username='
+                this.url = CoreConfigConstants.proxyurl + '?username='
                 + value[0].username + '&password=' + value[0].password + '&redir='
                 + this.module.url;
                 this.loaded = true;
