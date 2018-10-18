@@ -44,7 +44,8 @@ export class CoreMainMenuMorePage implements OnDestroy {
     protected updateSiteObserver;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider,
-            private navCtrl: NavController, private loginHelper: CoreLoginHelperProvider, private mainMenuProvider: CoreMainMenuProvider,
+            private navCtrl: NavController, private loginHelper: CoreLoginHelperProvider,
+            private mainMenuProvider: CoreMainMenuProvider,
             eventsProvider: CoreEventsProvider) {
 
         this.langObserver = eventsProvider.on(CoreEventsProvider.LANGUAGE_CHANGED, this.loadSiteInfo.bind(this));
@@ -62,6 +63,10 @@ export class CoreMainMenuMorePage implements OnDestroy {
             this.handlers = handlers.slice(CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Remove the main handlers.
             this.handlersLoaded = this.menuDelegate.areHandlersLoaded();
         });
+    }
+
+    ionViewWillEnter(): void {
+        this.loadSiteInfo();
     }
 
     /**
@@ -130,7 +135,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
      * Logout the user.
      */
     logout(): void {
-    	var id = this.sitesProvider.getCurrentSiteId();
+    	const id = this.sitesProvider.getCurrentSiteId();
         this.sitesProvider.deleteSite(id).then(() => {
         	this.loginHelper.goToAddSite(true, true);
         });
