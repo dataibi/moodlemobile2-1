@@ -99,6 +99,9 @@ export class CoreEditProfilePage {
     refreshUser(refresher?: any): void {
         this.userProvider.invalidateUserCache(this.userId).finally(() => {
             this.fetchUser().finally(() => {
+                const currentSite = this.sitesProvider.getCurrentSite(),
+                siteInfo = currentSite.getInfo();
+                currentSite.setInfo({...siteInfo, fullname: this.title});
                 this.eventsProvider.trigger(CoreUserProvider.PROFILE_REFRESHED, {
                     courseId: this.courseId, userId: this.userId,
                     user: this.user
