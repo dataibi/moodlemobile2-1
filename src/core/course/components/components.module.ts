@@ -1,5 +1,5 @@
-import { NavigationMapWrapperPage } from './nav-map-wrapper/nav-map-wrapper';
 // (C) Copyright 2015 Martin Dougiamas
+// Modifications copyright (C) 2018 REVEAL
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@ import { NavigationMapWrapperPage } from './nav-map-wrapper/nav-map-wrapper';
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { NavigationMapWrapperPage } from './nav-map-wrapper/nav-map-wrapper';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from 'ionic-angular';

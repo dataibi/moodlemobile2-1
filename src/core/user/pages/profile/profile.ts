@@ -58,7 +58,7 @@ export class CoreUserProfilePage {
             private domUtils: CoreDomUtilsProvider, private translate: TranslateService, private eventsProvider: CoreEventsProvider,
             private coursesProvider: CoreCoursesProvider, private sitesProvider: CoreSitesProvider,
             private mimetypeUtils: CoreMimetypeUtilsProvider, private fileUploaderHelper: CoreFileUploaderHelperProvider,
-            private userDelegate: CoreUserDelegate, private navCtrl: NavController, private fb: FormBuilder,
+            private userDelegate: CoreUserDelegate, private navCtrl: NavController, private formBuilder: FormBuilder,
             @Optional() private svComponent: CoreSplitViewComponent) {
         this.userId = navParams.get('userId');
         this.courseId = navParams.get('courseId');
@@ -80,7 +80,7 @@ export class CoreUserProfilePage {
             }
         }, sitesProvider.getCurrentSiteId());
 
-        this.profileForm = fb.group({
+        this.profileForm = formBuilder.group({
             email: ['', Validators.required],
             fullname: ['', Validators.required]
         });

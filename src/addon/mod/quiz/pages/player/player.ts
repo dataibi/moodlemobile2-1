@@ -109,7 +109,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
             this.autoSaveError = error;
             this.cdr.detectChanges();
         });
-        
+
     }
 
     /**
@@ -333,9 +333,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy {
      * @return {Promise<void>} Promise resolved when done.
      */
     finishAttempt(userFinish?: boolean, timeUp?: boolean): Promise<void> {
-    
+
     // Fabiano: removed popup confirmation
-/*      
+/*
 		let promise;
 
         // Show confirm if the user clicked the finish button and the quiz is in progress.

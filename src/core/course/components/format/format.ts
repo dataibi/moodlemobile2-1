@@ -30,7 +30,6 @@ import { NavController } from 'ionic-angular/navigation/nav-controller';
 import { NavParams } from 'ionic-angular/navigation/nav-params';
 import { NavigationMapProvider } from '@providers/navigation-map-provider';
 import { Subscription } from 'rxjs';
-import { QrScannerPage } from '@components/qr-scanner/qr-scanner-page';
 import { NavigationMapWrapperPage } from './../nav-map-wrapper/nav-map-wrapper';
 
 /**

@@ -44,8 +44,8 @@ export class CoreMainMenuMorePage implements OnDestroy {
     protected updateSiteObserver;
 
     constructor(private menuDelegate: CoreMainMenuDelegate, private sitesProvider: CoreSitesProvider,
-            private navCtrl: NavController, private loginHelper: CoreLoginHelperProvider, private mainMenuProvider: CoreMainMenuProvider,
-            eventsProvider: CoreEventsProvider) {
+            private navCtrl: NavController, private loginHelper: CoreLoginHelperProvider,
+            private mainMenuProvider: CoreMainMenuProvider, eventsProvider: CoreEventsProvider) {
 
         this.langObserver = eventsProvider.on(CoreEventsProvider.LANGUAGE_CHANGED, this.loadSiteInfo.bind(this));
         this.updateSiteObserver = eventsProvider.on(CoreEventsProvider.SITE_UPDATED, this.loadSiteInfo.bind(this),
@@ -130,7 +130,7 @@ export class CoreMainMenuMorePage implements OnDestroy {
      * Logout the user.
      */
     logout(): void {
-    	var id = this.sitesProvider.getCurrentSiteId();
+    	const id = this.sitesProvider.getCurrentSiteId();
         this.sitesProvider.deleteSite(id).then(() => {
         	this.loginHelper.goToAddSite(true, true);
         });

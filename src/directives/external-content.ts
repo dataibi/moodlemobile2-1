@@ -88,6 +88,7 @@ export class CoreExternalContentDirective implements AfterViewInit {
         }
 
         const url = this.element.getAttribute(sourceAttr) || this.element.getAttribute(targetAttr);
+
         return this.handleExternalContent(targetAttr, url, siteId).catch(() => {
             // Ignore errors.
         });

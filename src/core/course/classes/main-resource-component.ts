@@ -1,4 +1,5 @@
 // (C) Copyright 2015 Martin Dougiamas
+// Modifications copyright (C) 2018 REVEAL
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -139,7 +140,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param {boolean} [refresh] Whether we're refreshing data.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected fetchContent(refresh?: boolean, fetchModule?): Promise<any> {
+    protected fetchContent(refresh?: boolean, fetchModule?: any): Promise<any> {
         return Promise.resolve();
     }
 
@@ -149,14 +150,13 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param {boolean} [refresh] Whether we're refreshing data.
      * @return {Promise<any>} Promise resolved when done.
      */
-    protected loadContent(refresh?: boolean, fetchModule?): Promise<any> {
+    protected loadContent(refresh?: boolean, fetchModule?: any): Promise<any> {
         return this.fetchContent(refresh).catch((error) => {
             // Error getting data, fail.
             this.domUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         }).finally(() => {
             this.loaded = true;
             this.refreshIcon = 'refresh';
-            console.log('loadcontent finally finish');
         });
     }
 

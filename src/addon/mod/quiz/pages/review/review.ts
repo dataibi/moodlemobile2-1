@@ -85,13 +85,14 @@ export class AddonModQuizReviewPage implements OnInit {
         }).finally(() => {
             this.loaded = true;
             // Fabiano: pages stack simplyfied
-			
-			let pageIndex = this.navCtrl.getActive().index;
 
-			this.navCtrl.remove(pageIndex-1,1);
-			
+			const pageIndex = this.navCtrl.getActive().index;
+
+			this.navCtrl.remove(pageIndex - 1, 1);
+
 			// Fabiano: in order to nav to another quiz
-			// this.navCtrl.push('AddonModQuizPlayerPage', {courseId: this.courseId, quizId: 6, moduleUrl: "https://moodle.mathetics.eu/mod/quiz/view.php?id=660"});
+            // Fabiano: this.navCtrl.push('AddonModQuizPlayerPage', {courseId: this.courseId,
+            // Fabiano:     quizId: 6, moduleUrl: "https://moodle.mathetics.eu/mod/quiz/view.php?id=660"});
 
         });
     }
