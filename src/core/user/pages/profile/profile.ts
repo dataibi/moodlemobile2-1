@@ -87,9 +87,9 @@ export class CoreUserProfilePage {
     }
 
     /**
-     * View loaded.
+     * View entered.
      */
-    ionViewDidLoad(): void {
+    ionViewDidEnter(): void {
         this.fetchUser().then(() => {
             return this.userProvider.logView(this.userId, this.courseId).catch((error) => {
                 this.isDeleted = error.errorcode === 'userdeleted';

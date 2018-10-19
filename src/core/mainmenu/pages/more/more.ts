@@ -64,6 +64,10 @@ export class CoreMainMenuMorePage implements OnDestroy {
         });
     }
 
+    ionViewWillEnter(): void {
+        this.loadSiteInfo();
+    }
+
     /**
      * Page destroyed.
      */
