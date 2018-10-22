@@ -238,5 +238,13 @@
     "wsfunctionnotavailable": "De webservice is niet beschikbaar",
     "year": "Jaar",
     "years": "Jaren",
-    "yes": "Ja"
+    "yes": "Ja",
+    "scannertext": "Scan de QR code a.u.b",
+    "scantologin": "Druk op de knop en scan een QR-code om in te loggen",
+    "showexponats": "Toon opdrachten",
+    "hideexponats": "Verberg opdrachten",
+    "showrooms": "Toon zalen",
+    "hiderooms": "Verberg zalen",
+    "exponats": "objecten",
+    "scanner": "scanner"
 }
