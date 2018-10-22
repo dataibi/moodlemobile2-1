@@ -683,36 +683,66 @@ export class CoreDomUtilsProvider {
 
         // Treat elements with src (img, audio, video, ...).
         media = element.querySelectorAll('img, video, audio, source, track');
-        media.forEach((media: HTMLElement) => {
-            let newSrc = paths[this.textUtils.decodeURIComponent(media.getAttribute('src'))];
+
+        // media.forEach((media: HTMLElement) => {
+        //     let newSrc = paths[this.textUtils.decodeURIComponent(media.getAttribute('src'))];
+
+        //     if (typeof newSrc != 'undefined') {
+        //         media.setAttribute('src', newSrc);
+        //     }
+
+        //     // Treat video posters.
+        //     if (media.tagName == 'VIDEO' && media.getAttribute('poster')) {
+        //         newSrc = paths[this.textUtils.decodeURIComponent(media.getAttribute('poster'))];
+        //         if (typeof newSrc !== 'undefined') {
+        //             media.setAttribute('poster', newSrc);
+        //         }
+        //     }
+        // });
+
+        for (let i = 0; i < media.length; i++) {
+            let newSrc = paths[this.textUtils.decodeURIComponent(media[i].getAttribute('src'))];
 
             if (typeof newSrc != 'undefined') {
-                media.setAttribute('src', newSrc);
+                media[i].setAttribute('src', newSrc);
             }
 
             // Treat video posters.
-            if (media.tagName == 'VIDEO' && media.getAttribute('poster')) {
-                newSrc = paths[this.textUtils.decodeURIComponent(media.getAttribute('poster'))];
+            if (media[i].tagName == 'VIDEO' && media[i].getAttribute('poster')) {
+                newSrc = paths[this.textUtils.decodeURIComponent(media[i].getAttribute('poster'))];
                 if (typeof newSrc !== 'undefined') {
-                    media.setAttribute('poster', newSrc);
+                    media[i].setAttribute('poster', newSrc);
                 }
             }
-        });
+        }
 
         // Now treat links.
         anchors = element.querySelectorAll('a');
-        anchors.forEach((anchor: HTMLElement) => {
-            const href = this.textUtils.decodeURIComponent(anchor.getAttribute('href')),
+        // anchors.forEach((anchor: HTMLElement) => {
+        //     const href = this.textUtils.decodeURIComponent(anchor.getAttribute('href')),
+        //         newUrl = paths[href];
+
+        //     if (typeof newUrl != 'undefined') {
+        //         anchor.setAttribute('href', newUrl);
+
+        //         if (typeof anchorFn == 'function') {
+        //             anchorFn(anchor, href);
+        //         }
+        //     }
+        // });
+
+        for (let i = 0; i < anchors.length; i++) {
+            const href = this.textUtils.decodeURIComponent(anchors[i].getAttribute('href')),
                 newUrl = paths[href];
 
             if (typeof newUrl != 'undefined') {
-                anchor.setAttribute('href', newUrl);
+                anchors[i].setAttribute('href', newUrl);
 
                 if (typeof anchorFn == 'function') {
-                    anchorFn(anchor, href);
+                    anchorFn(anchors[i], href);
                 }
             }
-        });
+        }
 
         return element.innerHTML;
     }
