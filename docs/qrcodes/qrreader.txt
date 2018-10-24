@@ -5,9 +5,15 @@ Or for many codes:
 Please use the ./qr_form file:
 http://www.moodle.mathetics.eu/theme/badges/qr_loop_form.php
 
+On Linux better install libqrencode:
+https://fukuchi.org/works/qrencode/index.html.en
+and use the generate.sh script. Change the filename (in the script) for the csv file in which the strings for the qr COde are.
+For this script the separator in the qr_form has to be "line".
+
 and the following generator:
 https://qrexplore.com/generate/
 Options are in the ./qr_settings.png
+Here in the qr_form the separator has to be semicolon.
 
 
 QrCode has to have a qrType property like this:

@@ -2,6 +2,7 @@
 
 class CsvHelper {
     private $mode = '';
+    private $separator = '';
     private $userPrefix = '';
     private $firstNamePrefix = '';
     private $lastNamePrefix = '';
@@ -19,6 +20,7 @@ class CsvHelper {
 
     function __construct(
         $mode,
+        $separator,
         $userPrefix,
         $firstNamePrefix,
         $lastNamePrefix,
@@ -32,6 +34,7 @@ class CsvHelper {
         $exhibitEnd = 1
     ) {
         $this->mode = $mode;
+        $this->separator = $separator;
         $this->userPrefix = $userPrefix;
         $this->firstNamePrefix = $firstNamePrefix;
         $this->lastNamePrefix = $lastNamePrefix;
@@ -75,7 +78,16 @@ class CsvHelper {
         for ($i = $this->userStart; $i <= $this->userEnd; $i++) {
             $password = $this->generatePassword();
             if ($i != $this->userEnd) {
-                $this->user_qrs[$i] = '{"username": "' . $this->userPrefix . $i . '", "password": "' . $password . '", "qrType": "login"};';
+                switch ($this->separator) {
+                    case ';':
+                        $this->user_qrs[$i] = '{"username": "' . $this->userPrefix . $i . '", "password": "' . $password . '", "qrType": "login"};';
+                        break;
+                    case 'line':
+                        $this->user_qrs[$i] = '{"username": "' . $this->userPrefix . $i . '", "password": "' . $password . '", "qrType": "login"}<br>';
+                        break;
+                    default:
+                        $this->user_qrs[$i] = '{"username": "' . $this->userPrefix . $i . '", "password": "' . $password . '", "qrType": "login"};';
+                }
                 $this->users[$i] = $this->userPrefix . $i . ';' . $password . ';' . $this->firstNamePrefix . $i . ';' . $this->lastNamePrefix . $i . ';' . $this->userPrefix . $i . '@' . $this->emailSuffix . ';' . $this->courseName . '<br>';
             } else {
                 $this->user_qrs[$i] = '{"username": "' . $this->userPrefix . $i . '", "password": "' . $password . '", "qrType": "login"}';
@@ -98,7 +110,16 @@ class CsvHelper {
         if ($this->mapNumber != -1) {
             for ($i = $this->exhibitStart; $i <= $this->exhibitEnd; $i++) {
                 if ($i != $this->exhibitEnd) {
-                    echo '{"exhibit": {"map":' . $this->mapNumber . ',"room":' . $this->roomNumber . ',"exponat":' . $i . '}, "qrType": "section"};';
+                    switch ($this->separator) {
+                        case ';':
+                            echo '{"exhibit": {"map":' . $this->mapNumber . ',"room":' . $this->roomNumber . ',"exponat":' . $i . '}, "qrType": "section"};';
+                            break;
+                        case 'line':
+                            echo '{"exhibit": {"map":' . $this->mapNumber . ',"room":' . $this->roomNumber . ',"exponat":' . $i . '}, "qrType": "section"}<br>';
+                            break;
+                        default:
+                            echo '{"exhibit": {"map":' . $this->mapNumber . ',"room":' . $this->roomNumber . ',"exponat":' . $i . '}, "qrType": "section"};';
+                    }
                 } else {
                     echo '{"exhibit": {"map":' . $this->mapNumber . ',"room":' . $this->roomNumber . ',"exponat":' . $i . '}, "qrType": "section"}';
                 }
@@ -107,7 +128,16 @@ class CsvHelper {
         } else {
             for ($i = $this->exhibitStart; $i <= $this->exhibitEnd; $i++) {
                 if ($i != $this->exhibitEnd) {
-                    echo '{"exhibit": {"room":' . $this->roomNumber . ',"exponat":' . $i . '}, "qrType": "section"};';
+                    switch ($this->separator) {
+                        case ';':
+                        echo '{"exhibit": {"room":' . $this->roomNumber . ',"exponat":' . $i . '}, "qrType": "section"};';
+                            break;
+                        case 'line':
+                        echo '{"exhibit": {"room":' . $this->roomNumber . ',"exponat":' . $i . '}, "qrType": "section"}<br>';
+                            break;
+                        default:
+                        echo '{"exhibit": {"room":' . $this->roomNumber . ',"exponat":' . $i . '}, "qrType": "section"};';
+                    }
                 } else {
                     echo '{"exhibit": {"room":' . $this->roomNumber . ',"exponat":' . $i . '}, "qrType": "section"}';
                 }
@@ -132,6 +162,10 @@ function test_input($data) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['mode'])) {
         $mode = test_input($_POST['mode']);
+    }
+
+    if (isset($_POST['separator'])) {
+        $separator = test_input($_POST['separator']);
     }
 
     if (isset($_POST['userPrefix'])) {
@@ -183,6 +217,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($mode === 'user') {
         $userCreatorObject = new CsvHelper(
             $mode,
+            $separator,
             $userPrefix,
             $firstNamePrefix,
             $lastNamePrefix,
@@ -200,6 +235,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else if ($mode === 'topic') {
         $topicQrCodeCreatorObject = new CsvHelper(
             $mode,
+            $separator,
             '',
             '',
             '',

@@ -22,14 +22,22 @@ use semicolon for seperator!
 
 <div>
   <h3>What do you want create?</h3>
-  <h5>Only for users</h5>
+
   <label for="radio_user">user</label>
   <input type="radio" name="mode" id="radio_user" value="user">
 
   <label for="radio_topic">topic</label>
   <input type="radio" name="mode" id="radio_topic" value="topic">
 </div>
-
+<div>
+<label>Qr Codes separated by:
+  <select name="separator" size="1">
+    <option value=";">;</option>
+    <option value="line">line</option>
+  </select>
+</label>
+</div>
+<h5>Only for users</h5>
 <div>
   <label for="userPrefix">User Prefix:</label>
   <input maxlength="100" type="text" name="userPrefix" id="userPrefix" value="">
@@ -93,12 +101,12 @@ use semicolon for seperator!
     <option value="Choice 3">Choice 3</option>
   </select>
 </div>
-  
+
 <div>
   <label for="textarea">Textarea:</label>
   <textarea cols="40" rows="8" name="textarea" id="textarea"></textarea>
 </div>
-  
+
 <div>
   <label for="checkbox">Checkbox:</label>
   <input type="checkbox" name="checkbox">
