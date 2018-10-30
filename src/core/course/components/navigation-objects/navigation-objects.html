@@ -1,23 +1,11 @@
 <ion-header>
 	<ion-navbar>
 		<ion-title>{{roomContent.name}} {{ 'core.exponats' | translate }}</ion-title>
-		<ion-fab id="user" top right>
-			<button ion-fab mini (click)="navToProfile($event)">
-				<core-icon name="contact"></core-icon>
-			</button>
-		</ion-fab>
+		<button class="own-image-button--mini qr-button" mini ion-fab (click)="navToQrScanner()">
+			<img src="assets/img/qrcode_big_pr_co.png">
+		</button>
 	</ion-navbar>
 </ion-header>
-<ion-fab bottom left>
-	<button mini ion-fab (click)="backToMapView($event)">
-		<core-icon name="compass"></core-icon>
-	</button>
-</ion-fab>
-<ion-fab bottom right>
-    <button class="own-image-button--mini" mini ion-fab (click)="navToQrScanner()">
-        <img src="assets/img/qrcode_big.png">
-    </button>
-</ion-fab>
 <ion-content class="card-background-page paddingBottomContent">
 	<div class="paddingBottomContent">
 		<ion-list>

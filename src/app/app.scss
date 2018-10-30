@@ -904,3 +904,10 @@ $paddingBottomForButtons: 65px;
 .own-image-button--mini {
   padding: $spacing--small;
 }
+
+.qr-button {
+  position: absolute;
+  top: 0;
+  right: $spacing--small;
+  background-color: $white;
+}
