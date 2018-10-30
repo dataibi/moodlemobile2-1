@@ -3,18 +3,11 @@
 		<ion-title>
 			<core-format-text [text]="course.fullname"></core-format-text>
 		</ion-title>
-		<ion-fab id="user" top right>
-			<button ion-fab mini (click)="navToProfile()">
-				<core-icon name="contact"></core-icon>
-			</button>
-		</ion-fab>
+		<button class="own-image-button--mini qr-button" mini ion-fab (click)="navToQrScanner()">
+			<img src="assets/img/qrcode_big_pr_co.png">
+		</button>
 	</ion-navbar>
 </ion-header>
-<ion-fab bottom right>
-    <button class="own-image-button--mini" mini ion-fab (click)="navToQrScanner()">
-        <img src="assets/img/qrcode_big.png">
-    </button>
-</ion-fab>
 <ion-content>
 	<ion-refresher [enabled]="displayRefresher" (ionRefresh)="refreshWholeCourse()" pullMin="120" pullMax="200">
 		<ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>

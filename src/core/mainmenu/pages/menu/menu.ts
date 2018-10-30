@@ -75,7 +75,9 @@ export class CoreMainMenuPage implements OnDestroy {
                 newTabs.push(tab || handler);
             }
 
-            this.tabs = newTabs;
+            this.tabs = newTabs.filter((tab) => {
+                return (tab.title === 'core.courses.courseoverview') || (tab.title === 'addon.notifications.notifications');
+            });
 
             // Sort them by priority so new handlers are in the right position.
             this.tabs.sort((a, b) => {

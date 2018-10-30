@@ -49,10 +49,6 @@ export class NavigationMapWrapperPage {
 		this.data = navParams.get('data');
 	}
 
-	navToProfile(): void {
-		this.navCtrl.push('CoreMainMenuMorePage');
-	}
-
     /**
      * Invalidate the data.
      */
