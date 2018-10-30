@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { Component, Injector } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, PopoverController } from 'ionic-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { CoreCourseModulePrefetchDelegate } from './../../providers/module-prefetch-delegate';
 import { CoreTextUtilsProvider } from './../../../../providers/utils/text';
@@ -23,35 +23,37 @@ import { CoreCourseFormatDelegate } from './../../providers/format-delegate';
 import { CoreDomUtilsProvider } from './../../../../providers/utils/dom';
 import { CoreCourseProvider } from './../../providers/course';
 import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-page';
+import { OwnPopoverPage } from './../popover/popoverpage';
+import { AddonNotificationsListPage } from '@addon/notifications/pages/list/list';
 
 @Component({
-	selector: 'nav-map-wrapper',
-	templateUrl: 'nav-map-wrapper.html'
+    selector: 'nav-map-wrapper',
+    templateUrl: 'nav-map-wrapper.html'
 })
 export class NavigationMapWrapperPage {
-	module: any;
-	course: any;
-	data: any;
-	sections: any[];
-	courseHandlers: CoreCourseOptionsHandlerToDisplay[];
-	displayRefresher: boolean = true;
-	title: string;
+    module: any;
+    course: any;
+    data: any;
+    sections: any[];
+    courseHandlers: CoreCourseOptionsHandlerToDisplay[];
+    displayRefresher: boolean = true;
+    title: string;
 
-	constructor(public navCtrl: NavController, navParams: NavParams,
-			private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
-            private courseFormatDelegate: CoreCourseFormatDelegate, private courseOptionsDelegate: CoreCourseOptionsDelegate,
-            private translate: TranslateService, private courseHelper: CoreCourseHelperProvider,
-            private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
-            private injector: Injector,
-            private prefetchDelegate: CoreCourseModulePrefetchDelegate) {
-		this.module = navParams.get('module');
-		this.course = navParams.get('course');
-		this.data = navParams.get('data');
-	}
+    constructor(public navCtrl: NavController, navParams: NavParams,
+        private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
+        private courseFormatDelegate: CoreCourseFormatDelegate, private courseOptionsDelegate: CoreCourseOptionsDelegate,
+        private translate: TranslateService, private courseHelper: CoreCourseHelperProvider,
+        private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
+        private injector: Injector,
+        private prefetchDelegate: CoreCourseModulePrefetchDelegate, public popoverCtrl: PopoverController) {
+        this.module = navParams.get('module');
+        this.course = navParams.get('course');
+        this.data = navParams.get('data');
+    }
 
-	navToProfile(): void {
-		this.navCtrl.push('CoreMainMenuMorePage');
-	}
+    navToProfile(): void {
+        this.navCtrl.push('CoreMainMenuMorePage');
+    }
 
     /**
      * Invalidate the data.
@@ -69,7 +71,7 @@ export class NavigationMapWrapperPage {
         }
 
         return Promise.all(promises);
-	}
+    }
 
     /**
      * Fetch and load all the data required for the view.
@@ -156,21 +158,21 @@ export class NavigationMapWrapperPage {
 
             // Load the course handlers.
             promises.push(this.courseOptionsDelegate.getHandlersToDisplay(this.injector, this.course, refresh, false)
-                    .then((handlers) => {
-                // Add the courseId to the handler component data.
-                handlers.forEach((handler) => {
-                    handler.data.componentData = handler.data.componentData || {};
-                    handler.data.componentData.courseId = this.course.id;
-                });
+                .then((handlers) => {
+                    // Add the courseId to the handler component data.
+                    handlers.forEach((handler) => {
+                        handler.data.componentData = handler.data.componentData || {};
+                        handler.data.componentData.courseId = this.course.id;
+                    });
 
-                this.courseHandlers = handlers;
-            }));
+                    this.courseHandlers = handlers;
+                }));
 
             return Promise.all(promises).catch((error) => {
                 this.domUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
             });
         });
-	}
+    }
 
     /**
      * User entered the page.
@@ -182,7 +184,7 @@ export class NavigationMapWrapperPage {
     }
 
     navToQrScanner(): void {
-        this.navCtrl.push(QrScannerPage, {course: this.course, isLogin: false});
+        this.navCtrl.push(QrScannerPage, { course: this.course, isLogin: false });
     }
 
     /**
@@ -191,5 +193,20 @@ export class NavigationMapWrapperPage {
     refreshWholeCourse(): void {
         this.courseFormatDelegate.openCourse(this.navCtrl, this.course);
         // TODO: use local methods to load data, don`t go to courses list
+    }
+
+    presentPopover(myEvent: any): void {
+        const popover = this.popoverCtrl.create(OwnPopoverPage,
+            {
+                homeRef: this
+
+            });
+        popover.present({
+            ev: myEvent
+        });
+    }
+
+    navToNotifications(): void {
+        this.navCtrl.push(AddonNotificationsListPage);
     }
 }

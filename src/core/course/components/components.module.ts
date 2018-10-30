@@ -29,6 +29,8 @@ import { CorePipesModule } from './../../../pipes/pipes.module';
 import { NavigationFloorsPage } from './navigation-floors/navigation-floors';
 import { NavigationObjectsPage } from './navigation-objects/navigation-objects';
 import { NavigationMapComponent } from './navigation-map/navigation-map';
+import { OwnPopoverPage } from './popover/popoverpage';
+import { AddonNotificationsListPageModule } from './../../../addon/notifications/pages/list/list.module';
 
 @NgModule({
     declarations: [
@@ -40,7 +42,8 @@ import { NavigationMapComponent } from './navigation-map/navigation-map';
         NavigationMapComponent,
         NavigationObjectsPage,
         NavigationFloorsPage,
-        NavigationMapWrapperPage
+        NavigationMapWrapperPage,
+        OwnPopoverPage
     ],
     imports: [
         CommonModule,
@@ -48,7 +51,8 @@ import { NavigationMapComponent } from './navigation-map/navigation-map';
         TranslateModule.forChild(),
         CoreComponentsModule,
         CoreDirectivesModule,
-        CorePipesModule
+        CorePipesModule,
+        AddonNotificationsListPageModule
     ],
     providers: [
     ],
@@ -64,7 +68,8 @@ import { NavigationMapComponent } from './navigation-map/navigation-map';
         NavigationMapComponent,
         NavigationObjectsPage,
         NavigationFloorsPage,
-        NavigationMapWrapperPage
+        NavigationMapWrapperPage,
+        OwnPopoverPage
     ]
 })
 export class CoreCourseComponentsModule {}

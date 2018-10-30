@@ -12,10 +12,10 @@
     "demo_sites": {},
     "gcmpn": "694767596569",
     "customurlscheme": "moodlemobile",
-    "siteurl": "https://badges.mathetics.eu",
+    "siteurl": "https://moodle.mathetics.eu",
     "multisitesdisplay": "",
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
-    "privacypolicy": "https://badges.mathetics.eu/admin/tool/policy/viewall.php?returnurl=https%3A%2F%2Fbadges.mathetics.eu%2Fadmin%2Fsearch.php%3Fquery",
-    "proxyurl": "https://badges.mathetics.eu/proxy/p6.php"
+    "privacypolicy": "https://moodle.mathetics.eu/privacy%20policy_B.htm",
+    "proxyurl": "https://moodle.mathetics.eu/proxy/p6.php"
 }

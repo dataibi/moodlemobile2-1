@@ -33,5 +33,11 @@ import { AddonNotificationsListPage } from './list';
         TranslateModule.forChild(),
         AddonNotificationsComponentsModule,
     ],
+    entryComponents: [
+        AddonNotificationsListPage
+    ],
+    exports: [
+        AddonNotificationsListPage
+    ]
 })
 export class AddonNotificationsListPageModule {}

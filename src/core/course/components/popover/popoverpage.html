@@ -1,0 +1,12 @@
+<ion-list>
+    <ion-list-header>Ionic</ion-list-header>
+    <button ion-item (click)="navToProfile()">
+        <core-format-text [clean]="true" [text]="'Profile'"></core-format-text>
+        <core-icon [name]="'contact'" item-end></core-icon>
+    </button>
+    <button ion-item (click)="navToNotifications()">
+        <core-format-text [clean]="true" [text]="'Notifications'"></core-format-text>
+        <core-icon [name]="'notifications'" item-end></core-icon>
+    </button>
+    <ng-content></ng-content>
+</ion-list>

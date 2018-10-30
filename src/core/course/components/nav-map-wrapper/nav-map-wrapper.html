@@ -4,10 +4,13 @@
 			<core-format-text [text]="course.fullname"></core-format-text>
 		</ion-title>
 		<ion-fab id="user" top right>
-			<button ion-fab mini (click)="navToProfile()">
-				<core-icon name="contact"></core-icon>
+			<button ion-fab mini (click)="presentPopover($event)">
+				<core-icon name="more"></core-icon>
 			</button>
 		</ion-fab>
+		<!-- <button ion-button icon-only (click)="presentPopover($event)">
+			<ion-icon name="more"></ion-icon>
+		</button> -->
 	</ion-navbar>
 </ion-header>
 <ion-fab bottom right>
