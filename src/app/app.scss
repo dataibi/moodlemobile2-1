@@ -904,3 +904,13 @@ $paddingBottomForButtons: 65px;
 .own-image-button--mini {
   padding: $spacing--small;
 }
+
+.notification-badge {
+  position: absolute;
+		top: $spacing--tiny;
+		right: -$spacing--tiny;
+    opacity: 0.9;
+    background: $white;
+    color: $core-color;
+    z-index: 10;
+}

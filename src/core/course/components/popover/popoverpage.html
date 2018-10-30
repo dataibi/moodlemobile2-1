@@ -6,6 +6,7 @@
     </button>
     <button ion-item (click)="navToNotifications()">
         <core-format-text [clean]="true" [text]="'Notifications'"></core-format-text>
+        <ion-badge item-end class="" *ngIf="notification !== ''" color="accent">{{ notification }}</ion-badge>
         <core-icon [name]="'notifications'" item-end></core-icon>
     </button>
     <ng-content></ng-content>

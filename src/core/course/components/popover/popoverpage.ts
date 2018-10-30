@@ -25,11 +25,14 @@ import { NavParams } from 'ionic-angular/navigation/nav-params';
 export class OwnPopoverPage {
 
     homePage: any;
+    notification: string = '';
+    
     constructor(
         public viewCtrl: ViewController,
         public navCtrl: NavController, public params: NavParams) {
 
         this.homePage = this.params.get('homeRef');
+        this.notification = this.params.get('notification');
     }
 
     close(): Promise<any> {

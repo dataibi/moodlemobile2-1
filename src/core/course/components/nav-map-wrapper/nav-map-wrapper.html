@@ -4,7 +4,9 @@
 			<core-format-text [text]="course.fullname"></core-format-text>
 		</ion-title>
 		<ion-fab id="user" top right>
-			<button ion-fab mini (click)="presentPopover($event)">
+				<ion-badge class="notification-badge" *ngIf="notification && notification.badge !== ''" color="accent">{{ notification.badge }}</ion-badge>
+				<button ion-fab mini (click)="presentPopover($event)">
+				
 				<core-icon name="more"></core-icon>
 			</button>
 		</ion-fab>

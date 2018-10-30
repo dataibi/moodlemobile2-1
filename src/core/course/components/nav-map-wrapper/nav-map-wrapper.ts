@@ -25,6 +25,9 @@ import { CoreCourseProvider } from './../../providers/course';
 import { QrScannerPage } from './../../../../components/qr-scanner/qr-scanner-page';
 import { OwnPopoverPage } from './../popover/popoverpage';
 import { AddonNotificationsListPage } from '@addon/notifications/pages/list/list';
+import { Subscription } from 'rxjs';
+import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '@core/mainmenu/providers/delegate';
+import { CoreMainMenuProvider } from '@core/mainmenu/providers/mainmenu';
 
 @Component({
     selector: 'nav-map-wrapper',
@@ -38,6 +41,9 @@ export class NavigationMapWrapperPage {
     courseHandlers: CoreCourseOptionsHandlerToDisplay[];
     displayRefresher: boolean = true;
     title: string;
+    subscription: Subscription;
+    tabs: CoreMainMenuHandlerToDisplay[] = [];
+    notification: any;
 
     constructor(public navCtrl: NavController, navParams: NavParams,
         private courseProvider: CoreCourseProvider, private domUtils: CoreDomUtilsProvider,
@@ -45,7 +51,8 @@ export class NavigationMapWrapperPage {
         private translate: TranslateService, private courseHelper: CoreCourseHelperProvider,
         private textUtils: CoreTextUtilsProvider, private coursesProvider: CoreCoursesProvider,
         private injector: Injector,
-        private prefetchDelegate: CoreCourseModulePrefetchDelegate, public popoverCtrl: PopoverController) {
+        private prefetchDelegate: CoreCourseModulePrefetchDelegate, public popoverCtrl: PopoverController,
+        private menuDelegate: CoreMainMenuDelegate) {
         this.module = navParams.get('module');
         this.course = navParams.get('course');
         this.data = navParams.get('data');
@@ -183,6 +190,31 @@ export class NavigationMapWrapperPage {
         });
     }
 
+    ionViewDidLoad(): void {
+        this.subscription = this.menuDelegate.getHandlers().subscribe((handlers) => {
+            handlers = handlers.slice(0, CoreMainMenuProvider.NUM_MAIN_HANDLERS); // Get main handlers.
+
+            // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
+            const newTabs = [];
+
+            for (let i = 0; i < handlers.length; i++) {
+                const handler = handlers[i];
+
+                // Check if the handler is already in the tabs list. If so, use it.
+                const tab = this.tabs.find((tab) => {
+                    return tab.title == handler.title && tab.icon == handler.icon;
+                });
+
+                newTabs.push(tab || handler);
+            }
+
+            this.tabs = newTabs;
+            this.notification = this.tabs.find((tab) => {
+                return tab.title == 'addon.notifications.notifications';
+            });
+        });
+    }
+
     navToQrScanner(): void {
         this.navCtrl.push(QrScannerPage, { course: this.course, isLogin: false });
     }
@@ -198,7 +230,8 @@ export class NavigationMapWrapperPage {
     presentPopover(myEvent: any): void {
         const popover = this.popoverCtrl.create(OwnPopoverPage,
             {
-                homeRef: this
+                homeRef: this,
+                notification: this.notification && this.notification.badge && this.notification.badge
 
             });
         popover.present({
@@ -208,5 +241,12 @@ export class NavigationMapWrapperPage {
 
     navToNotifications(): void {
         this.navCtrl.push(AddonNotificationsListPage);
+    }
+
+    /**
+     * Page destroyed.
+     */
+    ngOnDestroy(): void {
+        this.subscription && this.subscription.unsubscribe();
     }
 }
