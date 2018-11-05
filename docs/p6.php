@@ -16,7 +16,8 @@ function getElementsByClass(&$parentNode, $tagName, $className)
 
 $username = $_REQUEST['username'];
 $password = $_REQUEST['password'];
-$url = "https://moodle.mathetics.eu/login/index.php";
+// $url = "https://badges.mathetics.eu/login/index.php";
+$url = "http://badges.mathetics.local/login/index.php";
 $postdata = "username=" . $username . "&password=" . $password;
 $usernamePasswordString = $username.$password;
 $cookieHashName = hash('sha256', $usernamePasswordString);
@@ -88,7 +89,10 @@ $t = $top[0];
 $t->parentNode->removeChild($t);
 
 $cards = getElementsByClass($dom, 'div', 'card');
-$cards[0]->setAttribute("style", "min-height: 0");
+$cards[0]->setAttribute("style", "min-height: 0; border: none");
+
+$container_fluid = $dom->getElementById('page');
+$container_fluid->setAttribute("style", "position: absolute; left: 0");
 
 $body = $dom->getElementsByTagName('body');
 $body[0]->setAttribute("style", "height: 0");
