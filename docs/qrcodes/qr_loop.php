@@ -69,7 +69,7 @@ class CsvHelper {
             }
         }
         $shuffledPassword = str_shuffle($genpassword);
-        return $genpassword;
+        return $shuffledPassword;
     }
 
     function generateUserCsv() {
