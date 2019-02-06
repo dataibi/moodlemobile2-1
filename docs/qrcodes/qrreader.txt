@@ -37,3 +37,6 @@ without maps:
 
 Theese are the same json strings like the ones in the topic summary.
 
+[Enrol in Course]
+{"enrolName": "exhibitiontestname", "password": "test", "courseId": 26, "qrType": "enrol"}
+
