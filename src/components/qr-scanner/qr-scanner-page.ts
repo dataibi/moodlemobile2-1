@@ -39,7 +39,7 @@ export class QrScannerPage {
   callingComponent: any;
   typeOfQrCode: string;
   course: any;
-  enrolCourse: any;
+  enrolCourse: any = {};
   dataLoaded: boolean;
   selfEnrolInstances: any[] = [];
   isEnrolled: boolean;
@@ -128,11 +128,7 @@ export class QrScannerPage {
    */
   doesQrCodeAndCalledComponentMatch(): boolean {
     const typeOfQrCode = this.whatQrCodeIsIt();
-    if (
-      this.callingComponent &&
-      this.callingComponent instanceof CoreLoginCredentialsPage &&
-      typeOfQrCode === 'login'
-    ) {
+    if (this.callingComponent && this.callingComponent instanceof CoreLoginCredentialsPage && typeOfQrCode === 'login') {
       return true;
     } else if (typeOfQrCode === 'section') {
       return true;
@@ -252,17 +248,25 @@ export class QrScannerPage {
       }
     } else if (this.typeOfQrCode === 'enrol') {
       data = safelyParseJSON(this.scanned);
-
+      this.enrolCourse.id = data.courseId;
       console.log('enroll methods instances data');
       console.log(data);
-      this.coursesProvider.getCoursesByField('id', data.courseId).then((course) => {
-        this.enrolCourse = course;
-        console.log('enroll methodsthis.enrolCourse');
-        console.log(this.enrolCourse);
-        this.getCourse().then(() => {
-          console.log('enroll methods instances');
-          console.log(this.selfEnrolInstances);
+      this.coursesProvider.getCourseEnrolmentMethods(data.courseId).then((methods) => {
+        console.log('enroll methods this.enrolCourse');
+        console.log(methods);
+        const enrolMethodInstance = methods.find((method) => {
+          return method.name === data.enrolName;
         });
+        if (enrolMethodInstance) {
+          this.selfEnrolInCourse(data.password, enrolMethodInstance.id, data.courseId);
+        } else {
+          console.log('enrolMethodInstance is ' + enrolMethodInstance);
+        }
+
+        // this.getCourse().then(() => {
+        //   console.log('enroll methods instances');
+        //   console.log(this.selfEnrolInstances);
+        // });
       });
     }
   }
@@ -274,25 +278,21 @@ export class QrScannerPage {
    * @param {number} instanceId The instance ID.
    * @return {Promise<any>} Promise resolved when self enrolled.
    */
-  selfEnrolInCourse(password: string, instanceId: number): Promise<any> {
+  selfEnrolInCourse(password: string, instanceId: number, courseId: number): Promise<any> {
     const modal = this.domUtils.showModalLoading('core.loading', true);
 
     return this.coursesProvider
-      .selfEnrol(this.enrolCourse.id, password, instanceId)
+      .selfEnrol(courseId, password, instanceId)
       .then(() => {
         // Close modal and refresh data.
-        // this.isEnrolled = true;
+        this.isEnrolled = true;
         this.dataLoaded = false;
 
         // Sometimes the list of enrolled courses takes a while to be updated. Wait for it.
         this.waitForEnrolled(true).then(() => {
           this.refreshData().finally(() => {
             // My courses have been updated, trigger event.
-            this.eventsProvider.trigger(
-              CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
-              {},
-              this.sitesProvider.getCurrentSiteId()
-            );
+            this.eventsProvider.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {}, this.sitesProvider.getCurrentSiteId());
           });
         });
       })
@@ -305,6 +305,7 @@ export class QrScannerPage {
           //     // No password entered, don't show error.
           //     return;
           //   }
+          console.log('selfEnrol is caught' + error);
         }
 
         this.domUtils.showErrorModalDefault(error, 'core.courses.errorselfenrol', true);
