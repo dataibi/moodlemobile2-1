@@ -239,7 +239,9 @@ export class CoreCoursesProvider {
      */
     getCourse(id: number, siteId?: string): Promise<any> {
         return this.getCourses([id], siteId).then((courses) => {
+            console.log('getCourse');
             if (courses && courses.length > 0) {
+                console.log('getCourse > 0');
                 return courses[0];
             }
 
@@ -326,6 +328,7 @@ export class CoreCoursesProvider {
         }
 
         return this.sitesProvider.getSite(siteId).then((site) => {
+            console.log('getCourse');
             const data = {
                     options: {
                         ids: ids

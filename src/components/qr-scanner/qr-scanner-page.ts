@@ -135,9 +135,9 @@ export class QrScannerPage {
     ) {
       return true;
     } else if (typeOfQrCode === 'section') {
-	  return true;
-	} else if (typeOfQrCode === 'enrol') {
-		return true;
+      return true;
+    } else if (typeOfQrCode === 'enrol') {
+      return true;
     } else {
       return false;
     }
@@ -250,21 +250,21 @@ export class QrScannerPage {
             this.navCtrl.remove(currentIndex);
           });
       }
-	} else if (this.typeOfQrCode === 'enrol') {
-		data = safelyParseJSON(this.scanned);
+    } else if (this.typeOfQrCode === 'enrol') {
+      data = safelyParseJSON(this.scanned);
 
-		console.log('enroll methods instances data');
-			console.log(data);
-		this.enrolCourse = this.coursesProvider.getCourse(data.courseId).then(() => {
-			console.log('enroll methodsthis.enrolCourse');
-			console.log(this.enrolCourse);
-		this.getCourse().then(() => {
-			console.log('enroll methods instances');
-			console.log(this.selfEnrolInstances);
-		});
-		});
-		
-	}
+      console.log('enroll methods instances data');
+      console.log(data);
+      this.coursesProvider.getCoursesByField('id', data.courseId).then((course) => {
+        this.enrolCourse = course;
+        console.log('enroll methodsthis.enrolCourse');
+        console.log(this.enrolCourse);
+        this.getCourse().then(() => {
+          console.log('enroll methods instances');
+          console.log(this.selfEnrolInstances);
+        });
+      });
+    }
   }
 
   /**
