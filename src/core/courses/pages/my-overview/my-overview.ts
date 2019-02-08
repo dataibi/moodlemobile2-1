@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild, OnInit } from '@angular/core';
 import { IonicPage, Searchbar, NavController } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
@@ -28,6 +28,7 @@ import { CoreSiteHomeProvider } from '@core/sitehome/providers/sitehome';
 import * as moment from 'moment';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreSiteHomeIndexComponent } from '@core/sitehome/components/index/index';
+import { Subscription } from 'rxjs';
 
 /**
  * Page that displays My Overview.
@@ -35,9 +36,9 @@ import { CoreSiteHomeIndexComponent } from '@core/sitehome/components/index/inde
 @IonicPage({ segment: 'core-courses-my-overview' })
 @Component({
     selector: 'page-core-courses-my-overview',
-    templateUrl: 'my-overview.html',
+    templateUrl: 'my-overview.html'
 })
-export class CoreCoursesMyOverviewPage implements OnDestroy {
+export class CoreCoursesMyOverviewPage implements  OnDestroy {
     @ViewChild(CoreTabsComponent) tabsComponent: CoreTabsComponent;
     @ViewChild('searchbar') searchbar: Searchbar;
     @ViewChild(CoreSiteHomeIndexComponent) siteHomeComponent: CoreSiteHomeIndexComponent;
@@ -76,18 +77,27 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
     };
     downloadAllCoursesEnabled: boolean;
     siteName: string;
+    currentCourseIdSubscription: Subscription;
 
     protected prefetchIconsInitialized = false;
     protected isDestroyed;
     protected updateSiteObserver;
     protected courseIds = '';
+    protected AB_TABLE = 'abuser';
 
-    constructor(private navCtrl: NavController, private coursesProvider: CoreCoursesProvider,
-            private domUtils: CoreDomUtilsProvider, private myOverviewProvider: CoreCoursesMyOverviewProvider,
-            private courseHelper: CoreCourseHelperProvider, private sitesProvider: CoreSitesProvider,
-            private siteHomeProvider: CoreSiteHomeProvider, private courseOptionsDelegate: CoreCourseOptionsDelegate,
-            private eventsProvider: CoreEventsProvider, private utils: CoreUtilsProvider,
-            private courseFormatDelegate: CoreCourseFormatDelegate) {
+    constructor(
+        private navCtrl: NavController,
+        private coursesProvider: CoreCoursesProvider,
+        private domUtils: CoreDomUtilsProvider,
+        private myOverviewProvider: CoreCoursesMyOverviewProvider,
+        private courseHelper: CoreCourseHelperProvider,
+        private sitesProvider: CoreSitesProvider,
+        private siteHomeProvider: CoreSiteHomeProvider,
+        private courseOptionsDelegate: CoreCourseOptionsDelegate,
+        private eventsProvider: CoreEventsProvider,
+        private utils: CoreUtilsProvider,
+        private courseFormatDelegate: CoreCourseFormatDelegate,
+    ) {
         this.loadSiteName();
     }
 
@@ -145,12 +155,15 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchMyOverviewTimeline(afterEventId?: number): Promise<any> {
-        return this.myOverviewProvider.getActionEventsByTimesort(afterEventId).then((events) => {
-            this.timeline.events = events.events;
-            this.timeline.canLoadMore = events.canLoadMore;
-        }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'Error getting my overview data.');
-        });
+        return this.myOverviewProvider
+            .getActionEventsByTimesort(afterEventId)
+            .then((events) => {
+                this.timeline.events = events.events;
+                this.timeline.canLoadMore = events.canLoadMore;
+            })
+            .catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'Error getting my overview data.');
+            });
     }
 
     /**
@@ -159,29 +172,31 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchMyOverviewTimelineByCourses(): Promise<any> {
-        return this.fetchUserCourses().then((courses) => {
-            const today = moment().unix();
-            let courseIds;
-            courses = courses.filter((course) => {
-                return course.startdate <= today && (!course.enddate || course.enddate >= today);
-            });
-
-            this.timelineCourses.courses = courses;
-            if (courses.length > 0) {
-                courseIds = courses.map((course) => {
-                    return course.id;
+        return this.fetchUserCourses()
+            .then((courses) => {
+                const today = moment().unix();
+                let courseIds;
+                courses = courses.filter((course) => {
+                    return course.startdate <= today && (!course.enddate || course.enddate >= today);
                 });
 
-                return this.myOverviewProvider.getActionEventsByCourses(courseIds).then((courseEvents) => {
-                    this.timelineCourses.courses.forEach((course) => {
-                        course.events = courseEvents[course.id].events;
-                        course.canLoadMore = courseEvents[course.id].canLoadMore;
+                this.timelineCourses.courses = courses;
+                if (courses.length > 0) {
+                    courseIds = courses.map((course) => {
+                        return course.id;
                     });
-                });
-            }
-        }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'Error getting my overview data.');
-        });
+
+                    return this.myOverviewProvider.getActionEventsByCourses(courseIds).then((courseEvents) => {
+                        this.timelineCourses.courses.forEach((course) => {
+                            course.events = courseEvents[course.id].events;
+                            course.canLoadMore = courseEvents[course.id].canLoadMore;
+                        });
+                    });
+                }
+            })
+            .catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'Error getting my overview data.');
+            });
     }
 
     /**
@@ -193,41 +208,72 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         this.courseFormatDelegate.openCourse(this.navCtrl, course);
     }
 
+    getCurrentCourseFromUser(): Promise<any> {
+        const siteId = this.sitesProvider.getCurrentSiteId();
+
+        return this.sitesProvider
+            .getSite(siteId)
+            .then((site) => {
+                return site.getDb().getRecords(this.AB_TABLE);
+            })
+            .then((value) => {
+                return value[0].currentCourseId;
+            });
+    }
+
     /**
      * Fetch the courses for my overview.
      *
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchMyOverviewCourses(): Promise<any> {
-        return this.fetchUserCourses().then((courses) => {
-            const today = moment().unix();
+        return this.fetchUserCourses()
+            .then((courses) => {
+                const today = moment().unix();
 
-            this.courses.past = [];
-            this.courses.inprogress = [];
-            this.courses.future = [];
+                this.courses.past = [];
+                this.courses.inprogress = [];
+                this.courses.future = [];
 
-            courses.forEach((course) => {
-                if (course.startdate > today) {
-                    // Courses that have not started yet.
-                    this.courses.future.push(course);
-                } else if (course.enddate && course.enddate < today) {
-                    // Courses that have already ended.
-                    this.courses.past.push(course);
+                courses.forEach((course) => {
+                    if (course.startdate > today) {
+                        // Courses that have not started yet.
+                        this.courses.future.push(course);
+                    } else if (course.enddate && course.enddate < today) {
+                        // Courses that have already ended.
+                        this.courses.past.push(course);
+                    } else {
+                        // Courses still in progress.
+                        this.courses.inprogress.push(course);
+                    }
+                });
+
+                this.courses.filter = '';
+                this.showFilter = false;
+                this.filteredCourses = this.courses[this.courses.selected];
+                console.log('this.courses');
+                console.log(this.courses);
+                console.log('this.filteredCourses');
+                console.log(this.filteredCourses);
+                this.initPrefetchCoursesIcons();
+
+                if (this.filteredCourses.length) {
+                    this.getCurrentCourseFromUser().then((currentCourseId) => {
+                        let courseIndex = 0;
+                        if (currentCourseId) { // Could be null
+                            courseIndex = this.filteredCourses.findIndex((filteredCourse) => {
+                                return filteredCourse.id === currentCourseId;
+                            });
+                        }
+                        this.openCourse(this.filteredCourses[courseIndex]);
+                    });
                 } else {
-                    // Courses still in progress.
-                    this.courses.inprogress.push(course);
+                    this.openCourse(this.filteredCourses[0]);
                 }
+            })
+            .catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'Error getting my overview data.');
             });
-
-            this.courses.filter = '';
-            this.showFilter = false;
-            this.filteredCourses = this.courses[this.courses.selected];
-
-            this.initPrefetchCoursesIcons();
-            this.openCourse(this.filteredCourses[0]);
-        }).catch((error) => {
-            this.domUtils.showErrorModalDefault(error, 'Error getting my overview data.');
-        });
     }
 
     /**
@@ -239,34 +285,41 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         return this.coursesProvider.getUserCourses().then((courses) => {
             const promises = [],
                 courseIds = courses.map((course) => {
-                return course.id;
-            });
+                    return course.id;
+                });
 
             if (this.coursesProvider.canGetAdminAndNavOptions()) {
                 // Load course options of the course.
-                promises.push(this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
-                    courses.forEach((course) => {
-                        course.navOptions = options.navOptions[course.id];
-                        course.admOptions = options.admOptions[course.id];
-                    });
-                }));
+                promises.push(
+                    this.coursesProvider.getCoursesAdminAndNavOptions(courseIds).then((options) => {
+                        courses.forEach((course) => {
+                            course.navOptions = options.navOptions[course.id];
+                            course.admOptions = options.admOptions[course.id];
+                        });
+                    })
+                );
             }
 
             this.courseIds = courseIds.join(',');
 
             if (this.courseIds && this.coursesProvider.isGetCoursesByFieldAvailable()) {
                 // Load course image of all the courses.
-                promises.push(this.coursesProvider.getCoursesByField('ids', this.courseIds).then((coursesInfo) => {
-                    coursesInfo = this.utils.arrayToObject(coursesInfo, 'id');
-                    courses.forEach((course) => {
-                        if (coursesInfo[course.id] && coursesInfo[course.id].overviewfiles &&
-                                coursesInfo[course.id].overviewfiles[0]) {
-                            course.imageThumb = coursesInfo[course.id].overviewfiles[0].fileurl;
-                        } else {
-                            course.imageThumb = false;
-                        }
-                    });
-                }));
+                promises.push(
+                    this.coursesProvider.getCoursesByField('ids', this.courseIds).then((coursesInfo) => {
+                        coursesInfo = this.utils.arrayToObject(coursesInfo, 'id');
+                        courses.forEach((course) => {
+                            if (
+                                coursesInfo[course.id] &&
+                                coursesInfo[course.id].overviewfiles &&
+                                coursesInfo[course.id].overviewfiles[0]
+                            ) {
+                                course.imageThumb = coursesInfo[course.id].overviewfiles[0].fileurl;
+                            } else {
+                                course.imageThumb = false;
+                            }
+                        });
+                    })
+                );
             }
 
             return Promise.all(promises).then(() => {
@@ -330,26 +383,28 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
             promises.push(this.coursesProvider.invalidateCoursesByField('ids', this.courseIds));
         }
 
-        return Promise.all(promises).finally(() => {
-            switch (this.tabShown) {
-                case 'timeline':
-                    switch (this.timeline.sort) {
-                        case 'sortbydates':
-                            return this.fetchMyOverviewTimeline();
-                        case 'sortbycourses':
-                            return this.fetchMyOverviewTimelineByCourses();
-                        default:
-                    }
-                    break;
-                case 'courses':
-                    this.prefetchIconsInitialized = false;
+        return Promise.all(promises)
+            .finally(() => {
+                switch (this.tabShown) {
+                    case 'timeline':
+                        switch (this.timeline.sort) {
+                            case 'sortbydates':
+                                return this.fetchMyOverviewTimeline();
+                            case 'sortbycourses':
+                                return this.fetchMyOverviewTimelineByCourses();
+                            default:
+                        }
+                        break;
+                    case 'courses':
+                        this.prefetchIconsInitialized = false;
 
-                    return this.fetchMyOverviewCourses();
-                default:
-            }
-        }).finally(() => {
-            refresher.complete();
-        });
+                        return this.fetchMyOverviewCourses();
+                    default:
+                }
+            })
+            .finally(() => {
+                refresher.complete();
+            });
     }
 
     /**
@@ -448,18 +503,22 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
         selectedData.icon = 'spinner';
         selectedData.badge = '';
 
-        return this.courseHelper.confirmAndPrefetchCourses(this.courses[selected], (progress) => {
-            selectedData.badge = progress.count + ' / ' + progress.total;
-        }).then(() => {
-            selectedData.icon = 'refresh';
-        }).catch((error) => {
-            if (!this.isDestroyed) {
-                this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                selectedData.icon = initialIcon;
-            }
-        }).finally(() => {
-            selectedData.badge = '';
-        });
+        return this.courseHelper
+            .confirmAndPrefetchCourses(this.courses[selected], (progress) => {
+                selectedData.badge = progress.count + ' / ' + progress.total;
+            })
+            .then(() => {
+                selectedData.icon = 'refresh';
+            })
+            .catch((error) => {
+                if (!this.isDestroyed) {
+                    this.domUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                    selectedData.icon = initialIcon;
+                }
+            })
+            .finally(() => {
+                selectedData.badge = '';
+            });
     }
 
     /**
@@ -489,7 +548,6 @@ export class CoreCoursesMyOverviewPage implements OnDestroy {
                 }
                 this.prefetchCoursesData[filter].icon = icon;
             });
-
         });
     }
 

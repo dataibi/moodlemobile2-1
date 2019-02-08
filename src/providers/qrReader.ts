@@ -19,8 +19,9 @@ import { Injectable, EventEmitter } from '@angular/core';
  */
 @Injectable()
 export class QrReaderProvider {
-
     naviLoginDataEvent = new EventEmitter<any>();
+
+    test = 'test provider';
 
     emitLoginData(loginData: string): void {
         this.naviLoginDataEvent.emit(loginData);
