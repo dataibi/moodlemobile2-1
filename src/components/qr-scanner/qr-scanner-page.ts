@@ -282,8 +282,9 @@ export class QrScannerPage {
                                 const userRecord = {
                                     currentCourseId: data.courseId
                                 };
-
-                                return site.getDb().insertRecord(this.AB_TABLE, userRecord);
+                                console.log('enrol insert db action');
+                                // return site.getDb().insertRecord(this.AB_TABLE, userRecord);
+                                return site.getDb().updateRecords(this.AB_TABLE, userRecord, {userId: 1});
                             });
                         })
                         .then(() => {
@@ -494,12 +495,19 @@ export class QrScannerPage {
   getCurrentCourseFromUser(): Promise<any> {
       const siteId = this.sitesProvider.getCurrentSiteId();
 
+      console.log('siteId getCurrentCourseFromUser');
+      console.log(siteId);
+
       return this.sitesProvider
           .getSite(siteId)
           .then((site) => {
+            console.log('site getCurrentCourseFromUser');
+            console.log(site);
               return site.getDb().getRecords(this.AB_TABLE);
           })
           .then((value) => {
+            console.log('value getCurrentCourseFromUser');
+            console.log(value);
               return value[0].currentCourseId;
           });
   }
@@ -541,12 +549,16 @@ export class QrScannerPage {
 
               if (this.filteredCourses.length) {
                   this.getCurrentCourseFromUser().then((currentCourseId) => {
+                    console.log('currentCourseId');
+                    console.log(currentCourseId);
                       let courseIndex = 0;
                       if (currentCourseId) { // Could be null
                           courseIndex = this.filteredCourses.findIndex((filteredCourse) => {
                               return filteredCourse.id === currentCourseId;
                           });
                       }
+                      console.log('courseIndex');
+                    console.log(courseIndex);
                       this.openCourse(this.filteredCourses[courseIndex]);
                   });
               } else {

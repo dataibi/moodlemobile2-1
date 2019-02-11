@@ -73,6 +73,10 @@ export class CoreLoginCredentialsPage implements OnInit {
                 {
                     name: 'currentCourseId',
                     type: 'INTEGER'
+                },
+                {
+                    name: 'userId',
+                    type: 'INTEGER'
                 }
             ]
         }
@@ -261,7 +265,8 @@ export class CoreLoginCredentialsPage implements OnInit {
         	    	const userRecord = {
                 		username: username,
                         password: password,
-                        currentCourseId: null
+                        currentCourseId: null,
+                        userId: 1
                     };
 
             		return site.getDb().insertRecord(this.AB_TABLE, userRecord);
