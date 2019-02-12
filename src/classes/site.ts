@@ -594,6 +594,8 @@ export class CoreSite {
         return this.getFromCache(method, data, preSets, false, originalData).catch(() => {
             // Do not pass those options to the core WS factory.
             return this.wsProvider.call(method, data, wsPreSets).then((response) => {
+                console.log('this.wsProvider.call response');
+                console.log(response);
                 if (preSets.saveToCache) {
                     this.saveToCache(method, data, response, preSets);
                 }
@@ -784,6 +786,7 @@ export class CoreSite {
 
             if (!preSets.omitExpires) {
                 if (now > entry.expirationTime) {
+                    console.log('chache not used');
                     this.logger.debug('Cached element found, but it is expired');
 
                     return Promise.reject(null);

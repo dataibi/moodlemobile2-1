@@ -276,7 +276,9 @@ export class QrScannerPage {
                 });
                 if (enrolMethodInstance) {
                     this.selfEnrolInCourse(data.password, enrolMethodInstance.id, data.courseId)
-                        .then(() => {
+                        .then((value) => {
+                            console.log('value in selfenrolcourse then');
+                            console.log(value);
                             const siteId = this.sitesProvider.getCurrentSiteId();
                             this.sitesProvider.getSite(siteId).then((site) => {
                                 const userRecord = {
@@ -321,7 +323,8 @@ export class QrScannerPage {
                 this.dataLoaded = false;
 
                 // Sometimes the list of enrolled courses takes a while to be updated. Wait for it.
-                this.waitForEnrolled(true).then(() => {
+                return this.waitForEnrolled(true).then(() => {
+                    console.log('is enrolled');
                     this.refreshData().finally(() => {
                         // My courses have been updated, trigger event.
                         this.eventsProvider.trigger(
@@ -333,6 +336,7 @@ export class QrScannerPage {
                 });
             })
             .catch((error) => {
+                console.log('self enroll catch');
                 if (error && error.code === CoreCoursesProvider.ENROL_INVALID_KEY) {
                     //   // Invalid password, show the modal to enter the password.
                     //   this.selfEnrolModal.present();
@@ -347,7 +351,10 @@ export class QrScannerPage {
                 this.domUtils.showErrorModalDefault(error, 'core.courses.errorselfenrol', true);
             })
             .finally(() => {
+                
+                console.log('finally selfenrol');
                 modal.dismiss();
+                return 'blafasel';
             });
     }
 
@@ -385,6 +392,7 @@ export class QrScannerPage {
      * @return {Promise<any>} Promise resolved when enrolled or timeout.
      */
     protected waitForEnrolled(first?: boolean): Promise<any> {
+        console.log('waitenrolled called');
         if (first) {
             this.waitStart = Date.now();
         }
@@ -394,14 +402,18 @@ export class QrScannerPage {
             .invalidateUserCourses()
             .catch(() => {
                 // Ignore errors.
+                console.log('catch in invalidate user courses');
             })
             .then(() => {
-                return this.coursesProvider.getUserCourse(this.enrolCourse.id);
+                return this.coursesProvider.getUserCourse(this.enrolCourse.id, false);
             })
-            .catch(() => {
+            .catch((value) => {
+                console.log(' Not enrolled, wait a bit and try again.');
+                console.log(value);
                 // Not enrolled, wait a bit and try again.
                 if (this.pageDestroyed || Date.now() - this.waitStart > 60000) {
                     // Max time reached or the user left the view, stop.
+                    console.log('Max time reached or the user left the view, stop.');
                     return;
                 }
 
@@ -410,8 +422,10 @@ export class QrScannerPage {
                         setTimeout(() => {
                             if (!this.pageDestroyed) {
                                 // Wait again.
+                                console.log('/ Wait again.');
                                 this.waitForEnrolled().then(resolve);
                             } else {
+                                console.log('/ Wait again.');
                                 resolve();
                             }
                         }, 5000);
@@ -611,7 +625,10 @@ export class QrScannerPage {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchUserCourses(): Promise<any> {
-        return this.coursesProvider.getUserCourses().then((courses) => {
+        return this.coursesProvider.getUserCourses(false).then((courses) => {
+
+            console.log('getUserCourses then courses');
+            console.log(courses);
             const promises = [],
                 courseIds = courses.map((course) => {
                     return course.id;
@@ -652,6 +669,8 @@ export class QrScannerPage {
             }
 
             return Promise.all(promises).then(() => {
+                console.log('getUserCourses promise all then courses');
+                console.log(courses);
                 return courses.sort((a, b) => {
                     const compareA = a.fullname.toLowerCase(),
                         compareB = b.fullname.toLowerCase();
