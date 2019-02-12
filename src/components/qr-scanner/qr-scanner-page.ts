@@ -16,7 +16,7 @@ import { QrReaderProvider } from './../../providers/qrReader';
 import { CoreLoginCredentialsPage } from './../../core/login/pages/credentials/credentials';
 import { NavController, NavParams, AlertController, Platform } from 'ionic-angular';
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
+// import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { safelyParseJSON } from '../../helpers/navigation_helpers';
 import { NavigationMapProvider } from '@providers/navigation-map-provider';
 import { CoreCourseSectionPage } from './../../core/course/pages/section/section';
@@ -28,6 +28,7 @@ import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delega
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import * as moment from 'moment';
 import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 
 @Component({
     selector: 'qr-scanner-page',
@@ -70,7 +71,7 @@ export class QrScannerPage {
     constructor(
         public navCtrl: NavController,
         navParams: NavParams,
-        private qrScanner: QRScanner,
+        // private qrScanner: QRScanner,
         private platform: Platform,
         private alertCtrl: AlertController,
         private qrReaderProvider: QrReaderProvider,
@@ -82,28 +83,53 @@ export class QrScannerPage {
         private courseOptionsDelegate: CoreCourseOptionsDelegate,
         private utils: CoreUtilsProvider,
         private courseFormatDelegate: CoreCourseFormatDelegate,
+        private barcodeScanner: BarcodeScanner
     ) {
         this.isLoginScan = navParams.get('isLogin');
         this.callingComponent = navParams.get('callingComponent');
         this.course = navParams.get('course');
     }
 
-    ionViewDidEnter(): void {
-        this.platform.ready().then(() => {
-            this.openQr();
+    // ionViewDidEnter(): void {
+    //     this.platform.ready().then(() => {
+    //         this.openQr();
+    //     });
+    // }
+
+    // ionViewWillLeave(): void {
+    //     this.closeScanner();
+    // }
+
+    scan() {
+        // this.selectedProduct = {};
+        this.barcodeScanner.scan().then((barcodeData) => {
+            console.log('barcodeData');
+            console.log(barcodeData);
+            // this.scanned = text;
+            // if (this.doesQrCodeAndCalledComponentMatch()) {
+            //     // Have to go this curious way with Elementref and trigger click,
+            //     // Cause fire event here in subscription don`t work well (takes very long)
+            //     this.sendbutton.nativeElement.click();
+            // } else {
+            //     this.presentAlert();
+            // }
+        }, (err) => {
+            console.log('barcodeData err');
+            console.log(err);
+        //   this.toast.show(err, '5000', 'center').subscribe(
+        //     toast => {
+        //       console.log(toast);
+        //     }
+        //   );
         });
-    }
+      }
 
-    ionViewWillLeave(): void {
-        this.closeScanner();
-    }
+    // closeScanner(): Promise<QRScannerStatus> {
+    //     this.scanSubscribe.unsubscribe(); // Stop scanning
+    //     this.hideCamera(); // Remove css classes for the transparent background
 
-    closeScanner(): Promise<QRScannerStatus> {
-        this.scanSubscribe.unsubscribe(); // Stop scanning
-        this.hideCamera(); // Remove css classes for the transparent background
-
-        return this.qrScanner.destroy(); // Destroy instance
-    }
+    //     return this.qrScanner.destroy(); // Destroy instance
+    // }
 
     closeAndGoBack(): void {
         if (this.navCtrl.canGoBack()) {
@@ -189,48 +215,48 @@ export class QrScannerPage {
         (window.document.querySelector('ion-app') as HTMLElement).classList.remove('cameraView');
     }
 
-    /**
-     * Test permission for scanner, open camera for qr reader and create subscription for scanned material
-     * @return {void}
-     */
-    openQr(): void {
-        // Optionally request the permission early
-        this.qrScanner
-            .prepare()
-            .then((status: QRScannerStatus) => {
-                if (status.authorized) {
-                    // Camera permission was granted
+    // /**
+    //  * Test permission for scanner, open camera for qr reader and create subscription for scanned material
+    //  * @return {void}
+    //  */
+    // openQr(): void {
+    //     // Optionally request the permission early
+    //     this.qrScanner
+    //         .prepare()
+    //         .then((status: QRScannerStatus) => {
+    //             if (status.authorized) {
+    //                 // Camera permission was granted
 
-                    // Start scanning
-                    this.scanSubscribe = this.qrScanner.scan().subscribe((text: string) => {
-                        this.scanned = text;
-                        if (this.doesQrCodeAndCalledComponentMatch()) {
-                            // Have to go this curious way with Elementref and trigger click,
-                            // Cause fire event here in subscription don`t work well (takes very long)
-                            this.sendbutton.nativeElement.click();
-                        } else {
-                            this.presentAlert();
-                        }
-                    });
+    //                 // Start scanning
+    //                 this.scanSubscribe = this.qrScanner.scan().subscribe((text: string) => {
+    //                     this.scanned = text;
+    //                     if (this.doesQrCodeAndCalledComponentMatch()) {
+    //                         // Have to go this curious way with Elementref and trigger click,
+    //                         // Cause fire event here in subscription don`t work well (takes very long)
+    //                         this.sendbutton.nativeElement.click();
+    //                     } else {
+    //                         this.presentAlert();
+    //                     }
+    //                 });
 
-                    this.showCamera();
-                    this.qrScanner.show();
+    //                 this.showCamera();
+    //                 this.qrScanner.show();
 
-                    // Wait for user to scan something, then the observable callback will be called
-                } else if (status.denied) {
-                    alert('denied');
-                    // Camera permission was permanently denied
-                    // You must use QRScanner.openSettings() method to guide the user to the settings page
-                    // Then they can grant the permission from there
-                } else {
-                    // Permission was denied, but not permanently. You can ask for permission again at a later time.
-                    alert('else');
-                }
-            })
-            .catch((e: any) => {
-                alert('Error is' + e);
-            });
-    }
+    //                 // Wait for user to scan something, then the observable callback will be called
+    //             } else if (status.denied) {
+    //                 alert('denied');
+    //                 // Camera permission was permanently denied
+    //                 // You must use QRScanner.openSettings() method to guide the user to the settings page
+    //                 // Then they can grant the permission from there
+    //             } else {
+    //                 // Permission was denied, but not permanently. You can ask for permission again at a later time.
+    //                 alert('else');
+    //             }
+    //         })
+    //         .catch((e: any) => {
+    //             alert('Error is' + e);
+    //         });
+    // }
 
     /**
      * Sends the qr reader readed data to the components or emits the event to emit data.
