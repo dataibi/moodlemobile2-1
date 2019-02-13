@@ -47,6 +47,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     protected isDestroyed = false;
     protected courseStatusObserver;
     protected siteUpdatedObserver;
+    protected AB_TABLE = 'abuser';
 
     constructor(
         @Optional() private navCtrl: NavController,
@@ -136,6 +137,15 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      */
     openCourse(course: any): void {
         const currentTab = (<Tab> this.navCtrl).index;
+
+        const siteId = this.sitesProvider.getCurrentSiteId();
+        this.sitesProvider.getSite(siteId).then((site) => {
+            const userRecord = {
+                currentCourseId: course.id
+            };
+
+            return site.getDb().updateRecords(this.AB_TABLE, userRecord, { userId: 1 });
+        });
 
         if (currentTab !== 1) {
             this.navCtrl.pop();
