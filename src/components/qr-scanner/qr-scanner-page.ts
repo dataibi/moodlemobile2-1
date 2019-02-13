@@ -91,7 +91,6 @@ export class QrScannerPage {
         this.course = navParams.get('course');
 
         translate.get('core.scannertext').subscribe((res: string) => {
-
             this.scannerOptions.prompt = res;
         });
     }
@@ -112,6 +111,7 @@ export class QrScannerPage {
                     this.sendbutton.nativeElement.click();
                 } else {
                     if (!barcodeData.cancelled) {
+                        console.log('is no matched qr code not cancelled');
                         this.presentAlert();
                     } else {
                         if (this.navCtrl.canGoBack()) {
@@ -121,6 +121,7 @@ export class QrScannerPage {
                 }
             },
             (err) => {
+                console.log('is no matched qr code not cancelled error');
                 this.presentAlert('error', err);
             }
         );
@@ -205,53 +206,65 @@ export class QrScannerPage {
     sendJson(): void {
         let data: any, topicsToSectionIdArray: any[], foundTopicAndSectionId: any;
         if (this.typeOfQrCode === 'login') {
-            this.qrReaderProvider.emitLoginData(this.scanned);
-        } else if (this.typeOfQrCode === 'section') {
-            // TODO: check if qr code is valid and show alert when not and reset
-            data = safelyParseJSON(this.scanned);
-            topicsToSectionIdArray = this.navigationMapProvider.getTopicsToSectionIdArray();
-            foundTopicAndSectionId = topicsToSectionIdArray.find((topic) => {
-                if (data.exhibit.map && typeof data.exhibit.map !== 'undefined') {
-                    if (data.exhibit.map !== topic.jsonString.map) {
-                        return false;
-                    }
-                }
-                if (data.exhibit.room === topic.jsonString.room && data.exhibit.exponat === topic.jsonString.exponat) {
-                    return true;
-                }
-            });
-            if (foundTopicAndSectionId !== undefined) {
-                const currentIndex = this.navCtrl.getActive().index;
-                this.navCtrl
-                    .push(CoreCourseSectionPage, { course: this.course, newSectionId: foundTopicAndSectionId.sectionId })
-                    .then(() => {
-                        this.navCtrl.remove(currentIndex);
-                    });
+            if (this.sitesProvider.isLoggedIn()) {
+                this.presentAlert('error', 'You are already logged in!');
+            } else {
+                this.qrReaderProvider.emitLoginData(this.scanned);
             }
-        } else if (this.typeOfQrCode === 'enrol') {
-            data = safelyParseJSON(this.scanned);
-            this.enrolCourse.id = data.courseId;
-            this.coursesProvider.getCourseEnrolmentMethods(data.courseId).then((methods) => {
-                const enrolMethodInstance = methods.find((method) => {
-                    return method.name === data.enrolName;
+        } else if (this.typeOfQrCode === 'section') {
+            if (!this.sitesProvider.isLoggedIn()) {
+                this.presentAlert('error', 'You are not logged in!');
+            } else {
+                // TODO: check if qr code is valid and show alert when not and reset
+                data = safelyParseJSON(this.scanned);
+                topicsToSectionIdArray = this.navigationMapProvider.getTopicsToSectionIdArray();
+                foundTopicAndSectionId = topicsToSectionIdArray.find((topic) => {
+                    if (data.exhibit.map && typeof data.exhibit.map !== 'undefined') {
+                        if (data.exhibit.map !== topic.jsonString.map) {
+                            return false;
+                        }
+                    }
+                    if (data.exhibit.room === topic.jsonString.room && data.exhibit.exponat === topic.jsonString.exponat) {
+                        return true;
+                    }
                 });
-                if (enrolMethodInstance) {
-                    this.selfEnrolInCourse(data.password, enrolMethodInstance.id, data.courseId)
-                        .then((value) => {
-                            const siteId = this.sitesProvider.getCurrentSiteId();
-                            this.sitesProvider.getSite(siteId).then((site) => {
-                                const userRecord = {
-                                    currentCourseId: data.courseId
-                                };
-
-                                return site.getDb().updateRecords(this.AB_TABLE, userRecord, { userId: 1 });
-                            });
-                        })
+                if (foundTopicAndSectionId !== undefined) {
+                    const currentIndex = this.navCtrl.getActive().index;
+                    this.navCtrl
+                        .push(CoreCourseSectionPage, { course: this.course, newSectionId: foundTopicAndSectionId.sectionId })
                         .then(() => {
-                            this.fetchMyOverviewCourses();
+                            this.navCtrl.remove(currentIndex);
                         });
                 }
-            });
+            }
+        } else if (this.typeOfQrCode === 'enrol') {
+            if (!this.sitesProvider.isLoggedIn()) {
+                this.presentAlert('error', 'You are not logged in!');
+            } else {
+                data = safelyParseJSON(this.scanned);
+                this.enrolCourse.id = data.courseId;
+                this.coursesProvider.getCourseEnrolmentMethods(data.courseId).then((methods) => {
+                    const enrolMethodInstance = methods.find((method) => {
+                        return method.name === data.enrolName;
+                    });
+                    if (enrolMethodInstance) {
+                        this.selfEnrolInCourse(data.password, enrolMethodInstance.id, data.courseId)
+                            .then((value) => {
+                                const siteId = this.sitesProvider.getCurrentSiteId();
+                                this.sitesProvider.getSite(siteId).then((site) => {
+                                    const userRecord = {
+                                        currentCourseId: data.courseId
+                                    };
+
+                                    return site.getDb().updateRecords(this.AB_TABLE, userRecord, { userId: 1 });
+                                });
+                            })
+                            .then(() => {
+                                this.fetchMyOverviewCourses();
+                            });
+                    }
+                });
+            }
         }
     }
 

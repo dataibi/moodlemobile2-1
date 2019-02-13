@@ -291,6 +291,9 @@ export class CoreLoginCredentialsPage implements OnInit {
             this.loginHelper.treatUserTokenError(siteUrl, error);
         }).finally(() => {
             modal.dismiss();
+            if (this.navCtrl.canGoBack()) {
+                this.navCtrl.pop();
+            }
         });
     }
 
