@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, OnDestroy, Optional } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, Tab } from 'ionic-angular';
 import { CoreEventsProvider } from '@providers/events';
 import { CoreSitesProvider } from '@providers/sites';
 import { CoreDomUtilsProvider } from '@providers/utils/dom';
@@ -48,10 +48,16 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     protected courseStatusObserver;
     protected siteUpdatedObserver;
 
-    constructor(@Optional() private navCtrl: NavController, private courseHelper: CoreCourseHelperProvider,
-            private courseFormatDelegate: CoreCourseFormatDelegate, private domUtils: CoreDomUtilsProvider,
-            private courseProvider: CoreCourseProvider, private eventsProvider: CoreEventsProvider,
-            private sitesProvider: CoreSitesProvider, private coursesProvider: CoreCoursesProvider) { }
+    constructor(
+        @Optional() private navCtrl: NavController,
+        private courseHelper: CoreCourseHelperProvider,
+        private courseFormatDelegate: CoreCourseFormatDelegate,
+        private domUtils: CoreDomUtilsProvider,
+        private courseProvider: CoreCourseProvider,
+        private eventsProvider: CoreEventsProvider,
+        private sitesProvider: CoreSitesProvider,
+        private coursesProvider: CoreCoursesProvider
+    ) {}
 
     /**
      * Component being initialized.
@@ -64,16 +70,20 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         }
 
         // Refresh the enabled flag if site is updated.
-        this.siteUpdatedObserver = this.eventsProvider.on(CoreEventsProvider.SITE_UPDATED, () => {
-            const wasEnabled = this.downloadCourseEnabled;
+        this.siteUpdatedObserver = this.eventsProvider.on(
+            CoreEventsProvider.SITE_UPDATED,
+            () => {
+                const wasEnabled = this.downloadCourseEnabled;
 
-            this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
+                this.downloadCourseEnabled = !this.coursesProvider.isDownloadCourseDisabledInSite();
 
-            if (!wasEnabled && this.downloadCourseEnabled) {
-                // Download course is enabled now, initialize it.
-                this.initPrefetchCourse();
-            }
-        }, this.sitesProvider.getCurrentSiteId());
+                if (!wasEnabled && this.downloadCourseEnabled) {
+                    // Download course is enabled now, initialize it.
+                    this.initPrefetchCourse();
+                }
+            },
+            this.sitesProvider.getCurrentSiteId()
+        );
     }
 
     /**
@@ -86,11 +96,15 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         }
 
         // Listen for status change in course.
-        this.courseStatusObserver = this.eventsProvider.on(CoreEventsProvider.COURSE_STATUS_CHANGED, (data) => {
-            if (data.courseId == this.course.id) {
-                this.updateCourseStatus(data.status);
-            }
-        }, this.sitesProvider.getCurrentSiteId());
+        this.courseStatusObserver = this.eventsProvider.on(
+            CoreEventsProvider.COURSE_STATUS_CHANGED,
+            (data) => {
+                if (data.courseId == this.course.id) {
+                    this.updateCourseStatus(data.status);
+                }
+            },
+            this.sitesProvider.getCurrentSiteId()
+        );
 
         // Determine course prefetch icon.
         this.courseHelper.getCourseStatusIconAndTitle(this.course.id).then((data) => {
@@ -113,7 +127,6 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
                 }
             }
         });
-
     }
 
     /**
@@ -122,7 +135,17 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      * @param {any} course The course to open.
      */
     openCourse(course: any): void {
-        this.courseFormatDelegate.openCourse(this.navCtrl, course);
+        const currentTab = (<Tab> this.navCtrl).index;
+
+        if (currentTab !== 1) {
+            this.navCtrl.pop();
+
+            this.navCtrl.parent.select(1).then(() => {
+                this.courseFormatDelegate.openCourse(this.navCtrl.parent.getSelected(), course);
+            });
+        } else {
+            this.courseFormatDelegate.openCourse(this.navCtrl, course);
+        }
     }
 
     /**
