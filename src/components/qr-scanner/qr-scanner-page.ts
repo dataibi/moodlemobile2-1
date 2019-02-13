@@ -16,7 +16,6 @@ import { QrReaderProvider } from './../../providers/qrReader';
 import { CoreLoginCredentialsPage } from './../../core/login/pages/credentials/credentials';
 import { NavController, NavParams, AlertController, Platform } from 'ionic-angular';
 import { Component, ViewChild, ElementRef } from '@angular/core';
-// import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 import { safelyParseJSON } from '../../helpers/navigation_helpers';
 import { NavigationMapProvider } from '@providers/navigation-map-provider';
 import { CoreCourseSectionPage } from './../../core/course/pages/section/section';
@@ -28,7 +27,8 @@ import { CoreCourseOptionsDelegate } from '@core/course/providers/options-delega
 import { CoreUtilsProvider } from '@providers/utils/utils';
 import * as moment from 'moment';
 import { CoreCourseFormatDelegate } from '@core/course/providers/format-delegate';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
+import { BarcodeScanner, BarcodeScannerOptions } from '@ionic-native/barcode-scanner';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'qr-scanner-page',
@@ -49,15 +49,16 @@ export class QrScannerPage {
     isEnrolled: boolean;
     canAccessCourse = true;
     courses = {
-      selected: 'inprogress',
-      loaded: false,
-      filter: '',
-      past: [],
-      inprogress: [],
-      future: []
-  };
-  showFilter = false;
-  filteredCourses: any[];
+        selected: 'inprogress',
+        loaded: false,
+        filter: '',
+        past: [],
+        inprogress: [],
+        future: []
+    };
+    showFilter = false;
+    filteredCourses: any[];
+    scannerOptions: BarcodeScannerOptions = {};
 
     protected guestInstanceId: number;
     protected enrollmentMethods: any[];
@@ -71,7 +72,6 @@ export class QrScannerPage {
     constructor(
         public navCtrl: NavController,
         navParams: NavParams,
-        // private qrScanner: QRScanner,
         private platform: Platform,
         private alertCtrl: AlertController,
         private qrReaderProvider: QrReaderProvider,
@@ -83,53 +83,48 @@ export class QrScannerPage {
         private courseOptionsDelegate: CoreCourseOptionsDelegate,
         private utils: CoreUtilsProvider,
         private courseFormatDelegate: CoreCourseFormatDelegate,
-        private barcodeScanner: BarcodeScanner
+        private barcodeScanner: BarcodeScanner,
+        translate: TranslateService
     ) {
         this.isLoginScan = navParams.get('isLogin');
         this.callingComponent = navParams.get('callingComponent');
         this.course = navParams.get('course');
+
+        translate.get('core.scannertext').subscribe((res: string) => {
+
+            this.scannerOptions.prompt = res;
+        });
     }
 
-    // ionViewDidEnter(): void {
-    //     this.platform.ready().then(() => {
-    //         this.openQr();
-    //     });
-    // }
-
-    // ionViewWillLeave(): void {
-    //     this.closeScanner();
-    // }
-
-    scan() {
-        // this.selectedProduct = {};
-        this.barcodeScanner.scan().then((barcodeData) => {
-            console.log('barcodeData');
-            console.log(barcodeData);
-            // this.scanned = text;
-            // if (this.doesQrCodeAndCalledComponentMatch()) {
-            //     // Have to go this curious way with Elementref and trigger click,
-            //     // Cause fire event here in subscription don`t work well (takes very long)
-            //     this.sendbutton.nativeElement.click();
-            // } else {
-            //     this.presentAlert();
-            // }
-        }, (err) => {
-            console.log('barcodeData err');
-            console.log(err);
-        //   this.toast.show(err, '5000', 'center').subscribe(
-        //     toast => {
-        //       console.log(toast);
-        //     }
-        //   );
+    ionViewDidEnter(): void {
+        this.platform.ready().then(() => {
+            this.scan();
         });
-      }
+    }
 
-    // closeScanner(): Promise<QRScannerStatus> {
-    //     this.scanSubscribe.unsubscribe(); // Stop scanning
-    //     this.hideCamera(); // Remove css classes for the transparent background
-
-    //     return this.qrScanner.destroy(); // Destroy instance
-    // }
+    scan(): void {
+        this.barcodeScanner.scan(this.scannerOptions).then(
+            (barcodeData) => {
+                this.scanned = barcodeData.text;
+                if (this.doesQrCodeAndCalledComponentMatch()) {
+                    // Have to go this curious way with Elementref and trigger click,
+                    // Cause fire event here in subscription don`t work well (takes very long)
+                    this.sendbutton.nativeElement.click();
+                } else {
+                    if (!barcodeData.cancelled) {
+                        this.presentAlert();
+                    } else {
+                        if (this.navCtrl.canGoBack()) {
+                            this.navCtrl.pop();
+                        }
+                    }
+                }
+            },
+            (err) => {
+                this.presentAlert('error', err);
+            }
+        );
+    }
 
     closeAndGoBack(): void {
         if (this.navCtrl.canGoBack()) {
@@ -182,10 +177,13 @@ export class QrScannerPage {
         }
     }
 
-    presentAlert(): void {
+    presentAlert(
+        title: string = 'QR Code not correct',
+        message: string = 'Please try another code generated for this project'
+    ): void {
         const alert = this.alertCtrl.create({
-            title: 'QR Code not correct',
-            message: 'Please try another code generated for this project',
+            title: title,
+            message: message,
             buttons: [
                 {
                     text: 'OK',
@@ -198,65 +196,6 @@ export class QrScannerPage {
         });
         alert.present();
     }
-
-    /**
-     * Only for the transparent background and css
-     * @return {void}
-     */
-    showCamera(): void {
-        (window.document.querySelector('ion-app') as HTMLElement).classList.add('cameraView');
-    }
-
-    /**
-     * Only for the transparent background and css
-     * @return {void}
-     */
-    hideCamera(): void {
-        (window.document.querySelector('ion-app') as HTMLElement).classList.remove('cameraView');
-    }
-
-    // /**
-    //  * Test permission for scanner, open camera for qr reader and create subscription for scanned material
-    //  * @return {void}
-    //  */
-    // openQr(): void {
-    //     // Optionally request the permission early
-    //     this.qrScanner
-    //         .prepare()
-    //         .then((status: QRScannerStatus) => {
-    //             if (status.authorized) {
-    //                 // Camera permission was granted
-
-    //                 // Start scanning
-    //                 this.scanSubscribe = this.qrScanner.scan().subscribe((text: string) => {
-    //                     this.scanned = text;
-    //                     if (this.doesQrCodeAndCalledComponentMatch()) {
-    //                         // Have to go this curious way with Elementref and trigger click,
-    //                         // Cause fire event here in subscription don`t work well (takes very long)
-    //                         this.sendbutton.nativeElement.click();
-    //                     } else {
-    //                         this.presentAlert();
-    //                     }
-    //                 });
-
-    //                 this.showCamera();
-    //                 this.qrScanner.show();
-
-    //                 // Wait for user to scan something, then the observable callback will be called
-    //             } else if (status.denied) {
-    //                 alert('denied');
-    //                 // Camera permission was permanently denied
-    //                 // You must use QRScanner.openSettings() method to guide the user to the settings page
-    //                 // Then they can grant the permission from there
-    //             } else {
-    //                 // Permission was denied, but not permanently. You can ask for permission again at a later time.
-    //                 alert('else');
-    //             }
-    //         })
-    //         .catch((e: any) => {
-    //             alert('Error is' + e);
-    //         });
-    // }
 
     /**
      * Sends the qr reader readed data to the components or emits the event to emit data.
@@ -292,41 +231,26 @@ export class QrScannerPage {
         } else if (this.typeOfQrCode === 'enrol') {
             data = safelyParseJSON(this.scanned);
             this.enrolCourse.id = data.courseId;
-            console.log('enroll methods instances data');
-            console.log(data);
             this.coursesProvider.getCourseEnrolmentMethods(data.courseId).then((methods) => {
-                console.log('enroll methods this.enrolCourse');
-                console.log(methods);
                 const enrolMethodInstance = methods.find((method) => {
                     return method.name === data.enrolName;
                 });
                 if (enrolMethodInstance) {
                     this.selfEnrolInCourse(data.password, enrolMethodInstance.id, data.courseId)
                         .then((value) => {
-                            console.log('value in selfenrolcourse then');
-                            console.log(value);
                             const siteId = this.sitesProvider.getCurrentSiteId();
                             this.sitesProvider.getSite(siteId).then((site) => {
                                 const userRecord = {
                                     currentCourseId: data.courseId
                                 };
-                                console.log('enrol insert db action');
-                                // return site.getDb().insertRecord(this.AB_TABLE, userRecord);
-                                return site.getDb().updateRecords(this.AB_TABLE, userRecord, {userId: 1});
+
+                                return site.getDb().updateRecords(this.AB_TABLE, userRecord, { userId: 1 });
                             });
                         })
                         .then(() => {
-                            console.log('is enroled and in db');
                             this.fetchMyOverviewCourses();
                         });
-                } else {
-                    console.log('enrolMethodInstance is ' + enrolMethodInstance);
                 }
-
-                // this.getCourse().then(() => {
-                //   console.log('enroll methods instances');
-                //   console.log(this.selfEnrolInstances);
-                // });
             });
         }
     }
@@ -350,7 +274,6 @@ export class QrScannerPage {
 
                 // Sometimes the list of enrolled courses takes a while to be updated. Wait for it.
                 return this.waitForEnrolled(true).then(() => {
-                    console.log('is enrolled');
                     this.refreshData().finally(() => {
                         // My courses have been updated, trigger event.
                         this.eventsProvider.trigger(
@@ -362,24 +285,15 @@ export class QrScannerPage {
                 });
             })
             .catch((error) => {
-                console.log('self enroll catch');
                 if (error && error.code === CoreCoursesProvider.ENROL_INVALID_KEY) {
-                    //   // Invalid password, show the modal to enter the password.
-                    //   this.selfEnrolModal.present();
-                    //   this.currentInstanceId = instanceId;
-                    //   if (!password) {
-                    //     // No password entered, don't show error.
-                    //     return;
-                    //   }
-                    console.log('selfEnrol is caught' + error);
+                    this.presentAlert('selfEnrol is caught', error);
                 }
 
                 this.domUtils.showErrorModalDefault(error, 'core.courses.errorselfenrol', true);
             })
             .finally(() => {
-                
-                console.log('finally selfenrol');
                 modal.dismiss();
+
                 return 'blafasel';
             });
     }
@@ -418,7 +332,6 @@ export class QrScannerPage {
      * @return {Promise<any>} Promise resolved when enrolled or timeout.
      */
     protected waitForEnrolled(first?: boolean): Promise<any> {
-        console.log('waitenrolled called');
         if (first) {
             this.waitStart = Date.now();
         }
@@ -428,18 +341,14 @@ export class QrScannerPage {
             .invalidateUserCourses()
             .catch(() => {
                 // Ignore errors.
-                console.log('catch in invalidate user courses');
             })
             .then(() => {
                 return this.coursesProvider.getUserCourse(this.enrolCourse.id, false);
             })
             .catch((value) => {
-                console.log(' Not enrolled, wait a bit and try again.');
-                console.log(value);
                 // Not enrolled, wait a bit and try again.
                 if (this.pageDestroyed || Date.now() - this.waitStart > 60000) {
                     // Max time reached or the user left the view, stop.
-                    console.log('Max time reached or the user left the view, stop.');
                     return;
                 }
 
@@ -448,10 +357,8 @@ export class QrScannerPage {
                         setTimeout(() => {
                             if (!this.pageDestroyed) {
                                 // Wait again.
-                                console.log('/ Wait again.');
                                 this.waitForEnrolled().then(resolve);
                             } else {
-                                console.log('/ Wait again.');
                                 resolve();
                             }
                         }, 5000);
@@ -529,28 +436,21 @@ export class QrScannerPage {
      * @param {any} course The course to open.
      */
     openCourse(course: any): void {
-      this.courseFormatDelegate.openCourse(this.navCtrl, course);
-  }
+        this.courseFormatDelegate.openCourse(this.navCtrl, course);
+    }
 
-  getCurrentCourseFromUser(): Promise<any> {
-      const siteId = this.sitesProvider.getCurrentSiteId();
+    getCurrentCourseFromUser(): Promise<any> {
+        const siteId = this.sitesProvider.getCurrentSiteId();
 
-      console.log('siteId getCurrentCourseFromUser');
-      console.log(siteId);
-
-      return this.sitesProvider
-          .getSite(siteId)
-          .then((site) => {
-            console.log('site getCurrentCourseFromUser');
-            console.log(site);
-              return site.getDb().getRecords(this.AB_TABLE);
-          })
-          .then((value) => {
-            console.log('value getCurrentCourseFromUser');
-            console.log(value);
-              return value[0].currentCourseId;
-          });
-  }
+        return this.sitesProvider
+            .getSite(siteId)
+            .then((site) => {
+                return site.getDb().getRecords(this.AB_TABLE);
+            })
+            .then((value) => {
+                return value[0].currentCourseId;
+            });
+    }
 
     /**
      * Fetch the courses for my overview.
@@ -558,57 +458,50 @@ export class QrScannerPage {
      * @return {Promise<any>} Promise resolved when done.
      */
     protected fetchMyOverviewCourses(): Promise<any> {
-      return this.fetchUserCourses()
-          .then((courses) => {
-              const today = moment().unix();
+        return this.fetchUserCourses()
+            .then((courses) => {
+                const today = moment().unix();
 
-              this.courses.past = [];
-              this.courses.inprogress = [];
-              this.courses.future = [];
+                this.courses.past = [];
+                this.courses.inprogress = [];
+                this.courses.future = [];
 
-              courses.forEach((course) => {
-                  if (course.startdate > today) {
-                      // Courses that have not started yet.
-                      this.courses.future.push(course);
-                  } else if (course.enddate && course.enddate < today) {
-                      // Courses that have already ended.
-                      this.courses.past.push(course);
-                  } else {
-                      // Courses still in progress.
-                      this.courses.inprogress.push(course);
-                  }
-              });
+                courses.forEach((course) => {
+                    if (course.startdate > today) {
+                        // Courses that have not started yet.
+                        this.courses.future.push(course);
+                    } else if (course.enddate && course.enddate < today) {
+                        // Courses that have already ended.
+                        this.courses.past.push(course);
+                    } else {
+                        // Courses still in progress.
+                        this.courses.inprogress.push(course);
+                    }
+                });
 
-              this.courses.filter = '';
-              this.showFilter = false;
-              this.filteredCourses = this.courses[this.courses.selected];
-              console.log('this.courses');
-              console.log(this.courses);
-              console.log('this.filteredCourses');
-              console.log(this.filteredCourses);
+                this.courses.filter = '';
+                this.showFilter = false;
+                this.filteredCourses = this.courses[this.courses.selected];
 
-              if (this.filteredCourses.length) {
-                  this.getCurrentCourseFromUser().then((currentCourseId) => {
-                    console.log('currentCourseId');
-                    console.log(currentCourseId);
-                      let courseIndex = 0;
-                      if (currentCourseId) { // Could be null
-                          courseIndex = this.filteredCourses.findIndex((filteredCourse) => {
-                              return filteredCourse.id === currentCourseId;
-                          });
-                      }
-                      console.log('courseIndex');
-                    console.log(courseIndex);
-                      this.openCourse(this.filteredCourses[courseIndex]);
-                  });
-              } else {
-                  this.openCourse(this.filteredCourses[0]);
-              }
-          })
-          .catch((error) => {
-              this.domUtils.showErrorModalDefault(error, 'Error getting my overview data.');
-          });
-  }
+                if (this.filteredCourses.length) {
+                    this.getCurrentCourseFromUser().then((currentCourseId) => {
+                        let courseIndex = 0;
+                        if (currentCourseId) {
+                            // Could be null
+                            courseIndex = this.filteredCourses.findIndex((filteredCourse) => {
+                                return filteredCourse.id === currentCourseId;
+                            });
+                        }
+                        this.openCourse(this.filteredCourses[courseIndex]);
+                    });
+                } else {
+                    this.openCourse(this.filteredCourses[0]);
+                }
+            })
+            .catch((error) => {
+                this.domUtils.showErrorModalDefault(error, 'Error getting my overview data.');
+            });
+    }
 
     /**
      * Check if the user can access as guest.
@@ -652,9 +545,6 @@ export class QrScannerPage {
      */
     protected fetchUserCourses(): Promise<any> {
         return this.coursesProvider.getUserCourses(false).then((courses) => {
-
-            console.log('getUserCourses then courses');
-            console.log(courses);
             const promises = [],
                 courseIds = courses.map((course) => {
                     return course.id;
@@ -695,8 +585,6 @@ export class QrScannerPage {
             }
 
             return Promise.all(promises).then(() => {
-                console.log('getUserCourses promise all then courses');
-                console.log(courses);
                 return courses.sort((a, b) => {
                     const compareA = a.fullname.toLowerCase(),
                         compareB = b.fullname.toLowerCase();

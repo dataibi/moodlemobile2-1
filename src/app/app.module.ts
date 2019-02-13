@@ -26,7 +26,7 @@ import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import { LocationStrategy } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
 // import { QRScanner } from '@ionic-native/qr-scanner';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';

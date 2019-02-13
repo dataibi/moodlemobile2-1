@@ -7,7 +7,7 @@
 </ion-header>
 
 <ion-content padding>
-    <div class="qr_title-wrapper">
+    <!-- <div class="qr_title-wrapper">
         <div float-end>
             <button ion-button icon-only clear color="dark" (click)="closeAndGoBack()">
                 <core-icon name="md-close-circle"></core-icon>
@@ -15,5 +15,6 @@
             <button class="hided-send-button-reference" #sendbutton ion-button icon-only clear color="dark" (click)="sendJson()"></button>
         </div>
         <h3 class="qr_title">{{ 'core.scannertext' | translate }}</h3>
-    </div>
+    </div> -->
+    <button class="hided-send-button-reference" #sendbutton ion-button icon-only clear color="dark" (click)="sendJson()"></button>
 </ion-content>
