@@ -48,9 +48,13 @@
             <ion-icon name="cog" item-start></ion-icon>
             <p>{{ 'core.mainmenu.appsettings' | translate }}</p>
         </a>
+        <a ion-item (click)="openMyCoursesList()" title="{{ 'core.mainmenu.myActivities' | translate }}">
+            <ion-icon name="log-out" item-start></ion-icon>
+            <p>{{ 'core.mainmenu.myActivities' | translate }}</p>
+        </a>
         <a ion-item (click)="logout()" title="{{ logoutLabel | translate }}">
             <ion-icon name="log-out" item-start></ion-icon>
-            <p>Log Out</p>
+            <p>{{ 'core.mainmenu.logout' | translate }}</p>
         </a>
     </ion-list>
 </ion-content>

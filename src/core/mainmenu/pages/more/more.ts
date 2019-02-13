@@ -139,4 +139,8 @@ export class CoreMainMenuMorePage implements OnDestroy {
         	this.loginHelper.goToAddSite(true, true);
         });
     }
+
+    openMyCoursesList(): void {
+        this.navCtrl.push('CoreCoursesMyCoursesPage');
+    }
 }
