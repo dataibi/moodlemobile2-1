@@ -246,5 +246,8 @@
     "exponats": "Exponate",
     "scanner": "Scanner",
     "scannertext": "Bitte scannen Sie einen Qr Code",
-    "scantologin": "Für den Login bitte den Button klicken und einen QR Code scannen"
+    "scantologin": "Für den Login bitte den Button klicken und einen QR Code scannen",
+    "alreadyLoggedIn": "Sie sind schon eingeloggt!",
+    "wrongQrCode": "Bitte versuchen Sie einen anderen für diese Aktivität generierten Qr Code!",
+    "notLoggedIn": "Sie sind nicht eingeloggt!"
 }

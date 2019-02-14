@@ -84,7 +84,7 @@ export class QrScannerPage {
         private utils: CoreUtilsProvider,
         private courseFormatDelegate: CoreCourseFormatDelegate,
         private barcodeScanner: BarcodeScanner,
-        translate: TranslateService
+        private translate: TranslateService
     ) {
         this.isLoginScan = navParams.get('isLogin');
         this.callingComponent = navParams.get('callingComponent');
@@ -104,25 +104,27 @@ export class QrScannerPage {
     scan(): void {
         this.barcodeScanner.scan(this.scannerOptions).then(
             (barcodeData) => {
+                const isLoggedIn = this.sitesProvider.isLoggedIn();
                 this.scanned = barcodeData.text;
                 if (this.doesQrCodeAndCalledComponentMatch()) {
                     // Have to go this curious way with Elementref and trigger click,
                     // Cause fire event here in subscription don`t work well (takes very long)
+
                     this.sendbutton.nativeElement.click();
                 } else {
                     if (!barcodeData.cancelled) {
-                        console.log('is no matched qr code not cancelled');
-                        this.presentAlert();
-                    } else {
-                        if (this.navCtrl.canGoBack()) {
-                            this.navCtrl.pop();
+                        if (this.typeOfQrCode === 'login' && isLoggedIn) {
+                            this.presentAlert('error', 'alreadyLoggedIn');
+                        } else {
+                            this.presentAlert();
                         }
+                    } else {
+                        this.closeAndGoBack();
                     }
                 }
             },
             (err) => {
-                console.log('is no matched qr code not cancelled error');
-                this.presentAlert('error', err);
+                this.presentAlert('error');
             }
         );
     }
@@ -178,24 +180,26 @@ export class QrScannerPage {
         }
     }
 
-    presentAlert(
-        title: string = 'QR Code not correct',
-        message: string = 'Please try another code generated for this project'
-    ): void {
-        const alert = this.alertCtrl.create({
-            title: title,
-            message: message,
-            buttons: [
-                {
-                    text: 'OK',
-                    role: 'cancel',
-                    handler: (): void => {
-                        this.closeAndGoBack();
+    presentAlert(title: string = 'error', message: string = 'wrongQrCode'): void {
+        this.translate.get([`core.${title}`, `core.${message}`]).subscribe((res: string) => {
+            console.log('object after translate array');
+            console.log(res);
+            console.log(res[`core.${message}`]);
+            const alert = this.alertCtrl.create({
+                title: res[`core.${title}`],
+                message: res[`core.${message}`],
+                buttons: [
+                    {
+                        text: 'OK',
+                        role: 'cancel',
+                        handler: (): void => {
+                            this.closeAndGoBack();
+                        }
                     }
-                }
-            ]
+                ]
+            });
+            alert.present();
         });
-        alert.present();
     }
 
     /**
@@ -207,13 +211,13 @@ export class QrScannerPage {
         let data: any, topicsToSectionIdArray: any[], foundTopicAndSectionId: any;
         if (this.typeOfQrCode === 'login') {
             if (this.sitesProvider.isLoggedIn()) {
-                this.presentAlert('error', 'You are already logged in!');
+                this.presentAlert('error', 'alreadyLoggedIn');
             } else {
                 this.qrReaderProvider.emitLoginData(this.scanned);
             }
         } else if (this.typeOfQrCode === 'section') {
             if (!this.sitesProvider.isLoggedIn()) {
-                this.presentAlert('error', 'You are not logged in!');
+                this.presentAlert('error', 'notLoggedIn');
             } else {
                 // TODO: check if qr code is valid and show alert when not and reset
                 data = safelyParseJSON(this.scanned);
@@ -239,7 +243,7 @@ export class QrScannerPage {
             }
         } else if (this.typeOfQrCode === 'enrol') {
             if (!this.sitesProvider.isLoggedIn()) {
-                this.presentAlert('error', 'You are not logged in!');
+                this.presentAlert('error', 'notLoggedIn');
             } else {
                 data = safelyParseJSON(this.scanned);
                 this.enrolCourse.id = data.courseId;
@@ -299,15 +303,13 @@ export class QrScannerPage {
             })
             .catch((error) => {
                 if (error && error.code === CoreCoursesProvider.ENROL_INVALID_KEY) {
-                    this.presentAlert('selfEnrol is caught', error);
+                    this.presentAlert('error');
                 }
 
                 this.domUtils.showErrorModalDefault(error, 'core.courses.errorselfenrol', true);
             })
             .finally(() => {
                 modal.dismiss();
-
-                return 'blafasel';
             });
     }
 

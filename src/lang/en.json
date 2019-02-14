@@ -253,5 +253,8 @@
     "exponats": "exhibits",
     "scanner": "scanner",
     "scannertext": "Please scan a qr code",
-    "scantologin": "Please press the button and scan a QR Code to login"
+    "scantologin": "Please press the button and scan a QR Code to login",
+    "alreadyLoggedIn": "You are already logged in!",
+    "wrongQrCode": "Please try another code generated for this project!",
+    "notLoggedIn": "You are not logged in!"
 }
