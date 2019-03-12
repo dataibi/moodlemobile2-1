@@ -93,6 +93,8 @@ export class QrScannerPage {
         translate.get('core.scannertext').subscribe((res: string) => {
             this.scannerOptions.prompt = res;
         });
+        this.scannerOptions.showFlipCameraButton = true;
+        this.scannerOptions.resultDisplayDuration = 0;
     }
 
     ionViewDidEnter(): void {
